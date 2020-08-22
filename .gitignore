@@ -1,3 +1,9 @@
+.idea
+.ipynb_checkpoints
+
+cmake-build-debug*
+build
+
 # Prerequisites
 *.d
 

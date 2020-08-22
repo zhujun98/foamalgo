@@ -1,0 +1,42 @@
+################################################################################
+# Distributed under the terms of the GNU General Public License v3.0.
+#
+# The full license is in the file LICENSE, distributed with this software.
+#
+# Copyright (C) 2020, Jun Zhu. All rights reserved.
+################################################################################
+
+# foamalgo cmake module
+# This module sets the following variables in your project::
+#
+#   foamalgo_FOUND - true if foamalgo found on the system
+#   foamalgo_INCLUDE_DIR - the directory containing foamalgo headers
+#   foamalgo_LIBRARY - empty
+
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(xtensor)
+find_dependency(xtensor-blas)
+
+if(NOT TARGET @PROJECT_NAME@)
+  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+  get_target_property(@PROJECT_NAME@_INCLUDE_DIR @PROJECT_NAME@ INTERFACE_INCLUDE_DIRECTORIES)
+endif()
+
+if(FOAM_USE_XSIMD)
+    find_dependency(xsimd)
+    target_link_libraries(@PROJECT_NAME@ INTERFACE xsimd)
+    target_compile_definitions(@PROJECT_NAME@ INTERFACE FOAM_USE_XSIMD)
+endif()
+
+if(FOAM_USE_TBB)
+    find_dependency(TBB)
+    target_include_directories(@PROJECT_NAME@ INTERFACE ${TBB_INCLUDE_DIRS})
+    target_link_libraries(@PROJECT_NAME@ INTERFACE ${TBB_LIBRARIES})
+    target_compile_definitions(@PROJECT_NAME@ INTERFACE FOAM_USE_TBB)
+endif()
+
+set_and_check(foamalgo_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
+set(foamalgo_LIBRARY "")
+check_required_components(foamalgo)
