@@ -1,27 +1,18 @@
 language: cpp
 
-stages:
-  - name: basic
-    if: branch != master
-  - name: full linux
-    if: branch = master
-
 jobs:
   include:
-    - stage: basic
+    - os: linux
       env: PYTHON_VERSION="3.7.5" COMPILER="gcc" GCCv="6"
-    - stage: full linux
-      os: linux
-      env: PYTHON_VERSION="3.7.5" COMPILER="gcc" GCCv="8"
-    - stage: full linux
-      os: linux
+    - os: linux
       env: PYTHON_VERSION="3.7.5" COMPILER="gcc" GCCv="7"
-    - stage: full linux
-      os: linux
-      env: PYTHON_VERSION="3.7.5" COMPILER="gcc" GCCv="6"
-    - stage: full linux
-      os: linux
+      if: branch = master
+    - os: linux
       env: PYTHON_VERSION="3.6.9" COMPILER="gcc" GCCv="6"
+      if: branch = master
+    - os: linux
+      env: PYTHON_VERSION="3.7.5" COMPILER="gcc" GCCv="8"
+      if: branch = master
 
 before_install:
   - export GXX="g++-$GCCv" GCC="gcc-$GCCv"
