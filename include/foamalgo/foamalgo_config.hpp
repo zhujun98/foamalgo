@@ -9,8 +9,7 @@
 #ifndef FOAMALGO_CONFIG_H
 #define FOAMALGO_CONFIG_H
 
-#define FOAMALGO_VERSION_MAJOR 0
-#define FOAMALGO_VERSION_MINOR 1
-#define FOAMALGO_VERSION_PATCH 0
+// IMPROVE
+#include "foamalgo_version.hpp"
 
 #endif //FOAMALGO_CONFIG_H

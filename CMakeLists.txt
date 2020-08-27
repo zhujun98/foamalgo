@@ -7,7 +7,8 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.13)
-project(foamalgo LANGUAGES CXX)
+
+project(foamalgo LANGUAGES CXX VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,22 +21,12 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-# Version
-# =======
-
 set(FOAMALGO_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(FOAMALGO_HEADER_DIR ${FOAMALGO_INCLUDE_DIR}/${PROJECT_NAME})
 
-file(STRINGS "${FOAMALGO_HEADER_DIR}/foamalgo_config.hpp" ${PROJECT_NAME}_version_defines
-     REGEX "#define FOAMALGO_VERSION_(MAJOR|MINOR|PATCH)")
-foreach(ver ${${PROJECT_NAME}_version_defines})
-    if(ver MATCHES "#define FOAMALGO_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
-        set(FOAMALGO_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
-    endif()
-endforeach()
-set(${PROJECT_NAME}_VERSION
-    ${FOAMALGO_VERSION_MAJOR}.${FOAMALGO_VERSION_MINOR}.${FOAMALGO_VERSION_PATCH})
-message(STATUS "Building ${PROJECT_NAME} v${${PROJECT_NAME}_VERSION}")
+# versioning
+# ==========
+configure_file(foamalgo_version.in ${FOAMALGO_HEADER_DIR}/foamalgo_version.hpp @ONLY)
 
 # options
 # =======
@@ -154,6 +145,7 @@ endif()
 set(FOAM_HEADERS
     ${FOAMALGO_HEADER_DIR}/canny.hpp
     ${FOAMALGO_HEADER_DIR}/foamalgo_config.hpp
+    ${FOAMALGO_HEADER_DIR}/foamalgo_version.hpp
     ${FOAMALGO_HEADER_DIR}/geometry.hpp
     ${FOAMALGO_HEADER_DIR}/geometry_1m.hpp
     ${FOAMALGO_HEADER_DIR}/helpers.hpp
