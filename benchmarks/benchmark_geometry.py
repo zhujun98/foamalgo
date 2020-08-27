@@ -12,14 +12,13 @@ import time
 
 import numpy as np
 
-from foamalgo.config import config
 
-_IMAGE_DTYPE = config['SOURCE_PROC_IMAGE_DTYPE']
-_RAW_IMAGE_DTYPE = config['SOURCE_RAW_IMAGE_DTYPE']
+_IMAGE_DTYPE = np.float32
+_RAW_IMAGE_DTYPE = np.uint16
 
 _data_sources = [(_RAW_IMAGE_DTYPE, 'raw'), (_IMAGE_DTYPE, 'calibrated')]
 
-_geom_path = osp.join(osp.dirname(osp.abspath(__file__)), "../pyfoamalgo/geometries")
+_geom_path = osp.join(osp.dirname(osp.abspath(__file__)), "../pyfoamalgo/geometry")
 
 
 def _benchmark_1m_imp(geom_fast_cls, geom_cls, geom_file, quad_positions=None):
@@ -75,8 +74,8 @@ def _benchmark_1m_imp(geom_fast_cls, geom_cls, geom_file, quad_positions=None):
 
 
 def benchmark_dssc_1m():
-    from foamalgo.geometries import DSSC_1MGeometryFast
-    from foamalgo.geometries import DSSC_1MGeometry
+    from pyfoamalgo.geometry import DSSC_1MGeometry as DSSC_1MGeometryFast
+    from extra_geom import DSSC_1MGeometry
 
     geom_file = osp.join(_geom_path, "dssc_geo_june19.h5")
     quad_positions = [
@@ -90,8 +89,8 @@ def benchmark_dssc_1m():
 
 
 def benchmark_lpd_1m():
-    from foamalgo.geometries import LPD_1MGeometryFast
-    from foamalgo.geometries import LPD_1MGeometry
+    from pyfoamalgo.geometry import LPD_1MGeometry as LPD_1MGeometryFast
+    from extra_geom import LPD_1MGeometry
 
     geom_file = osp.join(_geom_path, "lpd_mar_18_axesfixed.h5")
     quad_positions = [
@@ -105,8 +104,8 @@ def benchmark_lpd_1m():
 
 
 def benchmark_agipd_1m():
-    from foamalgo.geometries import AGIPD_1MGeometryFast
-    from foamalgo.geometries import AGIPD_1MGeometry
+    from pyfoamalgo.geometry import AGIPD_1MGeometry as AGIPD_1MGeometryFast
+    from extra_geom import AGIPD_1MGeometry
 
     geom_file = osp.join(_geom_path, "agipd_mar18_v11.geom")
 
@@ -114,7 +113,7 @@ def benchmark_agipd_1m():
 
 
 def benchmark_jungfrau():
-    from foamalgo.geometries import JungFrauGeometryFast
+    from pyfoamalgo.geometry import JungFrauGeometry as JungFrauGeometryFast
 
     for from_dtype, from_str in _data_sources:
         n_row, n_col = 3, 2

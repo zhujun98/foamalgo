@@ -11,7 +11,7 @@ import time
 
 import numpy as np
 
-from foamalgo.algorithms import (
+from pyfoamalgo import (
     correct_image_data, mask_image_data, movingAvgImageData,
     nanmean_image_data
 )

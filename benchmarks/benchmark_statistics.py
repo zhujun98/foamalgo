@@ -2,9 +2,7 @@ import time
 
 import numpy as np
 
-from foamalgo.algorithms import (
-    nanmean, nansum
-)
+from pyfoamalgo import nanmean, nansum
 
 
 def benchmark_nan_without_axis(f_cpp, f_py, shape, dtype):

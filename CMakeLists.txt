@@ -229,11 +229,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
 # FOAM_PYTHON
 # ============
 
-# pybind11
-set(PYBIND11_CPP_STANDARD -std=c++14)
-add_subdirectory(thirdparty/pybind11)
-find_package(pybind11 REQUIRED)
-
 if(BUILD_FOAM_PYTHON)
-    add_subdirectory(pyfoamalgo)
+    add_subdirectory(pyfoamalgo/src)
 endif()

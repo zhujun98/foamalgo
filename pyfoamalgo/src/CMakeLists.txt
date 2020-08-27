@@ -9,16 +9,13 @@
 # dependencies
 # ============
 
-set(xtensor-python_REQUIRED_VERSION 0.24.1)
+# pybind11
+set(PYBIND11_CPP_STANDARD -std=c++14)
+add_subdirectory(thirdparties/pybind11)
+find_package(pybind11 REQUIRED)
 
 # xtensor-python
-find_package(xtensor-python ${xtensor-python_REQUIRED_VERSION} QUIET)
-if(xtensor-python_FOUND)
-    message(STATUS "Found xtensor-python: ${xtensor-python_VERSION}, ${xtensor-python_INCLUDE_DIRS}")
-else()
-    configure_file(../cmake/downloadXtensorPython.cmake.in thirdparty/xtensor-python-stage/CMakeLists.txt)
-    build_external_project( xtensor-python )
-endif()
+add_subdirectory(thirdparties/xtensor-python)
 
 # ============
 # Build flags
@@ -34,7 +31,6 @@ define_foam_compile_flags(foam_py)
 set(_FOAM_MODULE_FILES
     azimuthal_integrator.cpp
     canny.cpp
-    datamodel.cpp
     geometry.cpp
     geometry_1m.cpp
     helpers.cpp

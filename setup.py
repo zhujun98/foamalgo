@@ -1,11 +1,9 @@
 """
-Distributed under the terms of the BSD 3-Clause License.
+Distributed under the terms of the GNU General Public License v3.0.
 
 The full license is in the file LICENSE, distributed with this software.
 
-Author: Jun Zhu <jun.zhu@xfel.eu>
-Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
-All rights reserved.
+Copyright (C) 2020, Jun Zhu. All rights reserved.
 """
 import contextlib
 import glob
@@ -60,7 +58,7 @@ ext_modules = [
 
 class BuildExt(build_ext):
 
-    description = "Build the C++ extensions for foamalgo"
+    description = "Build the C++ extensions for pyfoamalgo"
     user_options = [
         ('use-tbb', None, 'build with intel TBB'),
         ('xtensor-use-tbb', None, 'build xtensor with intel TBB'),
@@ -108,10 +106,10 @@ class BuildExt(build_ext):
         ext_dir = osp.abspath(osp.dirname(self.get_ext_fullpath(ext.name)))
         build_type = 'debug' if self.debug else 'release'
         build_lib = osp.join(os.getcwd(), self.build_lib)
-        saved_cwd = os.getcwd()
+        saved_cwd = osp.join(ext_dir, "pyfoamalgo/lib")
 
         cmake_options = [
-            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={osp.join(ext_dir, 'pyfoamalgo')}",
+            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={saved_cwd}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={build_type}",
             f"-DCMAKE_PREFIX_PATH={os.getenv('CMAKE_PREFIX_PATH')}",
@@ -155,7 +153,7 @@ class BuildExt(build_ext):
                 build_lib = saved_cwd
 
             try:
-                os.makedirs(osp.join(build_lib, 'pyfoamalgo'))
+                os.makedirs(build_lib)
             except OSError:
                 pass
 
@@ -209,17 +207,13 @@ class TestCommand(_TestCommand):
 
         # run Python test
         import pytest
-        errno = pytest.main(['pyfoamalgo'])
+        errno = pytest.main(['pyfoamalgo/tests'])
         sys.exit(errno)
 
 
 class BenchmarkCommand(Command):
 
-    description = "run benchmark after in-place build"
-
     user_options = []
-
-    # TODO: improve
 
     def initialize_options(self):
         """Override."""
@@ -241,7 +235,7 @@ class BinaryDistribution(Distribution):
 
 
 setup(
-    name='foamalgo',
+    name='pyfoamalgo',
     version=find_version(),
     author='Jun Zhu',
     author_email='zhujun981661@gmail.com',
@@ -258,14 +252,20 @@ setup(
         'benchmark': BenchmarkCommand,
     },
     distclass=BinaryDistribution,
+    package_data={
+        'pyfoamalgo': [
+            'geometry/*.h5',
+        ]
+    },
     install_requires=[
         'numpy>=1.16.1',
         'scipy>=1.2.1',
     ],
     extras_require={
         'test': [
+            'extra-data',
+            'extra-geom',
             'pytest',
-            'pytest-cov',
         ],
     },
     python_requires='>=3.6',

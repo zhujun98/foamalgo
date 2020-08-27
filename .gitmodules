@@ -1,3 +1,6 @@
 [submodule "thirdparty/pybind11"]
-	path = thirdparty/pybind11
+	path = pyfoamalgo/src/thirdparties/pybind11
 	url = https://github.com/pybind/pybind11.git
+[submodule "pyfoamalgo/src/thirdparties/xtensor-python"]
+	path = pyfoamalgo/src/thirdparties/xtensor-python
+	url = https://github.com/xtensor-stack/xtensor-python.git
