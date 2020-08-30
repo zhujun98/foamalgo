@@ -5,7 +5,7 @@
 find_path(
     pybind11_INCLUDE_DIR
     NAMES pybind11/pybind11.h
-    PATHS ${PROJECT_SOURCE_DIR}/thirdparty/pybind11/include
+    PATHS ${PROJECT_SOURCE_DIR}/py{PROJECT_NAME}/src/thirdparties/pybind11/include
     DOC "The directory where pybind11 includes reside"
 )
 set(pybind11_INCLUDE_DIRS ${pybind11_INCLUDE_DIR})
