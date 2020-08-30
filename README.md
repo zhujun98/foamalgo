@@ -10,24 +10,3 @@ foamalgo
 
 ![Language](https://img.shields.io/badge/language-c++-red)
 ![Language](https://img.shields.io/badge/language-python-blue)
-
-
-## Installation
-
-```shell script
-$ git clone --recursive https://github.com/zhujun98/foamalgo.git
-# in case submodules were not cloned by including '--recursive'
-$ git submodule update --init
-
-$ cd foamalgo
-$ mkdir build && cd build
-$ cmake -DCMAKE_INSTALL_PREFIX=your_install_prefix 
-$ make install
-```
-
-#### pyfoamalgo
-
-```shell script
-$ cd foamalgo
-$ pip install . -v
-```
