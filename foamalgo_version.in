@@ -1,0 +1,35 @@
+/**
+ * Distributed under the terms of the GNU General Public License v3.0.
+ *
+ * The full license is in the file LICENSE, distributed with this software.
+ *
+ * Copyright (C) 2020, Jun Zhu. All rights reserved.
+ */
+#include <string>
+
+
+inline std::string getFoamalgoVersion()
+{
+  return "@foamalgo_VERSION@";
+}
+
+inline unsigned getFoamalgoVersionMajor()
+{
+  return @foamalgo_VERSION_MAJOR@;
+}
+
+inline unsigned getFoamalgoVersionMinor()
+{
+  return @foamalgo_VERSION_MINOR@ +0;
+}
+
+inline unsigned getFoamalgoVersionPatch()
+{
+  return @foamalgo_VERSION_PATCH@ +0;
+}
+
+inline unsigned getFoamalgoVersionTweak()
+{
+
+ return @foamalgo_VERSION_TWEAK@ +0;
+}

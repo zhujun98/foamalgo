@@ -1,0 +1,23 @@
+################################################################################
+# Distributed under the terms of the GNU General Public License v3.0.
+#
+# The full license is in the file LICENSE, distributed with this software.
+#
+# Copyright (C) 2019, Jun Zhu. All rights reserved.
+################################################################################
+
+cmake_minimum_required(VERSION 3.1)
+
+include(ExternalProject)
+
+ExternalProject_Add(xtensor
+    GIT_REPOSITORY    https://github.com/QuantStack/xtensor.git
+    GIT_TAG           ${xtensor_REQUIRED_VERSION}
+    SOURCE_DIR        ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/xtensor-src
+    BINARY_DIR        ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/xtensor-build
+
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND     ""
+    INSTALL_COMMAND   ""
+    TEST_COMMAND      ""
+)
