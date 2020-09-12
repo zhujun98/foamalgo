@@ -17,7 +17,6 @@ variables:
 
 steps:
   - checkout: self
-    submodules: true
 
   - script: |
       sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
@@ -31,9 +30,8 @@ steps:
   - script: |
       conda create --yes --quiet --name foamalgo
       source activate foamalgo
-      conda install -y cmake numpy -c anaconda
-      conda install -y -c conda-forge tbb-devel
-      conda install -y -c conda-forge xsimd xtensor xtensor-blas xtensor-python
+      conda install -y cmake -c anaconda
+      conda install -y -c conda-forge tbb-devel==2020.1 xsimd xtensor xtensor-blas numpy xtensor-python
     displayName: "Create Anaconda environment"
 
   - script: |
