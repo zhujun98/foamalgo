@@ -1,6 +1,13 @@
 Installation
 ============
 
+Using the conda package
+-----------------------
+
+.. code::
+
+    conda install -c conda-forge foamalgo
+
 
 From source
 -----------
@@ -9,10 +16,10 @@ foamalgo
 """"""""
 
 .. code::
+    conda install -c anaconda cmake
+    conda install -c conda-forge tbb-devel xsimd xtensor xtensor-blas
 
-    git clone --recursive https://github.com/zhujun98/foamalgo.git
-    # in case submodules were not cloned by including '--recursive'
-    git submodule update --init
+    git clone https://github.com/zhujun98/foamalgo.git
 
     cd foamalgo
     mkdir build && cd build
@@ -24,8 +31,10 @@ pyfoamalgo
 """"""""""
 
 .. code::
+    conda install -c anaconda cmake
+    conda install -c conda-forge tbb-devel xsimd xtensor xtensor-blas numpy xtensor-python
 
-    git clone --recursive https://github.com/zhujun98/foamalgo.git
+    git clone https://github.com/zhujun98/foamalgo.git
 
     cd foamalgo
     pip install . -v
