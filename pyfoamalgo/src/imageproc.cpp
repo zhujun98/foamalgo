@@ -174,7 +174,7 @@ PYBIND11_MODULE(imageproc, m)
 #define FOAM_CORRECT_OFFSET_IMPL(VALUE_TYPE, N_DIM)                                         \
   m.def("correctOffset",                                                                    \
     (void (*)(xt::pytensor<VALUE_TYPE, N_DIM>&, const xt::pytensor<VALUE_TYPE, N_DIM>&))    \
-    &correctImageData<OffsetPolicy, xt::pytensor<VALUE_TYPE, N_DIM>>,                       \
+    &correctImageData<OffsetPolicy, xt::pytensor<VALUE_TYPE, N_DIM>>,               \
     py::arg("src").noconvert(), py::arg("offset").noconvert());
 
   FOAM_CORRECT_OFFSET_IMPL(double, 2)
@@ -185,7 +185,7 @@ PYBIND11_MODULE(imageproc, m)
 #define FOAM_CORRECT_GAIN_IMPL(VALUE_TYPE, N_DIM)                                           \
   m.def("correctGain",                                                                      \
     (void (*)(xt::pytensor<VALUE_TYPE, N_DIM>&, const xt::pytensor<VALUE_TYPE, N_DIM>&))    \
-    &correctImageData<GainPolicy, xt::pytensor<VALUE_TYPE, N_DIM>>,                         \
+    &correctImageData<GainPolicy, xt::pytensor<VALUE_TYPE, N_DIM>>,                  \
     py::arg("src").noconvert(), py::arg("gain").noconvert());
 
   FOAM_CORRECT_GAIN_IMPL(double, 2)
@@ -197,7 +197,7 @@ PYBIND11_MODULE(imageproc, m)
   m.def("correctGainOffset",                                                                    \
     (void (*)(xt::pytensor<VALUE_TYPE, N_DIM>&,                                                 \
               const xt::pytensor<VALUE_TYPE, N_DIM>&, const xt::pytensor<VALUE_TYPE, N_DIM>&))  \
-    &correctImageData<xt::pytensor<VALUE_TYPE, N_DIM>>,                                         \
+    &correctImageData<GainOffsetPolicy, xt::pytensor<VALUE_TYPE, N_DIM>>,                       \
     py::arg("src").noconvert(), py::arg("gain").noconvert(), py::arg("offset").noconvert());
 
   FOAM_CORRECT_GAIN_AND_OFFSET_IMPL(double, 2)

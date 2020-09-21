@@ -4,7 +4,7 @@
  * The full license is in the file BSD_LICENSE, distributed with this software.
  *
  * Author: Jun Zhu <jun.zhu@xfel.eu>
- * Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
+ * Copyright (C) European X-Ray Free-Electron Laser Facility GmbH, Jun Zhu.
  * All rights reserved.
  */
 #ifndef FOAM_IMAGE_PROC_H
@@ -961,19 +961,57 @@ inline void movingAvgImageData(E& src, const E& data, size_t count)
 #endif
 }
 
-class OffsetPolicy {
+class OffsetPolicy
+{
 public:
-  template<typename T>
-  static T correct(T v, T a) {
-    return v - a;
+  template<typename E1, typename E2>
+  static void correct(E1& v, const E2& offset)
+  {
+    // TODO:: simplify after xtensor-python bug fixing
+    auto shape = v.shape();
+    for (size_t j = 0; j < shape[0]; ++j)
+    {
+      for (size_t k = 0; k < shape[1]; ++k)
+      {
+        v(j, k) -= offset(j, k);
+      }
+    }
   }
 };
 
-class GainPolicy {
+class GainPolicy
+{
 public:
-  template<typename T>
-  static T correct(T v, T a) {
-    return v * a;
+  template<typename E1, typename E2>
+  static void correct(E1& v, const E2& gain)
+  {
+    // TODO:: simplify after xtensor-python bug fixing
+    auto shape = v.shape();
+    for (size_t j = 0; j < shape[0]; ++j)
+    {
+      for (size_t k = 0; k < shape[1]; ++k)
+      {
+        v(j, k) *= gain(j, k);
+      }
+    }
+  }
+};
+
+class GainOffsetPolicy
+{
+public:
+  template<typename E1, typename E2>
+  static void correct(E1& v, const E2& gain, const E2& offset)
+  {
+    // TODO:: simplify after xtensor-python bug fixing
+    auto shape = v.shape();
+    for (size_t j = 0; j < shape[0]; ++j)
+    {
+      for (size_t k = 0; k < shape[1]; ++k)
+      {
+        v(j, k) = gain(j, k) * ( v(j, k) - offset(j, k) );
+      }
+    }
   }
 };
 
@@ -1002,13 +1040,8 @@ inline void correctImageData(E& src, const E& constants)
       for (size_t i = 0; i < shape[0]; ++i)
       {
 #endif
-        for (size_t j = 0; j < shape[1]; ++j)
-        {
-          for (size_t k = 0; k < shape[2]; ++k)
-          {
-            src(i, j, k) = Policy::correct(src(i, j, k), constants(i, j, k));
-          }
-        }
+        auto&& src_view = xt::view(src, i, xt::all(), xt::all());
+        Policy::correct(src_view, xt::view(constants, i, xt::all(), xt::all()));
       }
 #if defined(FOAM_USE_TBB)
     }
@@ -1027,17 +1060,9 @@ inline void correctImageData(E& src, const E& constants)
 template <typename Policy, typename E, EnableIf<E, IsImage> = false>
 inline void correctImageData(E& src, const E& constants)
 {
-  auto shape = src.shape();
+  utils::checkShape(src.shape(), constants.shape(), "data and constants have different shapes");
+  Policy::correct(src, constants);
 
-  utils::checkShape(shape, constants.shape(), "data and constants have different shapes");
-
-  for (size_t j = 0; j < shape[0]; ++j)
-  {
-    for (size_t k = 0; k < shape[1]; ++k)
-    {
-      src(j, k) = Policy::correct(src(j, k), constants(j, k));
-    }
-  }
 }
 
 /**
@@ -1047,7 +1072,7 @@ inline void correctImageData(E& src, const E& constants)
 * @param gain: gain correction constants, which has the same shape as src.
 * @param offset: offset correction constants, which has the same shape as src.
 */
-template <typename E, EnableIf<E, IsImageArray> = false>
+template <typename Policy, typename E, EnableIf<E, IsImageArray> = false>
 inline void correctImageData(E& src, const E& gain, const E& offset)
 {
   auto shape = src.shape();
@@ -1065,13 +1090,10 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
       for (size_t i = 0; i < shape[0]; ++i)
       {
 #endif
-        for (size_t j = 0; j < shape[1]; ++j)
-        {
-          for (size_t k = 0; k < shape[2]; ++k)
-          {
-            src(i, j, k) = gain(i, j, k) * (src(i, j, k) - offset(i, j, k));
-          }
-        }
+        auto&& src_view = xt::view(src, i, xt::all(), xt::all());
+        Policy::correct(src_view,
+                        xt::view(gain, i, xt::all(), xt::all()),
+                        xt::view(offset, i, xt::all(), xt::all()));
       }
 #if defined(FOAM_USE_TBB)
     }
@@ -1086,7 +1108,7 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
 * @param gain: gain correction constants, which has the same shape as src.
 * @param offset: offset correction constants, which has the same shape as src.
 */
-template <typename E, EnableIf<E, IsImage> = false>
+template <typename Policy, typename E, EnableIf<E, IsImage> = false>
 inline void correctImageData(E& src, const E& gain, const E& offset)
 {
   auto shape = src.shape();
@@ -1094,13 +1116,7 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
   utils::checkShape(shape, gain.shape(), "data and gain constants have different shapes");
   utils::checkShape(shape, offset.shape(), "data and offset constants have different shapes");
 
-  for (size_t j = 0; j < shape[0]; ++j)
-  {
-    for (size_t k = 0; k < shape[1]; ++k)
-    {
-      src(j, k) = gain(j, k) * (src(j, k) - offset(j, k));
-    }
-  }
+  Policy::correct(src, gain, offset);
 }
 
 } // foam
