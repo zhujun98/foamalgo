@@ -30,7 +30,7 @@ install:
   - conda install -y python=$PYTHON_VERSION
   - echo $PYTHON_VERSION
   - conda install -y cmake -c anaconda
-  - conda install -y -c conda-forge tbb-devel==2020.1 xsimd xtensor xtensor-blas numpy xtensor-python
+  - conda install -y -c conda-forge tbb-devel xsimd xtensor xtensor-blas numpy xtensor-python
   - export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
   - if [[ "$TEST_SERIAL" == 1 ]]; then export BUILD_SERIAL_FOAM=1; fi
   - pip install -e .[test]
