@@ -260,7 +260,7 @@ setup(
     install_requires=[
         'numpy>=1.16.1',
         'scipy>=1.2.1',
-        'h5py',
+        'h5py>=2.10.0',
     ],
     extras_require={
         'test': [
