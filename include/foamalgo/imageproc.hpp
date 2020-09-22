@@ -674,7 +674,7 @@ inline void maskImageDataZero(E& src, T lb, T ub)
     }
   );
 #else
-  xt::filter(src, xt::isnan(src) | src < lb | src > ub) = value_type(0);
+  xt::filter(src, xt::isnan(src) | (src < lb) | (src > ub)) = value_type(0);
 #endif
 }
 
@@ -713,7 +713,7 @@ inline void maskImageDataNan(E& src, T lb, T ub)
     }
   );
 #else
-  xt::filter(src, src < lb | src > ub) = nan;
+  xt::filter(src, (src < lb) | (src > ub)) = nan;
 #endif
 }
 
