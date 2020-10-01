@@ -965,15 +965,15 @@ class OffsetPolicy
 {
 public:
   template<typename E1, typename E2>
-  static void correct(E1& v, const E2& offset)
+  static void correct(E1& src, const E2& offset)
   {
     // TODO:: simplify after xtensor-python bug fixing
-    auto shape = v.shape();
+    auto shape = src.shape();
     for (size_t j = 0; j < shape[0]; ++j)
     {
       for (size_t k = 0; k < shape[1]; ++k)
       {
-        v(j, k) -= offset(j, k);
+        src(j, k) -= offset(j, k);
       }
     }
   }
@@ -983,15 +983,15 @@ class GainPolicy
 {
 public:
   template<typename E1, typename E2>
-  static void correct(E1& v, const E2& gain)
+  static void correct(E1& src, const E2& gain)
   {
     // TODO:: simplify after xtensor-python bug fixing
-    auto shape = v.shape();
+    auto shape = src.shape();
     for (size_t j = 0; j < shape[0]; ++j)
     {
       for (size_t k = 0; k < shape[1]; ++k)
       {
-        v(j, k) *= gain(j, k);
+        src(j, k) *= gain(j, k);
       }
     }
   }
@@ -1000,20 +1000,48 @@ public:
 class GainOffsetPolicy
 {
 public:
-  template<typename E1, typename E2>
-  static void correct(E1& v, const E2& gain, const E2& offset)
+  template<typename E1, typename E2, typename E3>
+  static void correct(E1& src, const E2& gain, const E3& offset)
   {
     // TODO:: simplify after xtensor-python bug fixing
-    auto shape = v.shape();
+    auto shape = src.shape();
     for (size_t j = 0; j < shape[0]; ++j)
     {
       for (size_t k = 0; k < shape[1]; ++k)
       {
-        v(j, k) = gain(j, k) * ( v(j, k) - offset(j, k) );
+        src(j, k) = gain(j, k) * ( src(j, k) - offset(j, k) );
       }
     }
   }
 };
+
+namespace detail
+{
+
+template <typename Policy, typename E>
+inline void correctImageDataImp(E& src, const E& constants)
+{
+  auto shape = src.shape();
+#if defined(FOAM_USE_TBB)
+  tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
+    [&src, &constants, &shape] (const tbb::blocked_range<int> &block)
+    {
+      for(int i=block.begin(); i != block.end(); ++i)
+      {
+#else
+    for (size_t i = 0; i < shape[0]; ++i)
+      {
+#endif
+        auto&& src_view = xt::view(src, i, xt::all(), xt::all());
+        Policy::correct(src_view, xt::view(constants, i, xt::all(), xt::all()));
+      }
+#if defined(FOAM_USE_TBB)
+    }
+  );
+#endif
+}
+
+} //detail
 
 /**
  * Inplace apply either gain or offset correct for an array of images.
@@ -1026,27 +1054,9 @@ public:
 template <typename Policy, typename E, EnableIf<E, IsImageArray> = false>
 inline void correctImageData(E& src, const E& constants)
 {
-  auto shape = src.shape();
+  utils::checkShape(src.shape(), constants.shape(), "data and constants have different shapes");
 
-  utils::checkShape(shape, constants.shape(), "data and constants have different shapes");
-
-#if defined(FOAM_USE_TBB)
-  tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
-    [&src, &constants, &shape] (const tbb::blocked_range<int> &block)
-    {
-      for(int i=block.begin(); i != block.end(); ++i)
-      {
-#else
-      for (size_t i = 0; i < shape[0]; ++i)
-      {
-#endif
-        auto&& src_view = xt::view(src, i, xt::all(), xt::all());
-        Policy::correct(src_view, xt::view(constants, i, xt::all(), xt::all()));
-      }
-#if defined(FOAM_USE_TBB)
-    }
-  );
-#endif
+  detail::correctImageDataImp<Policy>(src, constants);
 }
 
 /**
@@ -1062,7 +1072,6 @@ inline void correctImageData(E& src, const E& constants)
 {
   utils::checkShape(src.shape(), constants.shape(), "data and constants have different shapes");
   Policy::correct(src, constants);
-
 }
 
 /**
@@ -1117,6 +1126,21 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
   utils::checkShape(shape, offset.shape(), "data and offset constants have different shapes");
 
   Policy::correct(src, gain, offset);
+}
+
+/**
+ * Inplace apply interleaved intra-dark correction for an array of images.
+ *
+ * @param src: image data. shape = (indices, y, x)
+ */
+template <typename E, EnableIf<E, IsImageArray> = false>
+inline void correctImageData(E& src)
+{
+  utils::checkEven(src.shape()[0], "Number of images must be an even number");
+
+  auto&& src_view = xt::view(src, xt::range(0, xt::placeholders::_, 2), xt::all(), xt::all());
+  detail::correctImageDataImp<OffsetPolicy>(
+    src_view, xt::view(src, xt::range(1, xt::placeholders::_, 2), xt::all(), xt::all()));
 }
 
 } // foam
