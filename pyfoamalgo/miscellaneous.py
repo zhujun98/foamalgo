@@ -10,7 +10,7 @@ All rights reserved.
 import numpy as np
 
 from .sampling import slice_curve
-from .lib.helpers import intersection
+from .lib.miscellaneous import intersection
 
 __all__ = [
     'normalize_auc',

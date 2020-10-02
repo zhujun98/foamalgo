@@ -11,13 +11,13 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "foamalgo/helpers.hpp"
+#include "foamalgo/miscellaneous.hpp"
 
 namespace py = pybind11;
 
 
-PYBIND11_MODULE(helpers, m) {
-  m.doc() = "Miscellaneous helper functions in cpp";
+PYBIND11_MODULE(miscellaneous, m) {
+  m.doc() = "Miscellaneous functions in cpp";
 
   m.def("intersection", &foam::intersection);
 }
