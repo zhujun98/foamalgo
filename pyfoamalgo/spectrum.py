@@ -10,6 +10,10 @@ All rights reserved.
 import numpy as np
 from scipy.stats import binned_statistic
 
+__all__ = [
+    'compute_spectrum_1d'
+]
+
 
 def compute_spectrum_1d(x, y, n_bins=10, *,
                         bin_range=None, edge2center=True, nan_to_num=False):

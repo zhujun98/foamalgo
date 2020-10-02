@@ -270,6 +270,8 @@ setup(
         ],
         'docs': [
             'sphinx',
+            'nbsphinx',
+            'sphinx-rtd-theme',
         ]
     },
     python_requires='>=3.6',
