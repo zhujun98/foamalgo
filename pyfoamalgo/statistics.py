@@ -32,7 +32,7 @@ def nansum(a, axis=None):
     """Faster numpy.nansum.
 
     This is a wrapper over numpy.nansum. It uses the C++ implementation
-    in EXtra-foam when applicable. Otherwise, it falls back to numpy.nansum.
+    when applicable. Otherwise, it falls back to numpy.nansum.
     """
     if axis is None:
         return _nansum_cpp(a)
@@ -47,7 +47,7 @@ def nanmean(a, axis=None):
     """Faster numpy.nansum.
 
     This is a wrapper over numpy.nanmean. It uses the C++ implementation
-    in EXtra-foam when applicable. Otherwise, it falls back to numpy.nanmean.
+    when applicable. Otherwise, it falls back to numpy.nanmean.
     """
     if axis is None:
         return _nanmean_cpp(a)
@@ -98,7 +98,7 @@ def nanstd(a, axis=None, *, normalized=False):
     # TODO:
 
     This is a wrapper over numpy.nanstd. It uses the C++ implementation
-    in EXtra-foam when applicable. Otherwise, it falls back to numpy.nansum.
+    when applicable. Otherwise, it falls back to numpy.nansum.
     """
     if normalized:
         return np.nanstd(a, axis=axis) / np.nanmean(a, axis=axis)
@@ -111,7 +111,7 @@ def nanvar(a, axis=None, *, normalized=False):
     # TODO:
 
     This is a wrapper over numpy.nanvar. It uses the C++ implementation
-    in EXtra-foam when applicable. Otherwise, it falls back to numpy.nansum.
+    when applicable. Otherwise, it falls back to numpy.nansum.
     """
     if normalized:
         return np.nanvar(a, axis=axis) / np.nanmean(a, axis=axis) ** 2
