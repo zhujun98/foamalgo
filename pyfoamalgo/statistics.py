@@ -13,6 +13,17 @@ from .imageproc import mask_image_data, nanmeanImageArray
 from .lib.statistics import nanmean as _nanmean_cpp
 from .lib.statistics import nansum as _nansum_cpp
 
+__all__ = [
+    'hist_with_stats',
+    'nanhist_with_stats',
+    'compute_statistics',
+    'nanmean',
+    'nansum',
+    'nanstd',
+    'nanvar',
+    'quick_min_max'
+]
+
 
 _NAN_CPP_TYPES = (np.float32, np.float64)
 

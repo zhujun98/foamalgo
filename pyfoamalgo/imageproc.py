@@ -15,6 +15,13 @@ from .lib.imageproc import (
     correctGain, correctOffset, correctGainOffset
 )
 
+__all__ = [
+    'nanmean_image_data',
+    'correct_image_data',
+    'mask_image_data',
+    'movingAvgImageData',
+]
+
 
 def nanmean_image_data(data, *, kept=None):
     """Compute nanmean of an array of images of a tuple/list of two images.

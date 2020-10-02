@@ -14,6 +14,11 @@ from .imageproc import mask_image_data
 from .lib.canny import cannyEdge
 from .lib.smooth import gaussianBlur
 
+__all__ = [
+    'edge_detect',
+    'fourier_transform_2d'
+]
+
 
 def edge_detect(image, *,
                 kernel_size=3, sigma=1, threshold=(0, 1),

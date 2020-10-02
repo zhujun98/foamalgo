@@ -10,6 +10,12 @@ All rights reserved.
 import numpy as np
 
 from .sampling import slice_curve
+from .lib.helpers import intersection
+
+__all__ = [
+    'normalize_auc',
+    'intersection',
+]
 
 
 def normalize_auc(y, x, auc_range=None):
