@@ -10,13 +10,8 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-import os
+import os.path as osp
 import sys
-
-sys.path.insert(0, os.path.abspath('..'))
-
-# The master toctree document.
-master_doc = 'index'
 
 # -- Project information -----------------------------------------------------
 
@@ -30,9 +25,22 @@ author = 'Jun Zhu'
 #
 # The short X.Y version.
 import pyfoamalgo
+# This is the released version in conda-forge
 version = pyfoamalgo.__version__
 # The full version, including alpha/beta/rc tags.
 release = version
+
+# caveat: Without specifying the correct system path to make RTD import
+#         the modules in the local directory, RTD will import the installed
+#         modules and the autodoc will never change.
+sys.path.insert(0, osp.abspath('../..'))
+
+autodoc_mock_imports = [
+    'pyfoamalgo.lib',
+]
+
+# The master toctree document.
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
