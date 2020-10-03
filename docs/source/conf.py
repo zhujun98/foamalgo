@@ -25,6 +25,7 @@ author = 'Jun Zhu'
 #
 # The short X.Y version.
 import pyfoamalgo
+# This is the released version in conda-forge
 version = pyfoamalgo.__version__
 # The full version, including alpha/beta/rc tags.
 release = version
