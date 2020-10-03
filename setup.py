@@ -268,9 +268,6 @@ setup(
             'extra-geom',
             'pytest',
         ],
-        'docs': [
-            'sphinx',
-        ]
     },
     python_requires='>=3.6',
     classifiers=[

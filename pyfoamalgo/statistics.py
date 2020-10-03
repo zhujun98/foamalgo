@@ -7,11 +7,23 @@ Author: Jun Zhu <jun.zhu@xfel.eu>
 Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
 All rights reserved.
 """
+import math
 import numpy as np
 
 from .imageproc import mask_image_data, nanmeanImageArray
 from .lib.statistics import nanmean as _nanmean_cpp
 from .lib.statistics import nansum as _nansum_cpp
+
+__all__ = [
+    'hist_with_stats',
+    'nanhist_with_stats',
+    'compute_statistics',
+    'nanmean',
+    'nansum',
+    'nanstd',
+    'nanvar',
+    'quick_min_max'
+]
 
 
 _NAN_CPP_TYPES = (np.float32, np.float64)
@@ -21,7 +33,7 @@ def nansum(a, axis=None):
     """Faster numpy.nansum.
 
     This is a wrapper over numpy.nansum. It uses the C++ implementation
-    in EXtra-foam when applicable. Otherwise, it falls back to numpy.nansum.
+    when applicable. Otherwise, it falls back to numpy.nansum.
     """
     if axis is None:
         return _nansum_cpp(a)
@@ -36,7 +48,7 @@ def nanmean(a, axis=None):
     """Faster numpy.nansum.
 
     This is a wrapper over numpy.nanmean. It uses the C++ implementation
-    in EXtra-foam when applicable. Otherwise, it falls back to numpy.nanmean.
+    when applicable. Otherwise, it falls back to numpy.nanmean.
     """
     if axis is None:
         return _nanmean_cpp(a)
@@ -87,7 +99,7 @@ def nanstd(a, axis=None, *, normalized=False):
     # TODO:
 
     This is a wrapper over numpy.nanstd. It uses the C++ implementation
-    in EXtra-foam when applicable. Otherwise, it falls back to numpy.nansum.
+    when applicable. Otherwise, it falls back to numpy.nansum.
     """
     if normalized:
         return np.nanstd(a, axis=axis) / np.nanmean(a, axis=axis)
@@ -100,20 +112,20 @@ def nanvar(a, axis=None, *, normalized=False):
     # TODO:
 
     This is a wrapper over numpy.nanvar. It uses the C++ implementation
-    in EXtra-foam when applicable. Otherwise, it falls back to numpy.nansum.
+    when applicable. Otherwise, it falls back to numpy.nansum.
     """
     if normalized:
         return np.nanvar(a, axis=axis) / np.nanmean(a, axis=axis) ** 2
     return np.nanvar(a, axis=axis)
 
 
-def _get_outer_edges(arr, range):
+def _get_outer_edges(arr, bin_range):
     """Determine the outer bin edges to use.
 
     From both the data and the range argument.
 
     :param numpy.ndarray arr: data.
-    :param tuple range: desired range (min, max).
+    :param tuple bin_range: desired range (min, max).
 
     :return tuple: outer edges (min, max).
 
@@ -122,7 +134,10 @@ def _get_outer_edges(arr, range):
           value of array and the corresponding boundary of the range argument
           are inf or -inf.
     """
-    v_min, v_max = range
+    if bin_range is None:
+        bin_range = (-math.inf, math.inf)
+
+    v_min, v_max = bin_range
     assert v_min < v_max
 
     if not np.isfinite(v_min) and not np.isfinite(v_max):
@@ -166,7 +181,7 @@ def compute_statistics(data):
     return np.mean(data), np.median(data), np.std(data)
 
 
-def nanhist_with_stats(data, bin_range=(-np.inf, np.inf), n_bins=10):
+def nanhist_with_stats(data, bin_range=None, n_bins=10):
     """Compute nan-histogram and nan-statistics of an array.
 
     :param numpy.ndarray data: image ROI.
@@ -193,7 +208,7 @@ def nanhist_with_stats(data, bin_range=(-np.inf, np.inf), n_bins=10):
     return hist, bin_centers, mean, median, std
 
 
-def hist_with_stats(data, bin_range=(-np.inf, np.inf), n_bins=10):
+def hist_with_stats(data, bin_range=None, n_bins=10):
     """Compute histogram and statistics of an array.
 
     :param numpy.ndarray data: input data.

@@ -8,8 +8,8 @@
  * All rights reserved.
  */
 
-#ifndef FOAM_HELPERS_H
-#define FOAM_HELPERS_H
+#ifndef FOAM_MISCELLANEOUS_H
+#define FOAM_MISCELLANEOUS_H
 
 #include <array>
 
@@ -40,4 +40,4 @@ intersection(const std::array<int, 4> &rect1, const std::array<int, 4> &rect2) {
 
 }
 
-#endif //FOAM_HELPERS_H
+#endif //FOAM_MISCELLANEOUS_H

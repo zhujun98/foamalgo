@@ -36,14 +36,14 @@ define_foam_compile_flags(foam_py)
 # ===============
 
 set(_FOAM_MODULE_FILES
-    azimuthal_integrator.cpp
-    canny.cpp
-    geometry.cpp
-    geometry_1m.cpp
-    helpers.cpp
-    imageproc.cpp
-    smooth.cpp
-    statistics.cpp
+        azimuthal_integrator.cpp
+        canny.cpp
+        geometry.cpp
+        geometry_1m.cpp
+        miscellaneous.cpp
+        imageproc.cpp
+        smooth.cpp
+        statistics.cpp
 )
 
 set(_FOAM_MODULES_NEED_BLAS)

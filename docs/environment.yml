@@ -1,0 +1,8 @@
+name: foamalgo-doc
+
+channels:
+  - conda-forge
+
+dependencies:
+  - foamalgo
+  - pyfoamalgo

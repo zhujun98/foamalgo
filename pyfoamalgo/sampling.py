@@ -9,6 +9,12 @@ All rights reserved.
 """
 import numpy as np
 
+__all__ = [
+    'down_sample',
+    'slice_curve',
+    'up_sample',
+]
+
 
 def slice_curve(y, x, x_min=None, x_max=None):
     """Slice an x-y plot based on the range of x values.
