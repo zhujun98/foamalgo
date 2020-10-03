@@ -148,13 +148,20 @@ set(FOAM_HEADERS
     ${FOAMALGO_HEADER_DIR}/foamalgo_version.hpp
     ${FOAMALGO_HEADER_DIR}/geometry.hpp
     ${FOAMALGO_HEADER_DIR}/geometry_1m.hpp
-    ${FOAMALGO_HEADER_DIR}/helpers.hpp
     ${FOAMALGO_HEADER_DIR}/imageproc.hpp
+    ${FOAMALGO_HEADER_DIR}/miscellaneous.hpp
     ${FOAMALGO_HEADER_DIR}/smooth.hpp
     ${FOAMALGO_HEADER_DIR}/statistics.hpp
     ${FOAMALGO_HEADER_DIR}/traits.hpp
     ${FOAMALGO_HEADER_DIR}/utilities.hpp
     )
+
+# check header files
+foreach(header IN LISTS FOAM_HEADERS)
+    if(NOT EXISTS ${header})
+        message( FATAL_ERROR "${header} does not exist!" )
+    endif()
+endforeach()
 
 add_library(${PROJECT_NAME} INTERFACE)
 
