@@ -48,4 +48,5 @@ pyfoamalgo
     git clone https://github.com/zhujun98/foamalgo.git
 
     cd foamalgo
+    export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
     pip install . -v

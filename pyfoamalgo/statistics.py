@@ -7,6 +7,7 @@ Author: Jun Zhu <jun.zhu@xfel.eu>
 Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
 All rights reserved.
 """
+import math
 import numpy as np
 
 from .imageproc import mask_image_data, nanmeanImageArray
@@ -118,13 +119,13 @@ def nanvar(a, axis=None, *, normalized=False):
     return np.nanvar(a, axis=axis)
 
 
-def _get_outer_edges(arr, range):
+def _get_outer_edges(arr, bin_range):
     """Determine the outer bin edges to use.
 
     From both the data and the range argument.
 
     :param numpy.ndarray arr: data.
-    :param tuple range: desired range (min, max).
+    :param tuple bin_range: desired range (min, max).
 
     :return tuple: outer edges (min, max).
 
@@ -133,7 +134,10 @@ def _get_outer_edges(arr, range):
           value of array and the corresponding boundary of the range argument
           are inf or -inf.
     """
-    v_min, v_max = range
+    if bin_range is None:
+        bin_range = (-math.inf, math.inf)
+
+    v_min, v_max = bin_range
     assert v_min < v_max
 
     if not np.isfinite(v_min) and not np.isfinite(v_max):
@@ -177,7 +181,7 @@ def compute_statistics(data):
     return np.mean(data), np.median(data), np.std(data)
 
 
-def nanhist_with_stats(data, bin_range=(-np.inf, np.inf), n_bins=10):
+def nanhist_with_stats(data, bin_range=None, n_bins=10):
     """Compute nan-histogram and nan-statistics of an array.
 
     :param numpy.ndarray data: image ROI.
@@ -204,7 +208,7 @@ def nanhist_with_stats(data, bin_range=(-np.inf, np.inf), n_bins=10):
     return hist, bin_centers, mean, median, std
 
 
-def hist_with_stats(data, bin_range=(-np.inf, np.inf), n_bins=10):
+def hist_with_stats(data, bin_range=None, n_bins=10):
     """Compute histogram and statistics of an array.
 
     :param numpy.ndarray data: input data.

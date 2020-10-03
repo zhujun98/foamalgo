@@ -268,11 +268,6 @@ setup(
             'extra-geom',
             'pytest',
         ],
-        'docs': [
-            'sphinx',
-            'nbsphinx',
-            'sphinx-rtd-theme',
-        ]
     },
     python_requires='>=3.6',
     classifiers=[

@@ -12,6 +12,7 @@
 
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('..'))
 
 # The master toctree document.
@@ -23,6 +24,15 @@ project = 'foamalgo'
 copyright = '2020, Jun Zhu'
 author = 'Jun Zhu'
 
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+#
+# The short X.Y version.
+import pyfoamalgo
+version = pyfoamalgo.__version__
+# The full version, including alpha/beta/rc tags.
+release = version
 
 # -- General configuration ---------------------------------------------------
 
@@ -32,7 +42,8 @@ author = 'Jun Zhu'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.mathjax',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
