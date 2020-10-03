@@ -34,6 +34,10 @@ def nansum(a, axis=None):
 
     This is a wrapper over numpy.nansum. It uses the C++ implementation
     when applicable. Otherwise, it falls back to numpy.nansum.
+
+    :param numpy.array a: data array.
+    :param None/int/tuple axis: Axis or axes along which the sum is computed.
+        The default is to compute the sum of the flattened array.
     """
     if axis is None:
         return _nansum_cpp(a)
@@ -45,10 +49,14 @@ def nansum(a, axis=None):
 
 
 def nanmean(a, axis=None):
-    """Faster numpy.nansum.
+    """Faster numpy.nanmean.
 
     This is a wrapper over numpy.nanmean. It uses the C++ implementation
     when applicable. Otherwise, it falls back to numpy.nanmean.
+
+    :param numpy.array a: data array.
+    :param None/int/tuple axis: Axis or axes along which the mean is computed.
+        The default is to compute the mean of the flattened array.
     """
     if axis is None:
         return _nanmean_cpp(a)
@@ -99,7 +107,14 @@ def nanstd(a, axis=None, *, normalized=False):
     # TODO:
 
     This is a wrapper over numpy.nanstd. It uses the C++ implementation
-    when applicable. Otherwise, it falls back to numpy.nansum.
+    when applicable. Otherwise, it falls back to numpy.nanstd.
+
+    :param numpy.array a: data array.
+    :param None/int/tuple axis: Axis or axes along which the standard
+        deviation is computed. The default is to compute the standard
+        deviation of the flattened array.
+    :param bool normalized: True for normalizing the result by nanmean
+        along the same axis or axes.
     """
     if normalized:
         return np.nanstd(a, axis=axis) / np.nanmean(a, axis=axis)
@@ -112,7 +127,14 @@ def nanvar(a, axis=None, *, normalized=False):
     # TODO:
 
     This is a wrapper over numpy.nanvar. It uses the C++ implementation
-    when applicable. Otherwise, it falls back to numpy.nansum.
+    when applicable. Otherwise, it falls back to numpy.nanvar.
+
+    :param numpy.array a: data array.
+    :param None/int/tuple axis: Axis or axes along which the variance
+        is computed. The default is to compute the variance of the
+        flattened array.
+    :param bool normalized: True for normalizing the result by square of
+        nanmean along the same axis or axes.
     """
     if normalized:
         return np.nanvar(a, axis=axis) / np.nanmean(a, axis=axis) ** 2

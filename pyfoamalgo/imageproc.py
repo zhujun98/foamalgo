@@ -57,7 +57,7 @@ def correct_image_data(data, *,
     :param bool intradark: apply interleaved intra-dark correction after
         the gain/offset correction.
     :param str detector: detector name. If given, specialized correction
-        may be applied. "DSSC": change data pixels with value 0 to 256
+        may be applied. "DSSC" - change data pixels with value 0 to 256
         before applying offset correction.
     """
     if gain is not None and offset is not None:
@@ -74,14 +74,14 @@ def correct_image_data(data, *,
         correctOffset(data)
 
 
-def mask_image_data(arr, *,
+def mask_image_data(data, *,
                     image_mask=None,
                     threshold_mask=None,
                     keep_nan=True,
                     out=None):
     """Mask image data by image mask and/or threshold mask.
 
-    :param numpy.ndarray arr: image data to be masked.
+    :param numpy.ndarray data: image data to be masked.
         Shape = (y, x) or (indices, y, x)
     :param numpy.ndarray image_mask: image mask. If provided, it must have
         the same shape as a single image, and the type must be bool.
@@ -98,15 +98,15 @@ def mask_image_data(arr, *,
 
     if out is None:
         if image_mask is None and threshold_mask is None:
-            f(arr)
+            f(data)
         elif image_mask is None:
-            f(arr, *threshold_mask)
+            f(data, *threshold_mask)
         elif threshold_mask is None:
-            f(arr, image_mask)
+            f(data, image_mask)
         else:
-            f(arr, image_mask, *threshold_mask)
+            f(data, image_mask, *threshold_mask)
     else:
-        if arr.ndim == 3:
+        if data.ndim == 3:
             raise ValueError("'arr' must be 2D when 'out' is specified!")
 
         if out.dtype != np.bool:
@@ -114,12 +114,12 @@ def mask_image_data(arr, *,
 
         if image_mask is None:
             if threshold_mask is None:
-                imageDataNanMask(arr, out)  # get the mask
-                f(arr)  # mask nan (only for keep_nan = False)
+                imageDataNanMask(data, out)  # get the mask
+                f(data)  # mask nan (only for keep_nan = False)
             else:
-                f(arr, *threshold_mask, out)
+                f(data, *threshold_mask, out)
         else:
             if threshold_mask is None:
-                f(arr, image_mask, out)
+                f(data, image_mask, out)
             else:
-                f(arr, image_mask, *threshold_mask, out)
+                f(data, image_mask, *threshold_mask, out)
