@@ -273,7 +273,6 @@ setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
-        'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: POSIX :: Linux',
