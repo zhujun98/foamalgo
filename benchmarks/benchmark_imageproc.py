@@ -12,8 +12,7 @@ import time
 import numpy as np
 
 from pyfoamalgo import (
-    correct_image_data, mask_image_data, movingAvgImageData,
-    nanmean_image_data
+    correct_image_data, mask_image_data, nanmean_image_data
 )
 
 
@@ -69,34 +68,6 @@ def bench_nanmean_image_array(shape):
 
     _run_nanmean_image_array(data, np.float32)
     _run_nanmean_image_array(data, np.float64)
-
-
-def _run_moving_average_image_array(data, new_data, data_type):
-    data = data.astype(data_type)
-    new_data = new_data.astype(data_type)
-
-    data_cpp = data.copy()
-    t0 = time.perf_counter()
-    movingAvgImageData(data_cpp, new_data, 5)
-    dt_cpp = time.perf_counter() - t0
-
-    data_py = data.copy()
-    t0 = time.perf_counter()
-    data_py += (new_data - data_py) / 5
-    dt_py = time.perf_counter() - t0
-
-    np.testing.assert_array_equal(data_cpp, data_py)
-
-    print(f"\nmoving average with {data_type} - "
-          f"dt (cpp para): {dt_cpp:.4f}, dt (numpy): {dt_py:.4f}")
-
-
-def bench_moving_average_image_array(shape):
-    data = np.random.rand(*shape)
-    new_data = np.random.rand(*shape)
-
-    _run_moving_average_image_array(data, new_data, np.float32)
-    _run_moving_average_image_array(data, new_data, np.float64)
 
 
 def _run_mask_image_array(data, mask, data_type, keep_nan=False):
@@ -243,6 +214,5 @@ if __name__ == "__main__":
         np.warnings.simplefilter("ignore", category=RuntimeWarning)
 
         bench_nanmean_image_array(s)
-        bench_moving_average_image_array(s)
         bench_mask_image_array(s)
         bench_correct_gain_offset(s)

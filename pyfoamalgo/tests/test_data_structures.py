@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 import numpy as np
 
@@ -7,6 +8,7 @@ from pyfoamalgo import (
     SimplePairSequence, OneWayAccuPairSequence
 )
 from pyfoamalgo.data_structures import _StatDataItem
+from pyfoamalgo import MovingAverageArray, MovingAverageScalar
 
 
 class TestDataStructures(unittest.TestCase):
@@ -405,3 +407,115 @@ class TestSequenceData(unittest.TestCase):
                 self.assertEqual(2, len(hist))
             else:
                 self.assertEqual(1, len(hist))
+
+
+class TestMovingAverageScalar(unittest.TestCase):
+    def testGeneral(self):
+        class Dummy:
+            data = MovingAverageScalar()
+
+        dm = Dummy()
+
+        dm.data = 1.0
+        self.assertEqual(1, Dummy.data.window)
+        self.assertEqual(1.0, dm.data)
+
+        Dummy.data.window = 5
+        self.assertEqual(5, Dummy.data.window)
+        self.assertEqual(1, Dummy.data.count)
+        dm.data = 2.0
+        self.assertEqual(5, Dummy.data.window)
+        self.assertEqual(2, Dummy.data.count)
+        self.assertEqual(1.5, dm.data)
+        dm.data = 3.0
+        self.assertEqual(5, Dummy.data.window)
+        self.assertEqual(3, Dummy.data.count)
+        self.assertEqual(2.0, dm.data)
+
+        # set a ma window which is smaller than the current window
+        Dummy.data.window = 3
+        self.assertEqual(3, Dummy.data.window)
+        self.assertEqual(3, Dummy.data.count)
+        self.assertEqual(2.0, dm.data)
+
+        del dm.data
+        self.assertIsNone(dm.data)
+        self.assertEqual(3, Dummy.data.window)
+        self.assertEqual(0, Dummy.data.count)
+
+        dm.data = 1.0
+        self.assertEqual(1.0, dm.data)
+        dm.data = None
+        self.assertIsNone(dm.data)
+        self.assertEqual(3, Dummy.data.window)
+        self.assertEqual(0, Dummy.data.count)
+
+
+class TestMovingAverageArray:
+    @pytest.mark.parametrize("n_dims", [1, 2, 3])
+    def testArray(self, n_dims):
+        class Dummy:
+            data = MovingAverageArray()
+
+        dm = Dummy()
+
+        if n_dims == 1:
+            arr_gt = np.array([1, np.nan, 3], dtype=np.float32)
+        elif n_dims == 2:
+            arr_gt = np.ones((3, 3), dtype=np.float32)
+            arr_gt[0][2] = np.nan
+        else:  # n_dims == 3
+            arr_gt = np.ones((3, 4, 4), dtype=np.float32)
+            arr_gt[1][2][1] = np.nan
+
+        dm.data = arr_gt.copy()
+        assert Dummy.data.window == 1
+
+        Dummy.data.window = 5
+        assert Dummy.data.window == 5
+        assert Dummy.data.count == 1
+        dm.data = 2. * arr_gt.copy()
+        assert Dummy.data.window == 5
+        assert Dummy.data.count == 2
+        np.testing.assert_array_equal(1.5 * arr_gt, dm.data)
+
+        # set a ma window which is smaller than the current window
+        Dummy.data.window = 3
+        assert Dummy.data.window == 3
+        assert Dummy.data.count == 2
+        np.testing.assert_array_equal(1.5 * arr_gt, dm.data)
+
+        # set an array with a different shape
+        if n_dims == 1:
+            new_arr = 3 * np.ones(6, dtype=np.float32)
+        elif n_dims == 2:
+            new_arr = 3 * np.ones((5, 5), dtype=np.float32)
+        else:  # n_dims == 3
+            new_arr = 3 * np.ones((5, 4, 4), dtype=np.float32)
+
+        dm.data = new_arr
+        assert Dummy.data.window == 3
+        assert Dummy.data.count == 1
+        np.testing.assert_array_equal(new_arr, dm.data)
+
+        del dm.data
+        assert dm.data is None
+        assert Dummy.data.window == 3
+        assert Dummy.data.count == 0
+
+        dm.data = new_arr.copy()
+        np.testing.assert_array_equal(new_arr, dm.data)
+        dm.data = None
+        assert dm.data is None
+        assert Dummy.data.window == 3
+        assert Dummy.data.count == 0
+
+    def testCopyFirst(self):
+        class Dummy:
+            data = MovingAverageArray(copy_first=True)
+
+        dm = Dummy()
+
+        arr = np.ones((3, 4, 4), dtype=np.float32)
+        dm.data = arr
+        assert dm.data is not arr

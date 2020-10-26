@@ -13,6 +13,9 @@ from collections.abc import MutableSet, Sequence
 
 import numpy as np
 
+from .lib.imageproc import movingAvgImageData
+
+
 __all__ = [
     'OrderedSet',
     'Stack',
@@ -20,6 +23,8 @@ __all__ = [
     'SimpleVectorSequence',
     'SimplePairSequence',
     'OneWayAccuPairSequence',
+    'MovingAverageScalar',
+    'MovingAverageArray',
 ]
 
 
@@ -462,3 +467,104 @@ class OneWayAccuPairSequence(_AbstractSequence):
         for x, y in zip(ax, ay):
             instance.append((x, y))
         return instance
+
+
+class _MovingAverageBase:
+    def __init__(self, window=1):
+        """Initialization.
+
+        :param int window: moving average window size.
+        """
+        self._data = None  # moving average
+
+        if not isinstance(window, int) or window < 0:
+            raise ValueError("Window must be a positive integer.")
+
+        self._window = window
+        self._count = 0
+
+    def __get__(self, instance, instance_type):
+        if instance is None:
+            return self
+
+        return self._data
+
+    def __delete__(self, instance):
+        self._data = None
+        self._count = 0
+
+    @property
+    def window(self):
+        return self._window
+
+    @window.setter
+    def window(self, v):
+        if not isinstance(v, int) or v <= 0:
+            raise ValueError("Window must be a positive integer.")
+
+        self._window = v
+
+    @property
+    def count(self):
+        return self._count
+
+
+class MovingAverageScalar(_MovingAverageBase):
+    """Stores moving average of a scalar number."""
+    def __set__(self, instance, data):
+        if data is None:
+            self._data = None
+            self._count = 0
+            return
+
+        if self._data is not None and self._window > 1 and \
+                self._count <= self._window:
+            if self._count < self._window:
+                self._count += 1
+                self._data += (data - self._data) / self._count
+            else:  # self._count == self._window
+                # here is an approximation
+                self._data += (data - self._data) / self._count
+        else:
+            self._data = data
+            self._count = 1
+
+
+class MovingAverageArray(_MovingAverageBase):
+    """Stores moving average of 2D/3D (and higher dimension) array data."""
+
+    def __init__(self, window=1, *, copy_first=False):
+        """Initialization.
+
+        :param int window: moving average window size.
+        :param bool copy_first: True for copy the first data.
+        """
+        super().__init__(window=window)
+
+        self._copy_first = copy_first
+
+    def __set__(self, instance, data):
+        if data is None:
+            self._data = None
+            self._count = 0
+            return
+
+        if self._data is not None and self._window > 1 and \
+                self._count <= self._window and data.shape == self._data.shape:
+            if self._count < self._window:
+                self._count += 1
+                if data.ndim in (2, 3):
+                    movingAvgImageData(self._data, data, self._count)
+                else:
+                    self._data += (data - self._data) / self._count
+            else:  # self._count == self._window
+                # here is an approximation
+                if data.ndim in (2, 3):
+                    movingAvgImageData(self._data, data, self._count)
+                else:
+                    self._data += (data - self._data) / self._count
+        else:
+            self._data = data.copy() if self._copy_first else data
+            self._count = 1
+
+
