@@ -9,3 +9,30 @@ foamalgo
 
 ![Language](https://img.shields.io/badge/language-c++-red)
 ![Language](https://img.shields.io/badge/language-python-blue)
+
+
+## Introduction
+
+`foamalgo` is a head-only C++ library with Python binding `pyfoamalgo`, 
+which is meant to be used in numerical analysis in photon science and 
+accelerator physics.
+
+## Installation
+
+Install the Python package
+
+```sh
+conda install -c conda-forge pyfoamalgo
+```
+
+Install the head-only C++ library
+
+```sh
+conda install -c conda-forge foamalgo
+```
+
+## Documentation
+
+For more information on `foamalgo` and `pyfoamalgo`, please checkout the documentation
+
+https://foamalgo.readthedocs.io/en/latest/index.html
