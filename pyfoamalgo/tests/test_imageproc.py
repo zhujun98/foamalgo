@@ -5,8 +5,9 @@ import pytest
 import numpy as np
 
 from pyfoamalgo import (
-    correct_image_data, mask_image_data, movingAvgImageData, nanmean_image_data
+    correct_image_data, mask_image_data, nanmean_image_data
 )
+from pyfoamalgo.lib.imageproc import movingAvgImageData
 
 
 class TestImageProc(unittest.TestCase):

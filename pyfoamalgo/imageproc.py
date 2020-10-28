@@ -10,7 +10,7 @@ All rights reserved.
 import numpy as np
 
 from .lib.imageproc import (
-    nanmeanImageArray, movingAvgImageData,
+    nanmeanImageArray,
     imageDataNanMask, maskImageDataNan, maskImageDataZero,
     correctGain, correctOffset, correctDsscOffset, correctGainOffset
 )
@@ -19,7 +19,6 @@ __all__ = [
     'nanmean_image_data',
     'correct_image_data',
     'mask_image_data',
-    'movingAvgImageData',
 ]
 
 
