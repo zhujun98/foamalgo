@@ -272,10 +272,10 @@ setup(
     python_requires='>=3.6',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
-        'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: POSIX :: Linux',
+        'Operating System :: MacOS',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering :: Information Analysis',
