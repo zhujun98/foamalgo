@@ -8,7 +8,7 @@
 
 cmake_minimum_required(VERSION 3.13)
 
-project(foamalgo LANGUAGES CXX VERSION 0.0.7)
+project(foamalgo LANGUAGES CXX VERSION 0.0.8)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
