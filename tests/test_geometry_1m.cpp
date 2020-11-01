@@ -51,7 +51,7 @@ protected:
 
 
 using Geometry1MTypes = ::testing::Types<DSSC_1MGeometry, LPD_1MGeometry, AGIPD_1MGeometry>;
-TYPED_TEST_CASE(Geometry1M, Geometry1MTypes);
+TYPED_TEST_SUITE(Geometry1M, Geometry1MTypes);
 
 
 TYPED_TEST(Geometry1M, testAssembledShapeAndCenter)
