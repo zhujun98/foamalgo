@@ -7,7 +7,7 @@ Welcome to foamalgo's documentation!
 ====================================
 
 .. toctree::
-   :caption: Installation:
+   :caption: INSTALLATION:
    :maxdepth: 2
 
    installation
@@ -19,7 +19,7 @@ Welcome to foamalgo's documentation!
    examples
 
 .. toctree::
-   :caption: API REFERENCE
+   :caption: PYTHON API REFERENCE:
    :maxdepth: 2
 
    imageproc
