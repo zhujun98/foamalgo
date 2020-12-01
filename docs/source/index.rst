@@ -13,10 +13,11 @@ Welcome to foamalgo's documentation!
    installation
 
 .. toctree::
-   :caption: USAGE:
+   :caption: EXAMPLES:
    :maxdepth: 2
 
    examples
+   foam-examples/foamalgo/python/LPD_geometry
 
 .. toctree::
    :caption: PYTHON API REFERENCE:

@@ -6,3 +6,8 @@ channels:
 dependencies:
   - foamalgo
   - pyfoamalgo
+  - pip:
+      - sphinx>=3.2.0
+      - sphinx-rtd-theme
+      - nbsphinx
+      - ipython
