@@ -50,3 +50,22 @@ pyfoamalgo
     cd foamalgo
     export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
     pip install . -v
+
+
+On the Maxwell cluster
+----------------------
+
+.. code::
+
+    module load anaconda3
+
+    # It is highly recommended to create an independent environment.
+    conda create -n foam python=3.7
+    conda activate foam
+
+    conda install -c conda-forge pyfoamalgo
+    conda install jupyter
+    python -m ipykernel install --user --name foam --display-name "foam"
+
+Now, you should be able to start a Jupyter notebook via https://max-jhub.desy.de/ and
+select the newly created kernel.

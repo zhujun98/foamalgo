@@ -1,0 +1,3 @@
+[submodule "docs/source/foam-examples"]
+	path = docs/source/foam-examples
+	url = https://github.com/zhujun98/foam-examples.git
