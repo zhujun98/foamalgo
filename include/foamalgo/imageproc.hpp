@@ -1153,6 +1153,8 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
 
 /**
  * Inplace apply interleaved intra-dark correction for an array of images.
+ * In other words, for every other image in the array starting from the
+ * first one, it will be subtracted by the image next to it.
  *
  * @param src: image data. shape = (indices, y, x)
  */

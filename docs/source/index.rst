@@ -8,20 +8,21 @@ Welcome to foamalgo's documentation!
 
 .. toctree::
    :caption: INSTALLATION:
-   :maxdepth: 2
+   :maxdepth: 1
 
    installation
 
 .. toctree::
    :caption: EXAMPLES:
-   :maxdepth: 2
+   :maxdepth: 1
 
-   examples
+   examples_overview
    foam-examples/foamalgo/python/LPD_geometry
+   foam-examples/foamalgo/python/DSSC_geometry_and_calibration
 
 .. toctree::
    :caption: PYTHON API REFERENCE:
-   :maxdepth: 2
+   :maxdepth: 1
 
    imageproc
    geometry
