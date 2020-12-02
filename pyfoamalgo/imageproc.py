@@ -54,7 +54,9 @@ def correct_image_data(data, *,
     :param None/numpy.array offset: offset constants, which has the same
         shape as the image data.
     :param bool intradark: apply interleaved intra-dark correction after
-        the gain/offset correction.
+        the gain/offset correction. In other words, for every other image
+        in the array starting from the first one, it will be subtracted
+        by the image next to it.
     :param str detector: detector name. If given, specialized correction
         may be applied. "DSSC" - change data pixels with value 0 to 256
         before applying offset correction.
