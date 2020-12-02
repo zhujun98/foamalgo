@@ -17,6 +17,7 @@ Welcome to foamalgo's documentation!
    :maxdepth: 1
 
    examples_overview
+   foam-examples/foamalgo/python/AGIPD_geometry_and_azimuthal_integration
    foam-examples/foamalgo/python/LPD_geometry
    foam-examples/foamalgo/python/DSSC_geometry_and_calibration
 
