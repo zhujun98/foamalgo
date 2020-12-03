@@ -1,6 +1,9 @@
 Welcome to foamalgo's documentation!
 ====================================
 
+Introduction
+------------
+
 `foamalgo` is a head-only C++ library with Python binding `pyfoamalgo`,
 which is meant to be used in numerical analysis in photon science and
 accelerator physics. It leverages SIMD and multi-threaded parallelism
@@ -37,11 +40,3 @@ and benefits the offline analysis as well.
    geometry
    azimuthal_integration
    statistics
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
