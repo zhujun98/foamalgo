@@ -6,7 +6,7 @@ import numpy as np
 
 from extra_data.stacking import StackView
 
-from pyfoamalgo.geometry import EPix100Geometry, JungFrauGeometry, load_geometry
+from pyfoamalgo.geometry import EPix100Geometry, JungFrauGeometry
 
 
 _geom_path = osp.join(osp.dirname(osp.abspath(__file__)), "../")
@@ -23,8 +23,8 @@ class TestJungFrauGeometry:
         cls.module_shape = (512, 1024)
         cls.asic_shape = (256, 256)
 
-        cls.geom_21_stack = load_geometry("JungFrau", stack_only=True, n_modules=2)
-        cls.geom_32_stack = load_geometry("JungFrau", stack_only=True, n_modules=6)
+        cls.geom_21_stack = JungFrauGeometry(2, 1)
+        cls.geom_32_stack = JungFrauGeometry(3, 2)
 
         cls.cases = [
             (cls.geom_21_stack, 2, (1024, 1024)),
@@ -34,7 +34,8 @@ class TestJungFrauGeometry:
         # TODO: add default JungFrau geometries
         geom_file = osp.join(osp.expanduser("~"), "jungfrau.geom")
         try:
-            cls.geom_32_cfel = load_geometry("JungFrau", filepath=geom_file, n_modules=6)
+            cls.geom_32_cfel = JungFrauGeometry.from_crystfel_geom(
+                geom_file, n_rows=3, n_columns=2, module_numbers=(1, 2, 3, 6, 7, 8))
         except FileNotFoundError:
             module_coordinates = [
                 np.array([ 0.08452896,  0.07981445, 0.]),
@@ -97,7 +98,15 @@ class TestJungFrauGeometry:
         module2 = np.copy(module1)
 
         JungFrauGeometry.maskModule(module1)
-        JungFrauGeometry.mask_module_py(module2)
+
+        ah, aw = JungFrauGeometry.asic_shape
+        ny, nx = JungFrauGeometry.asic_grid_shape
+        for i in range(ny):
+            module2[..., i * ah, :] = np.nan
+            module2[..., (i + 1) * ah - 1, :] = np.nan
+        for j in range(nx):
+            module2[..., :, j * aw] = np.nan
+            module2[..., :, (j + 1) * aw - 1] = np.nan
 
         np.testing.assert_array_equal(module1, module2)
 
@@ -109,8 +118,8 @@ class TestEPix100Geometry:
         cls.module_shape = (708, 768)
         cls.asic_shape = (354, 384)
 
-        cls.geom_21_stack = load_geometry("ePix100", stack_only=True, n_modules=2)
-        cls.geom_22_stack = load_geometry("ePix100", stack_only=True, n_modules=4)
+        cls.geom_21_stack = EPix100Geometry(2, 1)
+        cls.geom_22_stack = EPix100Geometry(2, 2)
 
         cls.cases = [
             (cls.geom_21_stack, 2, (1416, 768)),
@@ -162,6 +171,8 @@ class TestEPix100Geometry:
         module2 = np.copy(module1)
 
         EPix100Geometry.maskModule(module1)
-        EPix100Geometry.mask_module_py(module2)
+
+        module2[0, :] = np.nan
+        module2[-1, :] = np.nan
 
         np.testing.assert_array_equal(module1, module2)
