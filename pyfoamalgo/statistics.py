@@ -54,6 +54,9 @@ def nanmean(a, axis=None):
     This is a wrapper over numpy.nanmean. It uses the C++ implementation
     when applicable. Otherwise, it falls back to numpy.nanmean.
 
+    If the input array is an array of images, i.e. 3D array, one should check
+    :func:`pyfoamalgo.nanmean_image_data`.
+
     :param numpy.array a: data array.
     :param None/int/tuple axis: Axis or axes along which the mean is computed.
         The default is to compute the mean of the flattened array.
