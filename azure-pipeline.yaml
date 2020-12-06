@@ -6,8 +6,8 @@ pool:
 
 strategy:
   matrix:
-    clang3_8:
-      LLVM_VERSION: '3.8'
+    clang9:
+      LLVM_VERSION: '9.0'
     clang5:
       LLVM_VERSION: '5.0'
 
