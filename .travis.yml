@@ -3,7 +3,7 @@ language: cpp
 jobs:
   include:
     - os: linux
-      env: PYTHON_VERSION="3.7.9" COMPILER="gcc" GCCv="6" BENCHMARK=1
+      env: PYTHON_VERSION="3.7.9" COMPILER="gcc" GCCv="9" BENCHMARK=1
     - os: linux
       env: PYTHON_VERSION="3.7.9" COMPILER="gcc" GCCv="7" TEST_SERIAL=1
     - os: linux
