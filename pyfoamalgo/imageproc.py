@@ -17,6 +17,7 @@ from .lib.imageproc import (
 
 __all__ = [
     'nanmean_image_data',
+    'nanmean_images',
     'correct_image_data',
     'mask_image_data',
 ]
@@ -25,13 +26,15 @@ __all__ = [
 def nanmean_image_data(data, *, kept=None):
     """Compute nanmean of an array of images of a tuple/list of two images.
 
-    :param tuple/list/numpy.array data: a tuple/list of two 2D arrays, or
-        a 2D or 3D numpy array.
+    :param numpy.array data: a 2D or 3D array. If the input is a 2D array, a
+        copy will be returned. This seemingly awkward 'feature' is a sugar for
+        having clean code in EXtra-foam in order to deal train- and
+        pulse-resolved detectors at the same time.
     :param None/list kept: indices of the kept images.
-    """
-    if isinstance(data, (tuple, list)):
-        return nanmeanImageArray(*data)
 
+    :return: nanmean of the input data.
+    :rtype: numpy.ndarray.
+    """
     if data.ndim == 2:
         return data.copy()
 
@@ -39,6 +42,20 @@ def nanmean_image_data(data, *, kept=None):
         return nanmeanImageArray(data)
 
     return nanmeanImageArray(data, kept)
+
+
+def nanmean_images(image1, image2):
+    """Compute nanmean of two images.
+
+    There is no copy overhead.
+
+    :param numpy.array image1: the first image, Shape = (y, x).
+    :param numpy.array image2: the second image, Shape = (y, x).
+
+    :return: nanmean of the two input images.
+    :rtype: numpy.ndarray.
+    """
+    return nanmeanImageArray(image1, image2)
 
 
 def correct_image_data(data, *,
@@ -54,7 +71,9 @@ def correct_image_data(data, *,
     :param None/numpy.array offset: offset constants, which has the same
         shape as the image data.
     :param bool intradark: apply interleaved intra-dark correction after
-        the gain/offset correction.
+        the gain/offset correction. In other words, for every other image
+        in the array starting from the first one, it will be subtracted
+        by the image next to it.
     :param str detector: detector name. If given, specialized correction
         may be applied. "DSSC" - change data pixels with value 0 to 256
         before applying offset correction.

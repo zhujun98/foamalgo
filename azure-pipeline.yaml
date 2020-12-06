@@ -6,14 +6,14 @@ pool:
 
 strategy:
   matrix:
-    gcc6:
-      gcc.version: '6'
-    gcc7:
-      gcc.version: '7'
+    clang3_8:
+      LLVM_VERSION: '3.8'
+    clang5:
+      LLVM_VERSION: '5.0'
 
 variables:
-  CC: gcc-$(gcc.version)
-  CXX: g++-$(gcc.version)
+  CC: clang-$(LLVM_VERSION)
+  CXX: clang++-$(LLVM_VERSION)
 
 steps:
   - checkout: self

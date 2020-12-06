@@ -143,9 +143,19 @@ def benchmark_jungfrau():
     JungFrauGeometryFast.maskModule(module)
     dt_mask_cpp = time.perf_counter() - t0
 
+    def _mask_module_py(module):
+        ah, aw = JungFrauGeometryFast.asic_shape
+        ny, nx = JungFrauGeometryFast.asic_grid_shape
+        for i in range(ny):
+            module[..., i * ah, :] = np.nan
+            module[..., (i + 1) * ah - 1, :] = np.nan
+        for j in range(nx):
+            module[..., :, j * aw] = np.nan
+            module[..., :, (j + 1) * aw - 1] = np.nan
+
     module = np.ones((n_pulses, *geom.module_shape), dtype=_IMAGE_DTYPE)
     t0 = time.perf_counter()
-    JungFrauGeometryFast.mask_module_py(module)
+    _mask_module_py(module)
     dt_mask_py = time.perf_counter() - t0
 
     print(f"\nMask single module for JungFrauGeometry - \n"

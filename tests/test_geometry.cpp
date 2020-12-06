@@ -65,7 +65,7 @@ protected:
 
 
 using GeometryTypes = ::testing::Types<DetectorGeometry<JungFrau>, DetectorGeometry<EPix100>>;
-TYPED_TEST_CASE(Geometry, GeometryTypes);
+TYPED_TEST_SUITE(Geometry, GeometryTypes);
 
 TYPED_TEST(Geometry, testAssembledShapeAndCenter)
 {
