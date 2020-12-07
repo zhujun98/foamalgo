@@ -35,7 +35,7 @@ def nansum(a, axis=None):
     This is a wrapper over numpy.nansum. It uses the C++ implementation
     when applicable. Otherwise, it falls back to numpy.nansum.
 
-    :param numpy.array a: data array.
+    :param numpy.array a: Data array.
     :param None/int/tuple axis: Axis or axes along which the sum is computed.
         The default is to compute the sum of the flattened array.
     """
@@ -54,10 +54,10 @@ def nanmean(a, axis=None):
     This is a wrapper over numpy.nanmean. It uses the C++ implementation
     when applicable. Otherwise, it falls back to numpy.nanmean.
 
-    If the input array is an array of images, i.e. 3D array, one should check
-    :func:`pyfoamalgo.nanmean_image_data`.
+    If the input array is an array of images, i.e. 3D array, one may
+    want to check :func:`pyfoamalgo.nanmean_image_data`.
 
-    :param numpy.array a: data array.
+    :param numpy.array a: Data array.
     :param None/int/tuple axis: Axis or axes along which the mean is computed.
         The default is to compute the mean of the flattened array.
     """
@@ -112,7 +112,7 @@ def nanstd(a, axis=None, *, normalized=False):
     This is a wrapper over numpy.nanstd. It uses the C++ implementation
     when applicable. Otherwise, it falls back to numpy.nanstd.
 
-    :param numpy.array a: data array.
+    :param numpy.array a: Data array.
     :param None/int/tuple axis: Axis or axes along which the standard
         deviation is computed. The default is to compute the standard
         deviation of the flattened array.
@@ -132,7 +132,7 @@ def nanvar(a, axis=None, *, normalized=False):
     This is a wrapper over numpy.nanvar. It uses the C++ implementation
     when applicable. Otherwise, it falls back to numpy.nanvar.
 
-    :param numpy.array a: data array.
+    :param numpy.array a: Data array.
     :param None/int/tuple axis: Axis or axes along which the variance
         is computed. The default is to compute the variance of the
         flattened array.
@@ -149,10 +149,10 @@ def _get_outer_edges(arr, bin_range):
 
     From both the data and the range argument.
 
-    :param numpy.ndarray arr: data.
-    :param tuple bin_range: desired range (min, max).
+    :param numpy.ndarray arr: Data.
+    :param tuple bin_range: Desired range (min, max).
 
-    :return tuple: outer edges (min, max).
+    :return tuple: Outer edges (min, max).
 
     Note: the input array is assumed to be nan-free but could contain +-inf.
           The returned outer edges could be inf or -inf if both the min/max
@@ -198,7 +198,7 @@ def _get_outer_edges(arr, bin_range):
 def compute_statistics(data):
     """Compute statistics of an array.
 
-    :param numpy.ndarray data: input array.
+    :param numpy.ndarray data: Input array.
     """
     if len(data) == 0:
         # suppress runtime warning
@@ -209,9 +209,9 @@ def compute_statistics(data):
 def nanhist_with_stats(data, bin_range=None, n_bins=10):
     """Compute nan-histogram and nan-statistics of an array.
 
-    :param numpy.ndarray data: image ROI.
+    :param numpy.ndarray data: Image ROI.
     :param tuple bin_range: (lb, ub) of histogram.
-    :param int n_bins: number of bins of histogram.
+    :param int n_bins: Number of bins of histogram.
 
     :raise ValueError: if finite outer edges cannot be found.
     """
@@ -236,9 +236,9 @@ def nanhist_with_stats(data, bin_range=None, n_bins=10):
 def hist_with_stats(data, bin_range=None, n_bins=10):
     """Compute histogram and statistics of an array.
 
-    :param numpy.ndarray data: input data.
+    :param numpy.ndarray data: Input data.
     :param tuple bin_range: (lb, ub) of histogram.
-    :param int n_bins: number of bins of histogram.
+    :param int n_bins: Number of bins of histogram.
 
     :raise ValueError: if finite outer edges cannot be found.
     """
