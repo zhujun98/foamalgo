@@ -528,7 +528,7 @@ class TestSimpleQueue(unittest.TestCase):
     def testGeneral(self):
         queue = SimpleQueue(maxsize=2)
         self.assertTrue(queue.empty())
-        queue.put_nowait(1)
+        queue.put(1)
         queue.put(2)
         with self.assertRaises(Full):
             queue.put(3)

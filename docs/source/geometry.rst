@@ -3,6 +3,8 @@ Detector Geometry
 
 .. currentmodule:: pyfoamalgo.geometry
 
+.. autofunction:: stack_detector_modules
+
 1M-detector geometry
 --------------------
 

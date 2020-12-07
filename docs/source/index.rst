@@ -24,20 +24,27 @@ and benefits the offline analysis as well.
    installation
 
 .. toctree::
-   :caption: EXAMPLES:
+   :caption: PYTHON EXAMPLES:
    :maxdepth: 1
 
-   examples_overview
+   py_examples_overview
    foam-examples/foamalgo/python/AGIPD_geometry_and_azimuthal_integration
    foam-examples/foamalgo/python/LPD_geometry_and_image_mask
    foam-examples/foamalgo/python/DSSC_geometry_and_calibration
    foam-examples/foamalgo/python/Generalized_geometry
 
 .. toctree::
+   :caption: C++ EXAMPLES:
+   :maxdepth: 1
+
+   cpp_examples_overview
+
+.. toctree::
    :caption: PYTHON API REFERENCE:
    :maxdepth: 1
 
-   imageproc
-   geometry
    azimuthal_integration
+   data_structure
+   geometry
+   imageproc
    statistics

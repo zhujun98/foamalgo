@@ -40,9 +40,9 @@ class _GeometryMixin:
                              ignore_tile_edge=False, ignore_asic_edge=False):
         """Assemble data in modules according to where the pixels are.
 
-        :param numpy.ndarray/list modules: data in modules.
+        :param numpy.ndarray/list modules: Data in modules.
             Shape = (memory cells, modules, y x) / (modules, y, x)
-        :param numpy.ndarray out: assembled data.
+        :param numpy.ndarray out: Assembled data.
             Shape = (memory cells, y, x) / (y, x)
         :param ignore_tile_edge: True for ignoring the pixels at the edges
             of tiles. If 'out' is pre-filled with nan, it it equivalent to
@@ -87,7 +87,7 @@ class _1MGeometryMixin(_GeometryMixin):
         """Construct a geometry from an XFEL HDF5 format geometry file.
 
         :param str filename: Path of the geometry file.
-        :param list positions: a list of 4 (x, y) coordinates of the
+        :param list positions: A list of 4 (x, y) coordinates of the
             corner of each quadrant.
         """
         raise NotImplementedError
