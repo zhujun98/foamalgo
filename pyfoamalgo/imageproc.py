@@ -30,7 +30,7 @@ def nanmean_image_data(data, *, kept=None):
         copy will be returned. This seemingly awkward 'feature' is a sugar for
         having clean code in EXtra-foam in order to deal train- and
         pulse-resolved detectors at the same time.
-    :param None/list kept: indices of the kept images.
+    :param None/list kept: Indices of the kept images.
 
     :return: nanmean of the input data.
     :rtype: numpy.ndarray.
@@ -49,8 +49,8 @@ def nanmean_images(image1, image2):
 
     There is no copy overhead.
 
-    :param numpy.array image1: the first image, Shape = (y, x).
-    :param numpy.array image2: the second image, Shape = (y, x).
+    :param numpy.array image1: The first image, Shape = (y, x).
+    :param numpy.array image2: The second image, Shape = (y, x).
 
     :return: nanmean of the two input images.
     :rtype: numpy.ndarray.
@@ -66,15 +66,15 @@ def correct_image_data(data, *,
     """Apply gain and/or offset correct to image data.
 
     :param numpy.array data: image data, Shape = (y, x) or (indices, y, x)
-    :param None/numpy.array gain: gain constants, which has the same
+    :param None/numpy.array gain: Gain constants, which has the same
         shape as the image data.
-    :param None/numpy.array offset: offset constants, which has the same
+    :param None/numpy.array offset: Offset constants, which has the same
         shape as the image data.
-    :param bool intradark: apply interleaved intra-dark correction after
+    :param bool intradark: Apply interleaved intra-dark correction after
         the gain/offset correction. In other words, for every other image
         in the array starting from the first one, it will be subtracted
         by the image next to it.
-    :param str detector: detector name. If given, specialized correction
+    :param str detector: Detector name. If given, specialized correction
         may be applied. "DSSC" - change data pixels with value 0 to 256
         before applying offset correction.
     """
@@ -99,9 +99,9 @@ def mask_image_data(data, *,
                     out=None):
     """Mask image data by image mask and/or threshold mask.
 
-    :param numpy.ndarray data: image data to be masked.
+    :param numpy.ndarray data: Image data to be masked.
         Shape = (y, x) or (indices, y, x)
-    :param numpy.ndarray image_mask: image mask. If provided, it must have
+    :param numpy.ndarray image_mask: Image mask. If provided, it must have
         the same shape as a single image, and the type must be bool.
         Shape = (y, x)
     :param tuple/None threshold_mask: (min, max) of the threshold mask.
