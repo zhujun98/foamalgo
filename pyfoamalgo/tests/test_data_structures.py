@@ -34,6 +34,11 @@ class TestDataStructures(unittest.TestCase):
         self.assertEqual(4, stack.pop())
         self.assertTrue(stack.empty())
 
+        with self.assertRaises(IndexError):
+            stack.pop()
+        with self.assertRaises(IndexError):
+            stack.top()
+
     def testOrderedSet(self):
         x = OrderedSet([1, 3, 0])
         self.assertEqual('OrderedSet([1, 3, 0])', repr(x))
