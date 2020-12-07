@@ -35,7 +35,7 @@ class Stack:
     """An LIFO (last-in first-out) stack."""
     def __init__(self):
         """Initialization."""
-        self.__items = []
+        self.__items = deque()
 
     def push(self, item):
         """Append a new element."""
@@ -628,7 +628,7 @@ class SimpleQueue:
             self._queue.append(item)
 
     def qsize(self):
-        """Return the size of the queue."""
+        """Return the number of elements in the queue."""
         with self._mutex:
             return len(self._queue)
 
