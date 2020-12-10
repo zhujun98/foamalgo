@@ -1161,7 +1161,7 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
 template <typename E, EnableIf<E, IsImageArray> = false>
 inline void correctImageData(E& src)
 {
-  utils::checkEven(src.shape()[0], "Number of images must be an even number");
+  FOAM_ASSERT_ARGUMENT(src.shape()[0] % 2 == 0, "Number of images must be an even number")
 
   auto&& src_view = xt::view(src, xt::range(0, xt::placeholders::_, 2), xt::all(), xt::all());
   detail::correctImageDataImp<OffsetPolicy>(
