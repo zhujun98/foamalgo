@@ -1,15 +1,16 @@
 trigger:
   - master
+  - dev
 
 pool:
   vmImage: 'ubuntu-16.04'
 
 strategy:
   matrix:
-    clang3_8:
-      LLVM_VERSION: '3.8'
     clang5:
       LLVM_VERSION: '5.0'
+    clang9:
+      LLVM_VERSION: '9.0'
 
 variables:
   CC: clang-$(LLVM_VERSION)
