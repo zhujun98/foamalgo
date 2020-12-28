@@ -16,7 +16,6 @@ find_package(NumPy REQUIRED)
 message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")
 
 # pybind11
-set(PYBIND11_CPP_STANDARD -std=c++14)
 find_package(pybind11 ${pybind11_REQUIRED_VERSION} REQUIRED)
 message(STATUS "Found pybind11: ${pybind11_VERSION}, ${pybind11_INCLUDE_DIRS}")
 
