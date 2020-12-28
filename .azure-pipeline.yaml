@@ -6,26 +6,30 @@ jobs:
 
   strategy:
     matrix:
+      gcc7:
+        CC: gcc-7
+        CXX: g++-7
+        PYTHON_VERSION: 3.7
+        UBUNTU_NAME: xenial
+        IMAGE_NAME: 'ubuntu-16.04'
+      gcc9:
+        CC: gcc-9
+        CXX: g++-9
+        PYTHON_VERSION: 3.8
+        UBUNTU_NAME: focal
+        IMAGE_NAME: 'ubuntu-20.04'
       clang7:
         CC: clang-7
         CXX: clang++-7
         LLVM_VERSION: 7
+        PYTHON_VERSION: 3.6
         UBUNTU_NAME: xenial
         IMAGE_NAME: 'ubuntu-16.04'
       clang9:
         CC: clang-9
         CXX: clang++-9
         LLVM_VERSION: 9
-        UBUNTU_NAME: focal
-        IMAGE_NAME: 'ubuntu-20.04'
-      gcc7:
-        CC: gcc-7
-        CXX: g++-7
-        UBUNTU_NAME: xenial
-        IMAGE_NAME: 'ubuntu-16.04'
-      gcc9:
-        CC: gcc-9
-        CXX: g++-9
+        PYTHON_VERSION: 3.7
         UBUNTU_NAME: focal
         IMAGE_NAME: 'ubuntu-20.04'
 
@@ -52,7 +56,7 @@ jobs:
       displayName: "Add conda to PATH"
 
     - script: |
-        conda create --yes --quiet --name foamalgo
+        conda create --yes --quiet --name foamalgo --python=$(PYTHON_VERSION)
         source activate foamalgo
         conda install -y cmake -c anaconda
         conda install -y -c conda-forge tbb-devel xsimd xtensor xtensor-blas numpy xtensor-python
