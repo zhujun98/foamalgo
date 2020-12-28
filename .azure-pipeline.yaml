@@ -12,6 +12,7 @@ jobs:
         PYTHON_VERSION: 3.7
         UBUNTU_NAME: xenial
         IMAGE_NAME: 'ubuntu-16.04'
+        BENCHMARK: 1
       gcc9:
         CC: gcc-9
         CXX: g++-9
@@ -25,6 +26,7 @@ jobs:
         PYTHON_VERSION: 3.6
         UBUNTU_NAME: xenial
         IMAGE_NAME: 'ubuntu-16.04'
+        BUILD_SERIAL: 1
       clang9:
         CC: clang-9
         CXX: clang++-9

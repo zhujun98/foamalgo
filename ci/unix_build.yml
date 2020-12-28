@@ -9,7 +9,13 @@ steps:
   - script: |
       source activate foamalgo
       export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
+      if [[ $(BUILD_SERIAL) == '1' ]]; then
+        export BUILD_SERIAL_FOAM=1;
+      fi
       pip install -e .[test]
       python setup.py build_ext --inplace --with-tests
       python setup.py test -v
+      if [[ $(BENCHMARK) == '1' ]]; then
+        python setup.py benchmark -v
+      fi
     displayName: "Build and test"
