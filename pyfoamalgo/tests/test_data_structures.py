@@ -34,6 +34,11 @@ class TestDataStructures(unittest.TestCase):
         self.assertEqual(4, stack.pop())
         self.assertTrue(stack.empty())
 
+        with self.assertRaises(IndexError):
+            stack.pop()
+        with self.assertRaises(IndexError):
+            stack.top()
+
     def testOrderedSet(self):
         x = OrderedSet([1, 3, 0])
         self.assertEqual('OrderedSet([1, 3, 0])', repr(x))
@@ -528,7 +533,7 @@ class TestSimpleQueue(unittest.TestCase):
     def testGeneral(self):
         queue = SimpleQueue(maxsize=2)
         self.assertTrue(queue.empty())
-        queue.put_nowait(1)
+        queue.put(1)
         queue.put(2)
         with self.assertRaises(Full):
             queue.put(3)

@@ -32,26 +32,34 @@ __all__ = [
 
 
 class Stack:
-    """An LIFO stack."""
+    """An LIFO (last-in first-out) stack."""
     def __init__(self):
-        self.__items = []
+        """Initialization."""
+        self.__items = deque()
 
     def push(self, item):
         """Append a new element."""
         self.__items.append(item)
 
     def pop(self):
-        """Return and remove the top element."""
+        """Return and remove the top element.
+
+        :raise IndexError: If the stack is empty.
+        """
         return self.__items.pop()
 
     def top(self):
-        """Return the first element."""
-        if self.empty():
+        """Return the first element.
+
+        :raise IndexError: If the stack is empty.
+        """
+        if not self.__items:
             raise IndexError("Stack is empty")
 
         return self.__items[-1]
 
     def empty(self):
+        """Check whether the stack is empty."""
         return not self.__items
 
     def __len__(self):
@@ -59,6 +67,7 @@ class Stack:
 
 
 class OrderedSet(MutableSet):
+    """A set which remembers the original insertion order."""
     def __init__(self, sequence=None):
         super().__init__()
 
@@ -588,44 +597,52 @@ class SimpleQueue:
         self._maxsize = maxsize
         self._mutex = Lock()
 
-    def get_nowait(self):
-        """Pop an item from the queue without blocking."""
-        return self.get()
-
     def get(self):
+        """Remove and return an item from the queue.
+
+        :raise Empty: if the queue is Empty.
+        """
         with self._mutex:
             if len(self._queue) > 0:
                 return self._queue.popleft()
             raise Empty
 
-    def put_nowait(self, item):
-        """Put an item into the queue without blocking."""
-        self.put(item)
-
     def put(self, item):
+        """Put an item into the queue.
+
+        :raise Full: if the queue is already full.
+        """
         with self._mutex:
             if 0 < self._maxsize <= len(self._queue):
                 raise Full
             self._queue.append(item)
 
     def put_pop(self, item):
+        """Put an item into the queue.
+
+        If the queue is already full, the first item will be removed.
+        """
         with self._mutex:
             if 0 < self._maxsize < len(self._queue):
                 self._queue.popleft()
             self._queue.append(item)
 
     def qsize(self):
+        """Return the number of elements in the queue."""
         with self._mutex:
             return len(self._queue)
 
     def empty(self):
+        """Check whether the queue is empty."""
         with self._mutex:
             return not len(self._queue)
 
     def full(self):
+        """Check whether the queue is full."""
         with self._mutex:
             return 0 < self._maxsize <= len(self._queue)
 
     def clear(self):
+        """Clear the queue."""
         with self._mutex:
             self._queue.clear()

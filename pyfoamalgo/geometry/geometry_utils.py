@@ -16,13 +16,13 @@ def stack_detector_modules(train_data, device, ppt, *,
                            memory_cell_last=False):
     """Stack detector modules.
 
-    :param dict train_data: data from a pulse-train.
-    :param str device: device or output channel name with a '*' replacing
-        the module number. For example, SCS_DET_DSSC1M-1/DET/*CH0:xtdf.
-    :param str ppt: property name.
-    :param int modules: Number of modules. Ignored if 'module_numbers' is
+    :param dict train_data: Data from a pulse-train.
+    :param str device: Device or output channel name with a `*` replacing
+        the module number. For example, SCS_DET_DSSC1M-1/DET/\*CH0:xtdf.
+    :param str ppt: Property name.
+    :param int modules: Number of modules. Ignored if `module_numbers` is
         given. For AGIPD-1M, LPD-1M and DSSC-1M, number of modules must be
-        16 so it is not recommended to use 'module_numbers' to specify
+        16 so it is not recommended to use `module_numbers` to specify
         modules. Note that the default module number starts from 0, i.e.,
         the default module numbers for 4 modules are 0, 1, 2 and 3.
     :param list module_numbers: A list of module numbers. The numbers
@@ -89,6 +89,8 @@ def use_doc(kls):
         @functools.wraps(method)
         def doc_method(self, *args, **kwargs):
             return method(self, *args, **kwargs)
+
         doc_method.__doc__ = getattr(kls, method.__name__).__doc__
         return doc_method
+
     return wrapper

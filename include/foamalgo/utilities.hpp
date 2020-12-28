@@ -1,11 +1,9 @@
 /**
- * Distributed under the terms of the BSD 3-Clause License.
+ * Distributed under the terms of the GNU General Public License v3.0.
  *
- * The full license is in the file BSD_LICENSE, distributed with this software.
+ * The full license is in the file LICENSE, distributed with this software.
  *
- * Author: Jun Zhu <jun.zhu@xfel.eu>
- * Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
- * All rights reserved.
+ * Copyright (C) 2020, Jun Zhu. All rights reserved.
  */
 
 #ifndef FOAM_UTILITIES_H
@@ -43,18 +41,15 @@ inline void checkShape(S1&& shape1, S2&& shape2, std::string&& header, size_t s0
   }
 }
 
-template<typename T>
-inline void checkEven(T a, std::string&& header)
-{
-  if (a % 2 != 0)
-  {
-    std::ostringstream ss;
-    ss << header << ": " << a;
-    throw std::invalid_argument(ss.str());
-  }
-}
-
 } //utils
+
+#define FOAM_ASSERT_ARGUMENT(expr, msg)                                                       \
+  if (!(expr))                                                                                \
+  {                                                                                           \
+    throw std::invalid_argument(std::string(__FILE__) + ':' + std::to_string(__LINE__) +      \
+                                ": " + msg + "\n");                                           \
+  }
+
 } //foam
 
 #endif //FOAM_UTILITIES_H
