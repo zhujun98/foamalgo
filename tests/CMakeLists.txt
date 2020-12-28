@@ -46,7 +46,6 @@ find_package(Threads REQUIRED)
 set(_FOAM_UNITTESTS
     test_tbb.cpp
     test_azimuthal_integrator.cpp
-    test_blas.cpp
     test_canny.cpp
     test_geometry.cpp
     test_geometry_1m.cpp
@@ -56,8 +55,13 @@ set(_FOAM_UNITTESTS
     test_traits.cpp
     )
 
-set(_FOAM_UNITTEST_TARGETS_NEED_BLAS
-    test_blas)
+set(_FOAM_UNITTEST_TARGETS_NEED_BLAS)
+
+# Failed in compilation in macOS
+if (NOT APPLE)
+    list(APPEND _FOAM_UNITTESTS test_blas.cpp)
+    list(APPEND _FOAM_UNITTEST_TARGETS_NEED_BLAS test_blas)
+endif()
 
 set(CMAKE_BUILD_RPATH "${CMAKE_PREFIX_PATH}/lib")
 
