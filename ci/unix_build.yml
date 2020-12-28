@@ -1,0 +1,15 @@
+steps:
+  - script: |
+      conda create --yes --quiet --name foamalgo --python=$(PYTHON_VERSION)
+      source activate foamalgo
+      conda install -y cmake -c anaconda
+      conda install -y -c conda-forge tbb-devel xsimd xtensor xtensor-blas numpy xtensor-python
+    displayName: "Create Anaconda environment"
+
+  - script: |
+      source activate foamalgo
+      export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
+      pip install -e .[test]
+      python setup.py build_ext --inplace --with-tests
+      python setup.py test -v
+    displayName: "Build and test"
