@@ -207,7 +207,7 @@ class TestCommand(_TestCommand):
 
         # run Python test
         import pytest
-        errno = pytest.main(['pyfoamalgo/tests'])
+        errno = pytest.main(['pyfoamalgo'])
         sys.exit(errno)
 
 

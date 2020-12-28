@@ -20,8 +20,9 @@ class TestJungFrauGeometry:
     @classmethod
     def setup_class(cls):
         cls.n_pulses = 2
-        cls.module_shape = (512, 1024)
-        cls.asic_shape = (256, 256)
+        cls.module_shape = JungFrauGeometry.module_shape
+        cls.asic_shape = JungFrauGeometry.asic_shape
+        cls.pixel_size = JungFrauGeometry.pixel_size
 
         cls.geom_21_stack = JungFrauGeometry(2, 1)
         cls.geom_32_stack = JungFrauGeometry(3, 2)
@@ -69,7 +70,7 @@ class TestJungFrauGeometry:
             modules = StackView(
                 {i: np.ones((self.n_pulses, *self.module_shape), dtype=dtype) for i in range(n_modules)},
                 n_modules,
-                (self.n_pulses, ) + self.module_shape,
+                (self.n_pulses, ) + tuple(self.module_shape),
                 dtype,
                 np.nan)
 
@@ -115,8 +116,9 @@ class TestEPix100Geometry:
     """Test train-resolved."""
     @classmethod
     def setup_class(cls):
-        cls.module_shape = (708, 768)
-        cls.asic_shape = (354, 384)
+        cls.module_shape = EPix100Geometry.module_shape
+        cls.asic_shape = EPix100Geometry.asic_shape
+        cls.pixel_size = EPix100Geometry.pixel_size
 
         cls.geom_21_stack = EPix100Geometry(2, 1)
         cls.geom_22_stack = EPix100Geometry(2, 2)
@@ -146,7 +148,7 @@ class TestEPix100Geometry:
             modules = StackView(
                 {i: np.ones(self.module_shape, dtype=dtype) for i in range(n_modules)},
                 n_modules,
-                self.module_shape,
+                tuple(self.module_shape),
                 dtype,
                 np.nan)
 

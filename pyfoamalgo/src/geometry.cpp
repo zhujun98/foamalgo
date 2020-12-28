@@ -36,7 +36,7 @@ void declareGeometry(py::module &m, const std::string& detector_name)
          py::arg("layout") = foam::GeometryLayout::TopRightCW)
     .def("nModules", &Geometry::nModules)
     .def("assembledShape", &Geometry::assembledShape)
-    .def_readonly_static("pixel_size", &Detector::pixel_size)
+    .def_readonly_static("pixel_size", &Detector::pixel_size_py)
     .def_readonly_static("module_shape", &Detector::module_shape)
     .def_readonly_static("asic_shape", &Detector::asic_shape)
     .def_readonly_static("asic_grid_shape", &Detector::asic_grid_shape);
