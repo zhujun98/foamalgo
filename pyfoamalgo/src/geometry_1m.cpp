@@ -74,7 +74,7 @@ void declareGeometry1M(py::module &m, std::string&& detector)
 
   cls.def(py::init())
     .def(py::init<const std::array<std::array<std::array<double, 3>, Geometry::n_tiles_per_module>, Geometry::n_modules> &>())
-    .def_static("pixelSize", []() { return xt::pytensor<double, 1>(Geometry::pixelSize()); } )
+    .def_readonly_static("pixel_size", &Geometry::pixel_size_py)
     .def_readonly_static("module_shape", &Geometry::module_shape)
     .def_readonly_static("tile_shape", &Geometry::tile_shape)
     .def_readonly_static("n_tiles_per_module", &Geometry::n_tiles_per_module)

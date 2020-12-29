@@ -50,9 +50,9 @@ class DSSC_1MGeometry(_1MGeometryMixin, _DSSC_1MGeometryCpp):
                     # with the first pixel, which is either high-x low-y or
                     # low-x high-y.
                     if x_orient == 1:
-                        first_pixel_pos[1] += cls.pixelSize()[1] * cls.tile_shape[0]
+                        first_pixel_pos[1] += cls.pixel_size[1] * cls.tile_shape[0]
                     if y_orient == 1:
-                        first_pixel_pos[0] += cls.pixelSize()[0] * cls.tile_shape[1]
+                        first_pixel_pos[0] += cls.pixel_size[0] * cls.tile_shape[1]
 
                     tiles.append(list(first_pixel_pos))
                 modules.append(tiles)
@@ -83,8 +83,8 @@ class LPD_1MGeometry(_1MGeometryMixin, _LPD_1MGeometryCpp):
 
                     # LPD geometry is measured to the last pixel of each tile.
                     # Subtract tile dimensions for the position of 1st pixel.
-                    first_pixel_pos[0] -= cls.pixelSize()[0] * cls.tile_shape[1]
-                    first_pixel_pos[1] -= cls.pixelSize()[1] * cls.tile_shape[0]
+                    first_pixel_pos[0] -= cls.pixel_size[0] * cls.tile_shape[1]
+                    first_pixel_pos[1] -= cls.pixel_size[1] * cls.tile_shape[0]
 
                     tiles.append(list(first_pixel_pos))
                 modules.append(tiles)

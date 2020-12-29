@@ -35,35 +35,29 @@ namespace foam
 struct DetectorBase
 {
   using VectorType = xt::xtensor_fixed<double, xt::xshape<3>>;
+  // FIXME: used for Python binding. Currently, xtensor-python does not support xtensor_fixed
+  using VectorTypePy = xt::xtensor<double, 1>;
   using ShapeType = std::array<size_t, 2>;
 };
 
 struct JungFrau : public DetectorBase
 {
-  static const ShapeType module_shape;
-  static const ShapeType asic_shape;
-  static const VectorType pixel_size;
-  static const ShapeType asic_grid_shape;
+  static constexpr ShapeType module_shape {512, 1024}; // (y, x)
+  static constexpr ShapeType asic_shape {256, 256}; // (y, x)
+  static constexpr ShapeType asic_grid_shape{2, 4}; // (y, x)
+  inline static const VectorType pixel_size {75e-6, 75e-6, 1.}; // (x, y, z)
+  inline static const VectorTypePy pixel_size_py {pixel_size};
 };
-
-const JungFrau::ShapeType JungFrau::module_shape {512, 1024}; // (y, x)
-const JungFrau::ShapeType JungFrau::asic_shape {256, 256}; // (y, x)
-const JungFrau::VectorType JungFrau::pixel_size {75e-6, 75e-6, 1.}; // (x, y, z)
-const JungFrau::ShapeType JungFrau::asic_grid_shape {2, 4}; // (y, x)
 
 struct EPix100 : public DetectorBase
 {
-  static const ShapeType module_shape;
-  static const ShapeType asic_shape;
-  static const VectorType pixel_size;
-  static const ShapeType asic_grid_shape;
+  static constexpr ShapeType module_shape {708, 768}; // (y, x)
+  // TODO: in the paper it says 352 x 384
+  static constexpr ShapeType asic_shape {354, 384}; // (y, x)
+  static constexpr ShapeType asic_grid_shape {2, 2}; // (y, x)
+  inline static const VectorType pixel_size {50e-6, 50e-6, 1.}; // (x, y, z)
+  inline static const VectorTypePy pixel_size_py {pixel_size};
 };
-
-const EPix100::ShapeType EPix100::module_shape {708, 768}; // (y, x)
-// TODO: in the paper it says 352 x 384
-const EPix100::ShapeType EPix100::asic_shape {354, 384}; // (y, x)
-const EPix100::VectorType EPix100::pixel_size {50e-6, 50e-6, 1.}; // (x, y, z)
-const EPix100::ShapeType EPix100::asic_grid_shape {2, 2}; // (y, x)
 
 enum class GeometryLayout
 {
