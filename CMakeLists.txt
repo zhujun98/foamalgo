@@ -42,9 +42,9 @@ OPTION(BUILD_FOAM_PYTHON "Build FOAM Python bindings" OFF)
 # dependencies
 # ============
 
-set(xsimd_REQUIRED_VERSION 7.4.8)
-set(xtl_REQUIRED_VERSION 0.6.16)
-set(xtensor_REQUIRED_VERSION 0.21.5)
+set(xsimd_REQUIRED_VERSION 7.4.9)
+set(xtl_REQUIRED_VERSION 0.6.23)
+set(xtensor_REQUIRED_VERSION 0.21.10)
 set(xtensor-blas_REQUIRED_VERSION 0.17.2)
 
 set(thirdparty_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty)
@@ -53,7 +53,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/build_external_project.cmake)
 
 # tbb
 if(FOAM_USE_TBB OR XTENSOR_USE_TBB)
-    set(TBB_REQUIRED_VERSION 2019.9)
+    set(TBB_REQUIRED_VERSION 2020.2)
     string(REPLACE "." "_U" TBB_REQUIRED_VERSION_STR ${TBB_REQUIRED_VERSION})
 
     add_compile_definitions(TBB_SUPPRESS_DEPRECATED_MESSAGES)
