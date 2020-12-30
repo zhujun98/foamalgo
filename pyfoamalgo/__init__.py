@@ -6,7 +6,7 @@ The full license is in the file LICENSE, distributed with this software.
 Copyright (C) 2020, Jun Zhu. All rights reserved.
 """
 
-__version__ = "0.0.9"
+__version__ = "0.1.0"
 
 
 from .azimuthal_integration import *
