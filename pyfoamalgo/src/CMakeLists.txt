@@ -9,7 +9,7 @@
 # dependencies
 # ============
 
-set(pybind11_REQUIRED_VERSION 2.4.3)
+set(pybind11_REQUIRED_VERSION 2.6.1)
 set(xtensor-python_REQUIRED_VERSION 0.24.1)
 
 find_package(NumPy REQUIRED)
