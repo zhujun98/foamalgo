@@ -39,10 +39,9 @@ def nansum(a, axis=None):
     :param None/int/tuple axis: Axis or axes along which the sum is computed.
         The default is to compute the sum of the flattened array.
     """
-    if axis is None:
-        return _nansum_cpp(a)
-
     if a.dtype in _NAN_CPP_TYPES:
+        if axis is None:
+            return _nansum_cpp(a)
         return _nansum_cpp(a, axis=axis)
 
     return np.nansum(a, axis=axis)
@@ -61,12 +60,11 @@ def nanmean(a, axis=None):
     :param None/int/tuple axis: Axis or axes along which the mean is computed.
         The default is to compute the mean of the flattened array.
     """
-    if axis is None:
-        return _nanmean_cpp(a)
-
     if a.dtype in _NAN_CPP_TYPES:
         if axis == 0 and a.ndim == 3:
             return nanmeanImageArray(a)
+        if axis is None:
+            return _nanmean_cpp(a)
         return _nanmean_cpp(a, axis=axis)
 
     return np.nanmean(a, axis=axis)

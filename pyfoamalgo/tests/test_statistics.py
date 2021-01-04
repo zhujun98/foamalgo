@@ -67,6 +67,36 @@ class TestStatistics:
             self._assert_array_almost_equal(f_py(a3d, axis=(-2, -1)), f_cpp(a3d, axis=(-2, -1)))
             self._assert_array_almost_equal(f_py(a4d, axis=(-2, -1)), f_cpp(a4d, axis=(-2, -1)))
 
+    @pytest.mark.parametrize("f_cpp, f_py", [(nanmean, np.nanmean), (nansum, np.nansum)])
+    def testCppStatisticsExtra(self, f_cpp, f_py):
+        # Test automatically falling back to np.nansum/np.nanmean
+        dtype = np.int64
+
+        a1d = np.array([0, 1, 2], dtype=dtype)
+        a2d = np.array([[0, 1, 2], [3, 6, 0]], dtype=dtype)
+        a3d = np.array([[[0, 0, 2], [3, 6, 0]],
+                        [[1, 4, 0], [6, 3, 0]]], dtype=dtype)
+        a4d = np.ones((2, 3, 4, 5), dtype=dtype)
+        a5d = np.ones((1, 2, 3, 4, 5), dtype=dtype)
+
+        with np.warnings.catch_warnings():
+            np.warnings.simplefilter("ignore", category=RuntimeWarning)
+
+            # axis is None
+            self._assert_array_almost_equal(f_py(a1d), f_cpp(a1d))
+            self._assert_array_almost_equal(f_py(a2d), f_cpp(a2d))
+            self._assert_array_almost_equal(f_py(a3d), f_cpp(a3d))
+            self._assert_array_almost_equal(f_py(a4d), f_cpp(a4d))
+            self._assert_array_almost_equal(f_py(a5d), f_cpp(a5d))
+
+            # axis = 0
+            self._assert_array_almost_equal(f_py(a3d, axis=0), f_cpp(a3d, axis=0))
+            self._assert_array_almost_equal(f_py(a4d, axis=0), f_cpp(a4d, axis=0))
+
+            # axis = (1, 2)
+            self._assert_array_almost_equal(f_py(a3d, axis=(-2, -1)), f_cpp(a3d, axis=(-2, -1)))
+            self._assert_array_almost_equal(f_py(a4d, axis=(-2, -1)), f_cpp(a4d, axis=(-2, -1)))
+
     def testNanhistWithStats(self):
         # case 1
         roi = np.array([[np.nan, 1, 2], [3, 6, np.nan]], dtype=np.float32)
