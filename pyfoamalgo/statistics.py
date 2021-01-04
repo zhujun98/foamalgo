@@ -1,11 +1,9 @@
 """
-Distributed under the terms of the BSD 3-Clause License.
+Distributed under the terms of the GNU General Public License v3.0.
 
 The full license is in the file LICENSE, distributed with this software.
 
-Author: Jun Zhu <jun.zhu@xfel.eu>
-Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
-All rights reserved.
+Copyright (C) 2020, Jun Zhu. All rights reserved.
 """
 import math
 import numpy as np
@@ -15,6 +13,7 @@ from .lib.statistics import nanmean as _nanmean_cpp
 from .lib.statistics import nansum as _nansum_cpp
 from .lib.statistics import nanstd as _nanstd_cpp
 from .lib.statistics import nanvar as _nanvar_cpp
+from .lib.statistics import histogram1d as _histogram1d_cpp
 
 __all__ = [
     'hist_with_stats',
@@ -24,7 +23,8 @@ __all__ = [
     'nansum',
     'nanstd',
     'nanvar',
-    'quick_min_max'
+    'quick_min_max',
+    'histogram1d',
 ]
 
 
@@ -34,10 +34,10 @@ _NAN_CPP_TYPES = (np.float32, np.float64)
 def nansum(a, axis=None):
     """Faster numpy.nansum.
 
-    This is a wrapper over numpy.nansum. It uses the C++ implementation
-    when applicable. Otherwise, it falls back to numpy.nansum.
+    It uses the C++ implementation when applicable. Otherwise, it falls
+    back to numpy.nansum.
 
-    :param numpy.array a: Data array.
+    :param numpy.ndarray a: Data array.
     :param None/int/tuple axis: Axis or axes along which the sum is computed.
         The default is to compute the sum of the flattened array.
     """
@@ -52,13 +52,13 @@ def nansum(a, axis=None):
 def nanmean(a, axis=None):
     """Faster numpy.nanmean.
 
-    This is a wrapper over numpy.nanmean. It uses the C++ implementation
-    when applicable. Otherwise, it falls back to numpy.nanmean.
+    It uses the C++ implementation when applicable. Otherwise, it falls
+    back to numpy.nanmean.
 
     If the input array is an array of images, i.e. 3D array, one may
     want to check :func:`pyfoamalgo.nanmean_image_data`.
 
-    :param numpy.array a: Data array.
+    :param numpy.ndarray a: Data array.
     :param None/int/tuple axis: Axis or axes along which the mean is computed.
         The default is to compute the mean of the flattened array.
     """
@@ -75,10 +75,10 @@ def nanmean(a, axis=None):
 def nanstd(a, axis=None, *, normalized=False):
     """Faster numpy.nanstd.
 
-    This is a wrapper over numpy.nanstd. It uses the C++ implementation
-    when applicable. Otherwise, it falls back to numpy.nanstd.
+    It uses the C++ implementation when applicable. Otherwise, it falls
+    back to numpy.nanstd.
 
-    :param numpy.array a: Data array.
+    :param numpy.ndarray a: Data array.
     :param None/int/tuple axis: Axis or axes along which the standard
         deviation is computed. The default is to compute the standard
         deviation of the flattened array.
@@ -101,10 +101,10 @@ def nanstd(a, axis=None, *, normalized=False):
 def nanvar(a, axis=None, *, normalized=False):
     """Faster numpy.nanvar.
 
-    This is a wrapper over numpy.nanvar. It uses the C++ implementation
-    when applicable. Otherwise, it falls back to numpy.nanvar.
+    It uses the C++ implementation when applicable. Otherwise, it falls
+    back to numpy.nanvar.
 
-    :param numpy.array a: Data array.
+    :param numpy.ndarray a: Data array.
     :param None/int/tuple axis: Axis or axes along which the variance
         is computed. The default is to compute the variance of the
         flattened array.
@@ -123,6 +123,29 @@ def nanvar(a, axis=None, *, normalized=False):
         return ret / nanmean(a, axis=axis) ** 2
     return ret
 
+
+def histogram1d(a, bins=10, range=None):
+    """Faster numpy.histogram.
+
+    It uses the C++ implementation when applicable. Otherwise, it falls
+    back to numpy.histogram.
+
+    :param numpy.ndarray a: Data array.
+    :param int bins: Number of bins.
+    :param tuple/None range: The (lower, upper) boundary of the bins.
+        Default = (a.min(), a.max())
+
+    :return: (Values of the histogram, bin edges)
+    :rtype: (numpy.array, numpy.array)
+    """
+    if range is None:
+        range = (a.min(), a.max())
+
+    if a.dtype in _NAN_CPP_TYPES:
+        bin_edges = np.linspace(range[0], range[1], bins+1, dtype=a.dtype)
+        return (_histogram1d_cpp(a.ravel(), range[0], range[1], bins),
+                bin_edges)
+    return np.histogram(a, bins=bins, range=range)
 
 
 def quick_min_max(x, q=None):

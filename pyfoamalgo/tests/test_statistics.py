@@ -5,8 +5,8 @@ import math
 import numpy as np
 
 from pyfoamalgo.statistics import (
-    hist_with_stats, nanhist_with_stats, compute_statistics, _get_outer_edges,
-    nanmean, nansum, nanstd, nanvar, quick_min_max
+    histogram1d, hist_with_stats, nanhist_with_stats, compute_statistics,
+    _get_outer_edges, nanmean, nansum, nanstd, nanvar, quick_min_max
 )
 
 
@@ -228,3 +228,25 @@ class TestStatistics:
 
         data = np.array([1, 1, 2, 1, 1])
         assert (1.2, 1.0, 0.4) == compute_statistics(data)
+
+    @pytest.mark.parametrize("dtype", [np.float32, np.float64, np.int64, np.uint16])
+    def testHistogram1d(self, dtype):
+        arr1d = (100 * np.random.rand(100)).astype(dtype)
+        arr2d = arr1d.reshape((5, 20))
+
+        for arr in [arr1d, arr2d]:
+            # Test default
+            hist_np, edges_np = np.histogram(arr)
+            hist, edges = histogram1d(arr)
+            # FIXME
+            np.testing.assert_array_almost_equal(hist_np[:-1], hist[:-1])
+            np.testing.assert_array_almost_equal(edges_np, edges)
+            # assert hist_np.dtype == hist.dtype
+            assert edges_np.dtype == edges.dtype
+
+            # Test with given bin range
+            bin_range = (10, 90)
+            hist_np, edges_np = np.histogram(arr, bins=100, range=bin_range)
+            hist, edges = histogram1d(arr, bins=100, range=bin_range)
+            np.testing.assert_array_almost_equal(hist_np, hist)
+            np.testing.assert_array_almost_equal(edges_np, edges)

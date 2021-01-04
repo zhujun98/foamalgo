@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 
-from pyfoamalgo import nanmean, nansum, nanstd, nanvar
+from pyfoamalgo import nanmean, nansum, nanstd, nanvar, histogram1d
 
 
 def benchmark_nan_without_axis(f_cpp, f_py, shape, dtype):
@@ -43,6 +43,25 @@ def benchmark_nan_keep_zero_axis(f_cpp, f_py, shape, dtype):
           f"dt (numpy): {dt_py:.4f}")
 
 
+def benchmark_histogram1d(f_cpp, f_py, shape, dtype):
+    data = np.random.randn(*shape).astype(dtype=dtype)
+
+    t0 = time.perf_counter()
+    ret_cpp = f_cpp(data, bins=100)
+    dt_cpp = time.perf_counter() - t0
+
+    t0 = time.perf_counter()
+    ret_py = f_py(data, bins=100)
+    dt_py = time.perf_counter() - t0
+
+    # FIXME
+    np.testing.assert_allclose(ret_cpp[0][:-1], ret_py[0][:-1], rtol=1e-4)
+    np.testing.assert_allclose(ret_cpp[1], ret_py[1], rtol=1e-4)
+
+    print(f"\n----- {f_cpp.__name__} ------")
+    print(f"\ndtype = {dtype} - \ndt (cpp): {dt_cpp:.4f}, dt (numpy): {dt_py:.4f}")
+
+
 if __name__ == "__main__":
     print("*" * 80)
     print("Benchmark statistics functions")
@@ -57,3 +76,6 @@ if __name__ == "__main__":
         benchmark_nan_without_axis(f_cpp, f_py, s, np.float64)
         benchmark_nan_keep_zero_axis(f_cpp, f_py, s, np.float32)
         benchmark_nan_keep_zero_axis(f_cpp, f_py, s, np.float64)
+
+    for dtype in [np.float64]:
+        benchmark_histogram1d(histogram1d, np.histogram, s, dtype)
