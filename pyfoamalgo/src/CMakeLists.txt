@@ -9,8 +9,8 @@
 # dependencies
 # ============
 
-set(pybind11_REQUIRED_VERSION 2.6.1)
-set(xtensor-python_REQUIRED_VERSION 0.24.1)
+set(pybind11_REQUIRED_VERSION 2.6.2)
+set(xtensor-python_REQUIRED_VERSION 0.25.1)
 
 find_package(NumPy REQUIRED)
 message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")

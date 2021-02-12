@@ -43,9 +43,9 @@ OPTION(BUILD_FOAM_PYTHON "Build FOAM Python bindings" OFF)
 # ============
 
 set(xsimd_REQUIRED_VERSION 7.4.9)
-set(xtl_REQUIRED_VERSION 0.6.23)
-set(xtensor_REQUIRED_VERSION 0.21.10)
-set(xtensor-blas_REQUIRED_VERSION 0.17.2)
+set(xtl_REQUIRED_VERSION 0.7.0)
+set(xtensor_REQUIRED_VERSION 0.23.1)
+set(xtensor-blas_REQUIRED_VERSION 0.19.0)
 
 set(thirdparty_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty)
 
