@@ -10,6 +10,118 @@ import functools
 import numpy as np
 
 
+class StackView:
+    """Limited array-like object holding detector data from several modules.
+
+    Access is limited to either a single module at a time or all modules
+    together, but this is enough to assemble detector images.
+
+    Copied from and credit to EXtra-data
+    (https://github.com/European-XFEL/EXtra-data)
+    """
+    def __init__(self, data, nmodules, mod_shape, dtype, fillvalue,
+                 stack_axis=-3):
+        self._nmodules = nmodules
+        self._data = data  # {modno: array}
+        self.dtype = dtype
+        self._fillvalue = fillvalue
+        self._mod_shape = mod_shape
+        self.ndim = len(mod_shape) + 1
+        self._stack_axis = stack_axis
+        if self._stack_axis < 0:
+            self._stack_axis += self.ndim
+        sax = self._stack_axis
+        self.shape = mod_shape[:sax] + (nmodules,) + mod_shape[sax:]
+
+    def __repr__(self):
+        return "<VirtualStack (shape={}, {}/{} modules, dtype={})>".format(
+            self.shape, len(self._data), self._nmodules, self.dtype,
+        )
+
+    # Multidimensional slicing
+    def __getitem__(self, slices):
+        if not isinstance(slices, tuple):
+            slices = (slices,)
+
+        missing_dims = self.ndim - len(slices)
+        if Ellipsis in slices:
+            ix = slices.index(Ellipsis)
+            missing_dims += 1
+            slices = slices[:ix] + (slice(None, None),) * missing_dims + slices[ix + 1:]
+        else:
+            slices = slices + (slice(None, None),) * missing_dims
+
+        modno = slices[self._stack_axis]
+        mod_slices = slices[:self._stack_axis] + slices[self._stack_axis + 1:]
+
+        if isinstance(modno, int):
+            if modno < 0:
+                modno += self._nmodules
+            return self._get_single_mod(modno, mod_slices)
+        elif modno == slice(None, None):
+            return self._get_all_mods(mod_slices)
+        else:
+            raise Exception(
+                "VirtualStack can only slice a single module or all modules"
+            )
+
+    def _get_single_mod(self, modno, mod_slices):
+        try:
+            mod_data = self._data[modno]
+        except KeyError:
+            if modno >= self._nmodules:
+                raise IndexError(modno)
+            mod_data = np.full(self._mod_shape, self._fillvalue, self.dtype)
+            self._data[modno] = mod_data
+
+        # Now slice the module data as requested
+        return mod_data[mod_slices]
+
+    def _get_all_mods(self, mod_slices):
+        new_data = {modno: self._get_single_mod(modno, mod_slices)
+                    for modno in self._data}
+        new_mod_shape = list(new_data.values())[0].shape
+        return StackView(new_data, self._nmodules, new_mod_shape, self.dtype,
+                         self._fillvalue)
+
+    def asarray(self):
+        """Copy this data into a real numpy array
+
+        Don't do this until necessary - the point of using VirtualStack is to
+        avoid copying the data unnecessarily.
+        """
+        start_shape = (self._nmodules,) + self._mod_shape
+        arr = np.full(start_shape, self._fillvalue, dtype=self.dtype)
+        for modno, data in self._data.items():
+            arr[modno] = data
+        return np.moveaxis(arr, 0, self._stack_axis)
+
+    def squeeze(self, axis=None):
+        """Drop axes of length 1 - see numpy.squeeze()"""
+        if axis is None:
+            slices = [0 if d == 1 else slice(None, None) for d in self.shape]
+        elif isinstance(axis, (int, tuple)):
+            if isinstance(axis, int):
+                axis = (axis,)
+
+            slices = [slice(None, None)] * self.ndim
+
+            for ax in axis:
+                try:
+                    slices[ax] = 0
+                except IndexError:
+                    raise np.AxisError(
+                        "axis {} is out of bounds for array of dimension {}"
+                            .format(ax, self.ndim)
+                    )
+                if self.shape[ax] != 1:
+                    raise ValueError("cannot squeeze out an axis with size != 1")
+        else:
+            raise TypeError("axis={!r} not supported".format(axis))
+
+        return self[tuple(slices)]
+
+
 def stack_detector_modules(train_data, device, ppt, *,
                            modules=None,
                            module_numbers=None,
@@ -36,8 +148,6 @@ def stack_detector_modules(train_data, device, ppt, *,
         sufficient for assembling modules using detector geometry. It can
         be converted to a real numpy array by calling the `asarray` method.
     """
-    from extra_data.stacking import StackView
-
     if not train_data:
         raise ValueError("Empty data!")
 

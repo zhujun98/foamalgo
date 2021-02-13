@@ -264,7 +264,6 @@ setup(
     ],
     extras_require={
         'test': [
-            'extra-data',
             'extra-geom',
             'pytest',
         ],

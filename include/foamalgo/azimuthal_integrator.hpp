@@ -28,15 +28,24 @@
 
 namespace foam
 {
-
-namespace
+namespace ai
 {
 
+/**
+ * Compute the geometry (distance to the center) for azimuthal integration.
+ *
+ * @param src: Source image. Shape = (y, x)
+ * @param poni1: Integration center y, in meter.
+ * @param poni2: Integration center x, in meter.
+ * @param pixel1: Pixel size along y, in meter.
+ * @param pixel2: Pixel size along x, in meter.
+ *
+ * @return: Array of distance to the PONI, in meter. Shape = (y, x)
+ */
 template<typename T, typename E>
-auto computeGeometry(E&& src, T poni1, T poni2, T pixel1, T pixel2)
+xt::xtensor<T, 2> computeGeometry(E&& src, T poni1, T poni2, T pixel1, T pixel2)
 {
   auto shape = src.shape();
-
   xt::xtensor<T, 2> geometry = xt::zeros<T>(shape);
   for (size_t i = 0; i < shape[0]; ++i)
   {
@@ -51,10 +60,52 @@ auto computeGeometry(E&& src, T poni1, T poni2, T pixel1, T pixel2)
   return geometry;
 }
 
-template<typename E1, typename E2, typename E3, typename T>
-void histogramAI(E1&& src, const E2& geometry, E3& hist, T q_min, T q_max, size_t n_bins, size_t min_count)
+/**
+ * Compute the geometry (Q-map) for azimuthal integration.
+ *
+ * @param src: Source image. Shape = (y, x)
+ * @param poni1: Integration center y, in meter.
+ * @param poni2: Integration center x, in meter.
+ * @param pixel1: Pixel size along y, in meter.
+ * @param pixel2: Pixel size along x, in meter.
+ * @param dist: Sample distance in meter.
+ * @param wavelength: Photon wavelength in meter.
+ *
+ * @return: Array of momentum transfer, in 1/meter. Shape = (y, x).
+ */
+template<typename T, typename E>
+xt::xtensor<T, 2> computeGeometry(E&& src, T poni1, T poni2, T pixel1, T pixel2, T dist, T wavelength)
 {
-  T norm = T(1) / (q_max - q_min);
+  T four_pi_over_lambda = T(4.) * T(M_PI) / wavelength;
+  T dist2 = dist * dist;
+
+  auto shape = src.shape();
+  xt::xtensor<T, 2> geometry = xt::zeros<T>(shape);
+  for (size_t i = 0; i < shape[0]; ++i)
+  {
+    for (size_t j = 0; j < shape[1]; ++j)
+    {
+      T dx = static_cast<T>(j) * pixel2 - poni2;
+      T dy = static_cast<T>(i) * pixel1 - poni1;
+      // Convert radial distances (in meter) to momentum transfer q (in 1/meter).
+      // q = 4 * pi * sin(theta) / lambda
+      T tmp = std::sqrt(dx * dx + dy * dy);
+      geometry(i, j) = four_pi_over_lambda / std::sqrt(T(4.) * dist2 / (tmp * tmp) + T(1.));
+    }
+  }
+
+  return geometry;
+}
+
+namespace detail
+{
+
+template<typename E1, typename E2, typename E3, typename T>
+void histogramAIImp(E1&& src, const E2& geometry, E3& hist, T q_min, T q_max, size_t n_bins, size_t min_count)
+{
+  using value_type = typename std::decay_t<E3>::value_type;
+
+  value_type norm = value_type(1.) / (static_cast<value_type>(q_max) - static_cast<value_type>(q_min));
   xt::xtensor<size_t, 1> counts = xt::zeros<size_t>({ n_bins });
 
   auto shape = src.shape();
@@ -62,8 +113,8 @@ void histogramAI(E1&& src, const E2& geometry, E3& hist, T q_min, T q_max, size_
   {
     for (size_t j = 0; j < shape[1]; ++j)
     {
-      T q = geometry(i, j);
-      auto v = src(i, j);
+      auto q = static_cast<value_type>(geometry(i, j));
+      auto v = static_cast<value_type>(src(i, j));
 
       if (std::isnan(v)) continue;
 
@@ -73,7 +124,8 @@ void histogramAI(E1&& src, const E2& geometry, E3& hist, T q_min, T q_max, size_
         counts(n_bins - 1) += 1;
       } else if ( (q > q_min) && (q < q_max) )
       {
-        auto i_bin = static_cast<size_t>(static_cast<T>(n_bins) * (q - q_min) * norm);
+        auto i_bin = static_cast<size_t>(
+          static_cast<value_type>(n_bins) * (q - static_cast<value_type>(q_min)) * norm);
         hist(i_bin) += v;
         counts(i_bin) += 1;
       }
@@ -94,48 +146,51 @@ void histogramAI(E1&& src, const E2& geometry, E3& hist, T q_min, T q_max, size_
   {
     if (counts(i) == 0) hist(i) = 0.;
     else
-      hist(i) /= counts(i);
+      hist(i) /= static_cast<value_type>(counts(i));
   }
 }
 
-template<typename T, typename E, EnableIf<std::decay_t<E>, IsImage> = false>
-auto histogramAI(E&& src, const xt::xtensor<T, 2>& geometry, T q_min, T q_max,
-                 size_t n_bins, size_t min_count=1)
+} // detail
+
+template<typename E1, typename E2, typename T, EnableIf<std::decay_t<E1>, IsImage> = false>
+auto histogramAI(E1&& src, const E2& geometry, T q_min, T q_max, size_t n_bins, size_t min_count=1)
 {
-  auto shape = src.shape();
+  using container_value_type = typename std::decay_t<E1>::value_type;
+  using value_type = std::conditional_t<std::is_floating_point<container_value_type>::value,
+                                        container_value_type,
+                                        T>;
+  using vector_type = ReducedVectorType<E1, value_type>;
 
-  using vector_type = ReducedVectorType<E, T>;
+  vector_type hist = xt::zeros<value_type>({ n_bins });
 
-  vector_type hist = xt::zeros<T>({ n_bins });
+  detail::histogramAIImp(std::forward<E1>(src), geometry, hist, q_min, q_max, n_bins, min_count);
 
-  histogramAI(std::forward<E>(src), geometry, hist, q_min, q_max, n_bins, min_count);
-
-  vector_type edges = xt::linspace<T>(q_min, q_max, n_bins + 1);
+  vector_type edges = xt::linspace<value_type>(q_min, q_max, n_bins + 1);
   auto&& centers = 0.5 * (xt::view(edges, xt::range(0, -1)) + xt::view(edges, xt::range(1, xt::placeholders::_)));
 
   return std::make_pair<vector_type, vector_type>(centers, std::move(hist));
 }
 
-template<typename T, typename E, EnableIf<std::decay_t<E>, IsImage> = false>
+template<typename E, typename T, EnableIf<std::decay_t<E>, IsImage> = false>
 auto histogramAI(E&& src, T poni1, T poni2, T pixel1, T pixel2, size_t npt, size_t min_count=1)
 {
-  xt::xtensor<T, 2> geometry = computeGeometry(src, poni1, poni2, pixel1, pixel2);
-
+  auto geometry = computeGeometry(src, poni1, poni2, pixel1, pixel2);
   std::array<T, 2> bounds = xt::minmax(geometry)();
-
-  return histogramAI<T>(std::forward<E>(src), geometry, bounds[0], bounds[1], npt, min_count);
+  return histogramAI(std::forward<E>(src), geometry, bounds[0], bounds[1], npt, min_count);
 }
 
-template<typename T, typename E, EnableIf<std::decay_t<E>, IsImageArray> = false>
-auto histogramAI(E&& src, const xt::xtensor<T, 2>& geometry, T q_min, T q_max,
-                 size_t n_bins, size_t min_count=1)
+template<typename E1, typename E2, typename T, EnableIf<std::decay_t<E1>, IsImageArray> = false>
+auto histogramAI(E1&& src, const E2& geometry, T q_min, T q_max, size_t n_bins, size_t min_count=1)
 {
+  using container_value_type = typename std::decay_t<E1>::value_type;
+  using value_type = std::conditional_t<std::is_floating_point<container_value_type>::value,
+                                        container_value_type,
+                                        T>;
+  using image_type = ReducedImageType<E1, value_type>;
+  using vector_type = ReducedVectorType<image_type, value_type>;
+
   size_t np = src.shape()[0];
-
-  using vector_type = ReducedVectorTypeFromArray<E, T>;
-  using image_type = ReducedImageType<E, T>;
-
-  image_type hist = xt::zeros<T>({ np, n_bins });
+  image_type hist = xt::zeros<value_type>({ np, n_bins });
 
 #if defined(FOAM_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, np),
@@ -149,21 +204,21 @@ auto histogramAI(E&& src, const xt::xtensor<T, 2>& geometry, T q_min, T q_max,
       {
 #endif
         auto hist_view = xt::view(hist, k, xt::all());
-        histogramAI(xt::view(src, k, xt::all(), xt::all()), geometry, hist_view,
-                    q_min, q_max, n_bins, min_count);
+        detail::histogramAIImp(xt::view(src, k, xt::all(), xt::all()), geometry, hist_view,
+                               q_min, q_max, n_bins, min_count);
       }
 #if defined(FOAM_USE_TBB)
     }
   );
 #endif
 
-  vector_type edges = xt::linspace<T>(q_min, q_max, n_bins + 1);
+  vector_type edges = xt::linspace<value_type>(q_min, q_max, n_bins + 1);
   auto&& centers = 0.5 * (xt::view(edges, xt::range(0, -1)) + xt::view(edges, xt::range(1, xt::placeholders::_)));
 
   return std::make_pair<vector_type, image_type>(centers, std::move(hist));
 }
 
-} //namespace
+} //ai
 
 enum class AzimuthalIntegrationMethod
 {
@@ -177,33 +232,19 @@ enum class AzimuthalIntegrationMethod
 template<typename T = double>
 class AzimuthalIntegrator
 {
-public:
+  static_assert(std::is_floating_point<T>::value);
 
-  using value_type = std::conditional_t<std::is_floating_point<T>::value, T, double>;
-
-private:
-
-  value_type dist_; // sample distance, in m
-  xt::xtensor_fixed<value_type, xt::xshape<3>> poni_; // integration center (y, x, z), in meter
-  xt::xtensor_fixed<value_type, xt::xshape<3>> pixel_; // pixel size (y, x, z), in meter
-  value_type wavelength_; // wavelength, in m
+  T dist_; // sample distance, in m
+  xt::xtensor_fixed<T, xt::xshape<3>> poni_; // integration center (y, x, z), in meter
+  xt::xtensor_fixed<T, xt::xshape<3>> pixel_; // pixel size (y, x, z), in meter
+  T wavelength_; // Photon wavelength, in m
 
   bool initialized_ = false;
-  xt::xtensor<value_type, 2> q_;
-  value_type q_min_;
-  value_type q_max_;
+  xt::xtensor<T, 2> q_;
+  T q_min_;
+  T q_max_;
 
   AzimuthalIntegrationMethod method_;
-
-  /**
-   * Convert radial distances (in meter) to momentum transfer q (in 1/meter).
-   *
-   * q = 4 * pi * sin(theta) / lambda
-   *
-   * @return: momentum transfer in 1/meter.
-   */
-  template<typename E>
-  void distance2q(E& x) const;
 
   /**
    * Initialize Q-map.
@@ -213,14 +254,14 @@ private:
 
 public:
 
-  AzimuthalIntegrator(double dist, double poni1, double poni2, double pixel1, double pixel2, double wavelength);
+  AzimuthalIntegrator(T dist, T poni1, T poni2, T pixel1, T pixel2, T wavelength);
 
   ~AzimuthalIntegrator() = default;
 
   /**
    * Perform 1D azimuthal integration for a single image.
    *
-   * @param src: source image.
+   * @param src: source image. Shape = (y, x)
    * @param npt: number of integration points.
    * @param min_count: minimum number of pixels required.
    * @param method: azimuthal integration method.
@@ -231,6 +272,16 @@ public:
   auto integrate1d(E&& src, size_t npt, size_t min_count=1,
                    AzimuthalIntegrationMethod method=AzimuthalIntegrationMethod::HISTOGRAM);
 
+  /**
+   * Perform 1D azimuthal integration for an array of images.
+   *
+   * @param src: source image. Shape = (indices, y, x)
+   * @param npt: number of integration points.
+   * @param min_count: minimum number of pixels required.
+   * @param method: azimuthal integration method.
+   *
+   * @return (q, s): (momentum transfer, scattering)
+   */
   template<typename E, EnableIf<std::decay_t<E>, IsImageArray> = false>
   auto integrate1d(E&& src, size_t npt, size_t min_count=1,
                    AzimuthalIntegrationMethod method=AzimuthalIntegrationMethod::HISTOGRAM);
@@ -238,34 +289,17 @@ public:
 
 template<typename T>
 template<typename E>
-void AzimuthalIntegrator<T>::distance2q(E& x) const
-{
-  x = static_cast<value_type>(value_type(4.) / wavelength_) *
-      static_cast<value_type>(M_PI) / xt::sqrt(value_type(4.) * dist_ * dist_ / (x * x) + value_type(1.));
-}
-
-template<typename T>
-template<typename E>
 void AzimuthalIntegrator<T>::initQ(const E& src)
 {
-  q_ = computeGeometry(src, poni_[0], poni_[1], pixel_[0], pixel_[1]);
-  distance2q(q_);
-  std::array<value_type, 2> bounds = xt::minmax(q_)();
+  q_ = ai::computeGeometry(src, poni_[0], poni_[1], pixel_[0], pixel_[1], dist_, wavelength_);
+  std::array<T, 2> bounds = xt::minmax(q_)();
   q_min_ = bounds[0];
   q_max_ = bounds[1];
 }
 
 template<typename T>
-AzimuthalIntegrator<T>::AzimuthalIntegrator(double dist,
-                                            double poni1,
-                                            double poni2,
-                                            double pixel1,
-                                            double pixel2,
-                                            double wavelength)
-  : dist_(static_cast<value_type>(dist)),
-    poni_({static_cast<value_type>(poni1), static_cast<value_type>(poni2), 0}),
-    pixel_({static_cast<value_type>(pixel1), static_cast<value_type>(pixel2), 0}),
-    wavelength_(static_cast<value_type>(wavelength))
+AzimuthalIntegrator<T>::AzimuthalIntegrator(T dist, T poni1, T poni2, T pixel1, T pixel2, T wavelength)
+  : dist_(dist), poni_({poni1, poni2, 0}), pixel_({pixel1, pixel2, 0}), wavelength_(wavelength)
 {
 }
 
@@ -290,7 +324,7 @@ auto AzimuthalIntegrator<T>::integrate1d(E&& src,
   {
     case AzimuthalIntegrationMethod::HISTOGRAM:
     {
-      return histogramAI(std::forward<E>(src), q_, q_min_, q_max_, npt, min_count);
+      return ai::histogramAI(std::forward<E>(src), q_, q_min_, q_max_, npt, min_count);
     }
     default:
       throw std::runtime_error("Unknown azimuthal integration method");
@@ -318,7 +352,7 @@ auto AzimuthalIntegrator<T>::integrate1d(E&& src,
   {
     case AzimuthalIntegrationMethod::HISTOGRAM:
     {
-      return histogramAI(std::forward<E>(src), q_, q_min_, q_max_, npt, min_count);
+      return ai::histogramAI(std::forward<E>(src), q_, q_min_, q_max_, npt, min_count);
     }
     default:
       throw std::runtime_error("Unknown azimuthal integration method");
@@ -328,17 +362,20 @@ auto AzimuthalIntegrator<T>::integrate1d(E&& src,
 /**
  * class for finding the center of concentric rings in an image.
  */
+template<typename T = double>
 class ConcentricRingsFinder
 {
-  float pixel_x_; // pixel size in x direction
-  float pixel_y_; // pixel size in y direction
+  static_assert(std::is_floating_point<T>::value);
+
+  T pixel_x_; // pixel size in x direction
+  T pixel_y_; // pixel size in y direction
 
   template<typename E>
-  size_t estimateNPoints(const E& src, float cx, float cy) const;
+  size_t estimateNPoints(const E& src, T cx, T cy) const;
 
 public:
 
-  ConcentricRingsFinder(float pixel_x, float pixel_y);
+  ConcentricRingsFinder(T pixel_x, T pixel_y);
 
   ~ConcentricRingsFinder() = default;
 
@@ -353,28 +390,30 @@ public:
    * @return: the optimized (cx, cy) position in pixels.
    */
   template<typename E, EnableIf<std::decay_t<E>, IsImage> = false>
-  std::array<float, 2> search(E&& src, float cx0, float cy0, size_t min_count=1) const;
+  std::array<T, 2> search(E&& src, T cx0, T cy0, size_t min_count=1) const;
 
   template<typename E, EnableIf<std::decay_t<E>, IsImage> = false>
-  auto integrate(E&& src, float cx, float cy, size_t min_count=1) const;
+  auto integrate(E&& src, T cx, T cy, size_t min_count=1) const;
 };
 
-ConcentricRingsFinder::ConcentricRingsFinder(float pixel_x, float pixel_y)
+template<typename T>
+ConcentricRingsFinder<T>::ConcentricRingsFinder(T pixel_x, T pixel_y)
   : pixel_x_(pixel_x), pixel_y_(pixel_y)
 {
 }
 
+template<typename T>
 template<typename E>
-size_t ConcentricRingsFinder::estimateNPoints(const E& src, float cx, float cy) const
+size_t ConcentricRingsFinder<T>::estimateNPoints(const E& src, T cx, T cy) const
 {
   auto shape = src.shape();
-  auto h = static_cast<float>(shape[0]);
-  auto w = static_cast<float>(shape[1]);
+  auto h = static_cast<T>(shape[0]);
+  auto w = static_cast<T>(shape[1]);
 
-  float dx = cx - w;
-  float dy = cy - h;
-  float max_dist = std::sqrt(cx * cx + cy * cy);
-  float dist = std::sqrt(dx * dx + cy * cy);
+  T dx = cx - w;
+  T dy = cy - h;
+  T max_dist = std::sqrt(cx * cx + cy * cy);
+  T dist = std::sqrt(dx * dx + cy * cy);
   if (dist > max_dist) max_dist = dist;
   dist = std::sqrt(cx * cx + dy * dy);
   if (dist > max_dist) max_dist = dist;
@@ -384,12 +423,13 @@ size_t ConcentricRingsFinder::estimateNPoints(const E& src, float cx, float cy) 
   return static_cast<size_t>(dist / 2);
 }
 
+template<typename T>
 template<typename E, EnableIf<std::decay_t<E>, IsImage>>
-std::array<float, 2> ConcentricRingsFinder::search(E&& src, float cx0, float cy0, size_t min_count) const
+std::array<T, 2> ConcentricRingsFinder<T>::search(E&& src, T cx0, T cy0, size_t min_count) const
 {
-  float cx_max = cx0;
-  float cy_max = cy0;
-  float max_s = -1;
+  T cx_max = cx0;
+  T cy_max = cy0;
+  T max_s = -1.f;
   size_t npt = estimateNPoints(src, cx0, cy0);
 
   int initial_space = 10;
@@ -407,15 +447,15 @@ std::array<float, 2> ConcentricRingsFinder::search(E&& src, float cx0, float cy0
 #endif
         for (int j = -initial_space; j <= initial_space; ++j)
         {
-          float cx = cx0 + j;
-          float cy = cy0 + i;
-          float poni1 = cy * pixel_y_;
-          float poni2 = cx * pixel_x_;
+          T cx = cx0 + j;
+          T cy = cy0 + i;
+          T poni1 = cy * pixel_y_;
+          T poni2 = cx * pixel_x_;
 
-          auto ret = histogramAI<float>(src, poni1, poni2, pixel_y_, pixel_x_, npt, min_count);
+          auto ret = ai::histogramAI(src, poni1, poni2, pixel_y_, pixel_x_, npt, min_count);
 
-          std::array<float, 2> bounds = xt::minmax(ret.second)();
-          float curr_max = bounds[1];
+          auto bounds = xt::minmax(ret.second)();
+          auto curr_max = static_cast<T>(bounds[1]);
 
 #if defined(FOAM_USE_TBB)
           {
@@ -440,13 +480,14 @@ std::array<float, 2> ConcentricRingsFinder::search(E&& src, float cx0, float cy0
   return {cx_max, cy_max};
 }
 
+template<typename T>
 template<typename E, EnableIf<std::decay_t<E>, IsImage>>
-auto ConcentricRingsFinder::integrate(E&& src, float cx, float cy, size_t min_count) const
+auto ConcentricRingsFinder<T>::integrate(E&& src, T cx, T cy, size_t min_count) const
 {
   size_t npt = estimateNPoints(src, cx, cy);
 
   // FIXME: what if pixel x != pixel y
-  return histogramAI<float>(std::forward<E>(src), cy, cx, 1., 1., npt, min_count);
+  return ai::histogramAI(std::forward<E>(src), cy, cx, T(1.), T(1.), npt, min_count);
 }
 
 } //foam

@@ -4,9 +4,8 @@ import pytest
 
 import numpy as np
 
-from extra_data.stacking import StackView
-
 from pyfoamalgo.geometry import EPix100Geometry, JungFrauGeometry
+from pyfoamalgo.geometry.geometry_utils import StackView
 
 
 _geom_path = osp.join(osp.dirname(osp.abspath(__file__)), "../")

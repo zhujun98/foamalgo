@@ -4,10 +4,10 @@ import pytest
 
 import numpy as np
 
-from extra_data.stacking import StackView
 import extra_geom
 
 from pyfoamalgo.geometry import DSSC_1MGeometry, LPD_1MGeometry, AGIPD_1MGeometry
+from pyfoamalgo.geometry.geometry_utils import StackView
 
 _geom_path = osp.join(osp.dirname(osp.abspath(__file__)), "../")
 
