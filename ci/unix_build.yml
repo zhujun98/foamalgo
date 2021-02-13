@@ -14,8 +14,18 @@ steps:
       fi
       pip install -e .[test]
       python setup.py build_ext --inplace --with-tests
+    displayName: "Build"
+
+  - script: |
+      source activate foamalgo
+      export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
       python setup.py test -v
+    displayName: "Test"
+
+  - script: |
+      source activate foamalgo
+      export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
       if [[ $(BENCHMARK) == '1' ]]; then
         python setup.py benchmark -v
       fi
-    displayName: "Build and test"
+    displayName: "Benchmark"
