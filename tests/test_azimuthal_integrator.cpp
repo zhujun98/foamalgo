@@ -15,9 +15,7 @@
 
 #include "foamalgo/azimuthal_integrator.hpp"
 
-namespace foam
-{
-namespace test
+namespace foam::test
 {
 
 using ::testing::Each;
@@ -41,9 +39,6 @@ TEST(TestAzimuthalIntegrator, TestDataType)
 
   AzimuthalIntegrator<double> itgt_double(distance, poni1, poni2, pixel1, pixel2, wavelength);
   auto ret_double = itgt_float.integrate1d(src, 10);
-
-  AzimuthalIntegrator<int> itgt_int(distance, poni1, poni2, pixel1, pixel2, wavelength);
-  auto ret_int = itgt_float.integrate1d(src, 10);
 }
 
 TEST(TestAzimuthalIntegrator, TestIntegrator1D)
@@ -110,11 +105,9 @@ TEST(TestConcentricRingsFinder, TestGeneral)
   double cy = -6;
   size_t min_count = 32;
 
-  ConcentricRingsFinder finder(pixel_x, pixel_y);
+  ConcentricRingsFinder<float> finder(pixel_x, pixel_y);
   finder.search(src, cx, cy, min_count);
   finder.integrate(src, cx, cy, min_count);
 }
 
-} //test
-} //foam
-
+} //foam::test

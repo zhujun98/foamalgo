@@ -50,9 +50,13 @@ pyfoamalgo
     git clone https://github.com/zhujun98/foamalgo.git
 
     cd foamalgo
-    export CC=gcc-7 GXX=g++-7  # Specify the compiler in your system which supports C++17
+    export CC=gcc-8 GXX=g++-8  # Specify the compiler in your system which supports C++17
     export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
     pip install . -v
+
+.. warning::
+
+    There is a compiler bug related to GCC-7: https://github.com/xtensor-stack/xtensor/issues/2289.
 
 
 On the Maxwell cluster
