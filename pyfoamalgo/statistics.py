@@ -13,6 +13,8 @@ import numpy as np
 from .imageproc import mask_image_data, nanmeanImageArray
 from .lib.statistics import nanmean as _nanmean_cpp
 from .lib.statistics import nansum as _nansum_cpp
+from .lib.statistics import nanstd as _nanstd_cpp
+from .lib.statistics import nanvar as _nanvar_cpp
 
 __all__ = [
     'hist_with_stats',
@@ -70,6 +72,59 @@ def nanmean(a, axis=None):
     return np.nanmean(a, axis=axis)
 
 
+def nanstd(a, axis=None, *, normalized=False):
+    """Faster numpy.nanstd.
+
+    This is a wrapper over numpy.nanstd. It uses the C++ implementation
+    when applicable. Otherwise, it falls back to numpy.nanstd.
+
+    :param numpy.array a: Data array.
+    :param None/int/tuple axis: Axis or axes along which the standard
+        deviation is computed. The default is to compute the standard
+        deviation of the flattened array.
+    :param bool normalized: True for normalizing the result by nanmean
+        along the same axis or axes.
+    """
+    if a.dtype in _NAN_CPP_TYPES:
+        if axis is None:
+            ret = _nanstd_cpp(a)
+        else:
+            ret = _nanstd_cpp(a, axis=axis)
+    else:
+        ret = np.nanstd(a, axis=axis)
+
+    if normalized:
+        return ret / nanmean(a, axis=axis)
+    return ret
+
+
+def nanvar(a, axis=None, *, normalized=False):
+    """Faster numpy.nanvar.
+
+    This is a wrapper over numpy.nanvar. It uses the C++ implementation
+    when applicable. Otherwise, it falls back to numpy.nanvar.
+
+    :param numpy.array a: Data array.
+    :param None/int/tuple axis: Axis or axes along which the variance
+        is computed. The default is to compute the variance of the
+        flattened array.
+    :param bool normalized: True for normalizing the result by square of
+        nanmean along the same axis or axes.
+    """
+    if a.dtype in _NAN_CPP_TYPES:
+        if axis is None:
+            ret = _nanvar_cpp(a)
+        else:
+            ret = _nanvar_cpp(a, axis=axis)
+    else:
+        ret = np.nanvar(a, axis=axis)
+
+    if normalized:
+        return ret / nanmean(a, axis=axis) ** 2
+    return ret
+
+
+
 def quick_min_max(x, q=None):
     """Estimate the min/max values of input by down-sampling.
 
@@ -100,46 +155,6 @@ def quick_min_max(x, q=None):
     # caveat: nanquantile is about 30 times slower than nanmin/nanmax
     return np.nanquantile(x, 1 - q, interpolation='nearest'), \
            np.nanquantile(x, q, interpolation='nearest')
-
-
-def nanstd(a, axis=None, *, normalized=False):
-    """Faster numpy.nanstd.
-
-    # TODO:
-
-    This is a wrapper over numpy.nanstd. It uses the C++ implementation
-    when applicable. Otherwise, it falls back to numpy.nanstd.
-
-    :param numpy.array a: Data array.
-    :param None/int/tuple axis: Axis or axes along which the standard
-        deviation is computed. The default is to compute the standard
-        deviation of the flattened array.
-    :param bool normalized: True for normalizing the result by nanmean
-        along the same axis or axes.
-    """
-    if normalized:
-        return np.nanstd(a, axis=axis) / np.nanmean(a, axis=axis)
-    return np.nanstd(a, axis=axis)
-
-
-def nanvar(a, axis=None, *, normalized=False):
-    """Faster numpy.nanvar.
-
-    # TODO:
-
-    This is a wrapper over numpy.nanvar. It uses the C++ implementation
-    when applicable. Otherwise, it falls back to numpy.nanvar.
-
-    :param numpy.array a: Data array.
-    :param None/int/tuple axis: Axis or axes along which the variance
-        is computed. The default is to compute the variance of the
-        flattened array.
-    :param bool normalized: True for normalizing the result by square of
-        nanmean along the same axis or axes.
-    """
-    if normalized:
-        return np.nanvar(a, axis=axis) / np.nanmean(a, axis=axis) ** 2
-    return np.nanvar(a, axis=axis)
 
 
 def _get_outer_edges(arr, bin_range):

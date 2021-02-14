@@ -6,7 +6,7 @@ import numpy as np
 
 from pyfoamalgo.statistics import (
     hist_with_stats, nanhist_with_stats, compute_statistics, _get_outer_edges,
-    nanmean, nansum, quick_min_max
+    nanmean, nansum, nanstd, nanvar, quick_min_max
 )
 
 
@@ -67,7 +67,11 @@ class TestStatistics:
             self._assert_array_almost_equal(f_py(a3d, axis=(-2, -1)), f_cpp(a3d, axis=(-2, -1)))
             self._assert_array_almost_equal(f_py(a4d, axis=(-2, -1)), f_cpp(a4d, axis=(-2, -1)))
 
-    @pytest.mark.parametrize("f_cpp, f_py", [(nanmean, np.nanmean), (nansum, np.nansum)])
+    @pytest.mark.parametrize("f_cpp, f_py",
+                             [(nanmean, np.nanmean),
+                              (nansum, np.nansum),
+                              (nanstd, np.nanstd),
+                              (nanvar, np.nanvar)])
     def testCppStatisticsExtra(self, f_cpp, f_py):
         # Test automatically falling back to np.nansum/np.nanmean
         dtype = np.int64
