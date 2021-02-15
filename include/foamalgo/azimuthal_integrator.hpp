@@ -76,8 +76,7 @@ xt::xtensor<T, 2> computeGeometry(E&& src, T poni1, T poni2, T pixel1, T pixel2)
 template<typename T, typename E>
 xt::xtensor<T, 2> computeGeometry(E&& src, T poni1, T poni2, T pixel1, T pixel2, T dist, T wavelength)
 {
-  T four_pi_over_lambda = T(4.) * T(M_PI) / wavelength;
-  T dist2 = dist * dist;
+  T four_pi_over_lambda = T(4) * T(M_PI) / wavelength;
 
   auto shape = src.shape();
   xt::xtensor<T, 2> geometry = xt::zeros<T>(shape);
@@ -88,9 +87,9 @@ xt::xtensor<T, 2> computeGeometry(E&& src, T poni1, T poni2, T pixel1, T pixel2,
       T dx = static_cast<T>(j) * pixel2 - poni2;
       T dy = static_cast<T>(i) * pixel1 - poni1;
       // Convert radial distances (in meter) to momentum transfer q (in 1/meter).
-      // q = 4 * pi * sin(theta) / lambda
+      // q = 4 * pi * sin(2 * theta / 2.0) / lambda
       T tmp = std::sqrt(dx * dx + dy * dy);
-      geometry(i, j) = four_pi_over_lambda / std::sqrt(T(4.) * dist2 / (tmp * tmp) + T(1.));
+      geometry(i, j) = four_pi_over_lambda * std::sin(std::atan2(tmp, dist) / T(2));
     }
   }
 
