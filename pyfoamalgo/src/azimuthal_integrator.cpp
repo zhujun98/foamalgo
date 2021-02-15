@@ -15,6 +15,13 @@
 
 namespace py = pybind11;
 
+#define DECLARE_DTYPE_OVERLOAD(FUNCTOR) \
+  FUNCTOR(double)                       \
+  FUNCTOR(float)                        \
+  FUNCTOR(uint16_t)                     \
+  FUNCTOR(int16_t)
+
+
 template<typename T>
 void declareAzimuthalIntegrator(py::module& m)
 {
@@ -36,10 +43,7 @@ void declareAzimuthalIntegrator(py::module& m)
      py::arg("src").noconvert(), py::arg("npt"), py::arg("min_count")=1,                              \
      py::arg("method")=foam::AzimuthalIntegrationMethod::HISTOGRAM);
 
-  // for image data type at XFEL
-  AZIMUTHAL_INTEGRATE1D(float)
-  AZIMUTHAL_INTEGRATE1D(uint16_t)
-  AZIMUTHAL_INTEGRATE1D(int16_t)
+  DECLARE_DTYPE_OVERLOAD(AZIMUTHAL_INTEGRATE1D)
 
 #define AZIMUTHAL_INTEGRATE1D_PARA(DTYPE)                                                             \
   cls.def("integrate1d", (std::pair<foam::ReducedVectorType<xt::pytensor<DTYPE, 2>, T>,               \
@@ -50,9 +54,7 @@ void declareAzimuthalIntegrator(py::module& m)
      py::arg("src").noconvert(), py::arg("npt"), py::arg("min_count")=1,                              \
      py::arg("method")=foam::AzimuthalIntegrationMethod::HISTOGRAM);
 
-  AZIMUTHAL_INTEGRATE1D_PARA(float)
-  AZIMUTHAL_INTEGRATE1D_PARA(uint16_t)
-  AZIMUTHAL_INTEGRATE1D_PARA(int16_t)
+  DECLARE_DTYPE_OVERLOAD(AZIMUTHAL_INTEGRATE1D_PARA)
 }
 
 template<typename T>
@@ -71,21 +73,7 @@ void declareConcentricRingsFinder(py::module& m)
      &Finder::template search<const xt::pytensor<DTYPE, 2>&>,                                           \
      py::arg("src").noconvert(), py::arg("cx0"), py::arg("cy0"), py::arg("min_count") = 1);
 
-  CONCENTRIC_RING_FINDER_SEARCH(float)
-  CONCENTRIC_RING_FINDER_SEARCH(uint16_t)
-  CONCENTRIC_RING_FINDER_SEARCH(int16_t)
-
-
-#define CONCENTRIC_RING_FINDER_INTEGRATE(DTYPE)                                                         \
-  cls.def("integrate", (std::pair<foam::ReducedVectorType<xt::pytensor<DTYPE, 2>, T>,                   \
-                                  foam::ReducedVectorType<xt::pytensor<DTYPE, 2>, T>>                   \
-                        (Finder::*)(const xt::pytensor<DTYPE, 2>&, T, T, size_t) const)                 \
-     &Finder::template integrate<const xt::pytensor<DTYPE, 2>&>,                                        \
-     py::arg("src").noconvert(), py::arg("cx0"), py::arg("cy0"), py::arg("min_count") = 1);
-
-  CONCENTRIC_RING_FINDER_INTEGRATE(float)
-  CONCENTRIC_RING_FINDER_INTEGRATE(uint16_t)
-  CONCENTRIC_RING_FINDER_INTEGRATE(int16_t)
+  DECLARE_DTYPE_OVERLOAD(CONCENTRIC_RING_FINDER_SEARCH)
 }
 
 
