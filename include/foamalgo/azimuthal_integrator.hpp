@@ -104,7 +104,7 @@ void histogramAIImp(E1&& src, const E2& geometry, E3& hist, T q_min, T q_max, si
 {
   using value_type = typename std::decay_t<E3>::value_type;
 
-  value_type norm = value_type(1.) / (static_cast<value_type>(q_max) - static_cast<value_type>(q_min));
+  double norm = 1. / (static_cast<double>(q_max) - static_cast<double>(q_min));
   xt::xtensor<size_t, 1> counts = xt::zeros<size_t>({ n_bins });
 
   auto shape = src.shape();
@@ -112,7 +112,7 @@ void histogramAIImp(E1&& src, const E2& geometry, E3& hist, T q_min, T q_max, si
   {
     for (size_t j = 0; j < shape[1]; ++j)
     {
-      auto q = static_cast<value_type>(geometry(i, j));
+      auto q = static_cast<double>(geometry(i, j));
       auto v = static_cast<value_type>(src(i, j));
 
       if (std::isnan(v)) continue;
@@ -121,10 +121,10 @@ void histogramAIImp(E1&& src, const E2& geometry, E3& hist, T q_min, T q_max, si
       {
         hist(n_bins - 1) += v;
         counts(n_bins - 1) += 1;
-      } else if ( (q > q_min) && (q < q_max) )
+      } else if ( (q >= q_min) && (q < q_max) )
       {
         auto i_bin = static_cast<size_t>(
-          static_cast<value_type>(n_bins) * (q - static_cast<value_type>(q_min)) * norm);
+          static_cast<double>(n_bins) * (q - static_cast<double>(q_min)) * norm);
         hist(i_bin) += v;
         counts(i_bin) += 1;
       }
