@@ -258,7 +258,7 @@ public:
   ~AzimuthalIntegrator() = default;
 
   /**
-   * Perform 1D azimuthal integration for a single image.
+   * Calculate the azimuthal integration (1d) of an image.
    *
    * @param src: source image. Shape = (y, x)
    * @param npt: number of integration points.
@@ -272,7 +272,7 @@ public:
                    AzimuthalIntegrationMethod method=AzimuthalIntegrationMethod::HISTOGRAM);
 
   /**
-   * Perform 1D azimuthal integration for an array of images.
+   * Calculate the azimuthal integrations (1d) of an array of images.
    *
    * @param src: source image. Shape = (indices, y, x)
    * @param npt: number of integration points.
@@ -390,9 +390,6 @@ public:
    */
   template<typename E, EnableIf<std::decay_t<E>, IsImage> = false>
   std::array<T, 2> search(E&& src, T cx0, T cy0, size_t min_count=1) const;
-
-  template<typename E, EnableIf<std::decay_t<E>, IsImage> = false>
-  auto integrate(E&& src, T cx, T cy, size_t min_count=1) const;
 };
 
 template<typename T>
@@ -477,16 +474,6 @@ std::array<T, 2> ConcentricRingsFinder<T>::search(E&& src, T cx0, T cy0, size_t 
 #endif
 
   return {cx_max, cy_max};
-}
-
-template<typename T>
-template<typename E, EnableIf<std::decay_t<E>, IsImage>>
-auto ConcentricRingsFinder<T>::integrate(E&& src, T cx, T cy, size_t min_count) const
-{
-  size_t npt = estimateNPoints(src, cx, cy);
-
-  // FIXME: what if pixel x != pixel y
-  return ai::histogramAI(std::forward<E>(src), cy, cx, T(1.), T(1.), npt, min_count);
 }
 
 } //foam

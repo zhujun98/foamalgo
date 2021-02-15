@@ -26,7 +26,9 @@ static constexpr auto nan = std::numeric_limits<double>::quiet_NaN();
 
 TEST(TestAzimuthalIntegrator, TestDataType)
 {
-  xt::xtensor<float, 2> src = xt::arange(1024).reshape({16, 128});
+  xt::xtensor<double, 2> src_double = xt::arange(1024).reshape({16, 128});
+  xt::xtensor<float, 2> src_float = xt::arange(1024).reshape({16, 128});
+  xt::xtensor<int16_t, 2> src_int16 = xt::arange(1024).reshape({16, 128});
 
   double distance = 0.2;
   double pixel1 = 1e-4;
@@ -35,10 +37,28 @@ TEST(TestAzimuthalIntegrator, TestDataType)
   double poni2 = 130 * pixel2;
   double wavelength = 1e-10;
   AzimuthalIntegrator<float> itgt_float(distance, poni1, poni2, pixel1, pixel2, wavelength);
-  auto ret_float = itgt_float.integrate1d(src, 10);
+  auto ret_double = itgt_float.integrate1d(src_double, 10);
+  // value_type of the result is the same as the source if the source
+  // has a floating point value_type
+  bool flag = std::is_same_v<typename decltype(ret_double.first)::value_type, double>;
+  ASSERT_TRUE(flag);
+  flag = std::is_same_v<typename decltype(ret_double.second)::value_type, double>;
+  ASSERT_TRUE(flag);
 
   AzimuthalIntegrator<double> itgt_double(distance, poni1, poni2, pixel1, pixel2, wavelength);
-  auto ret_double = itgt_float.integrate1d(src, 10);
+  auto ret_float = itgt_double.integrate1d(src_float, 10);
+  flag = std::is_same_v<typename decltype(ret_float.first)::value_type, float>;
+  ASSERT_TRUE(flag);
+  flag = std::is_same_v<typename decltype(ret_float.second)::value_type, float>;
+  ASSERT_TRUE(flag);
+
+  // value_type of the result is the same as the template type of the integrator
+  // if the source does not have a floating point value_type
+  auto ret_int16 = itgt_double.integrate1d(src_int16, 10);
+  flag = std::is_same_v<typename decltype(ret_int16.first)::value_type, double>;
+  ASSERT_TRUE(flag);
+  flag = std::is_same_v<typename decltype(ret_int16.second)::value_type, double>;
+  ASSERT_TRUE(flag);
 }
 
 TEST(TestAzimuthalIntegrator, TestIntegrator1D)
@@ -107,7 +127,6 @@ TEST(TestConcentricRingsFinder, TestGeneral)
 
   ConcentricRingsFinder<float> finder(pixel_x, pixel_y);
   finder.search(src, cx, cy, min_count);
-  finder.integrate(src, cx, cy, min_count);
 }
 
 } //foam::test
