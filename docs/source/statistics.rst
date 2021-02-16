@@ -10,3 +10,5 @@ Statistics
 .. autofunction:: nanstd
 
 .. autofunction:: nanvar
+
+.. autofunction:: histogram1d

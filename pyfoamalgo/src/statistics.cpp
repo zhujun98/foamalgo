@@ -1,11 +1,9 @@
 /**
- * Distributed under the terms of the BSD 3-Clause License.
+ * Distributed under the terms of the GNU General Public License v3.0.
  *
- * The full license is in the file BSD_LICENSE, distributed with this software.
+ * The full license is in the file LICENSE, distributed with this software.
  *
- * Author: Jun Zhu <jun.zhu@xfel.eu>
- * Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
- * All rights reserved.
+ * Copyright (C) 2020, Jun Zhu. All rights reserved.
  */
 #include <vector>
 
@@ -56,5 +54,18 @@ PYBIND11_MODULE(statistics, m)
   FOAM_NAN_REDUCER(nanmean)
   FOAM_NAN_REDUCER(nanstd)
   FOAM_NAN_REDUCER(nanvar)
+
+
+#define FOAM_HISTOGRAM_IMP(VALUE_TYPE)                                                                \
+  m.def("histogram1d", [] (const xt::pytensor<VALUE_TYPE, 1>& src,                                    \
+                           VALUE_TYPE left,                                                           \
+                           VALUE_TYPE right,                                                          \
+                           size_t bins)                                                               \
+  {                                                                                                   \
+    return xt::histogram(src, left, right, bins);                                                     \
+  }, py::arg("src").noconvert(), py::arg("left"), py::arg("right"), py::arg("bins"));
+
+  FOAM_HISTOGRAM_IMP(float)
+  FOAM_HISTOGRAM_IMP(double)
 
 }

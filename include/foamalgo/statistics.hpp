@@ -12,6 +12,7 @@
 
 #include "xtensor/xview.hpp"
 #include "xtensor/xmath.hpp"
+#include "xtensor/xhistogram.hpp"
 
 #if defined(FOAM_USE_TBB)
 #include "tbb/parallel_for.h"
@@ -19,6 +20,25 @@
 #endif
 
 #include "traits.hpp"
+
+namespace xt
+{
+
+template <class E1, class E2>
+inline auto histogram(E1&& data, E2 left, E2 right, std::size_t bins = 10, bool density = false)
+{
+  using value_type = typename std::decay_t<E1>::value_type;
+
+  auto n = data.size();
+
+  return detail::histogram_imp(std::forward<E1>(data),
+                               histogram_bin_edges(data, left, right, bins),
+                               xt::ones<value_type>({ n }),
+                               density,
+                               true);
+}
+
+}
 
 
 namespace foam
