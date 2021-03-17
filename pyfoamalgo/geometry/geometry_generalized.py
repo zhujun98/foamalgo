@@ -13,9 +13,6 @@ from .geometry_base import _GeneralizedGeometryMixin
 from .geometry_utils import use_doc
 
 
-_IMAGE_DTYPE = np.float32
-
-
 class JungFrauGeometry(_GeneralizedGeometryMixin, _JungFrauGeometryCpp):
     """JungFrau geometry."""
     @classmethod

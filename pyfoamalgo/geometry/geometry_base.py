@@ -9,10 +9,8 @@ import abc
 
 import numpy as np
 
+from ..config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
 from .geometry_utils import use_doc
-
-
-_IMAGE_DTYPE = np.float32
 
 
 class _GeometryMixin:
@@ -21,7 +19,7 @@ class _GeometryMixin:
     The mixin class implements the API methods which have the same signatures
     as those implemented in EXtra-geom.
     """
-    def output_array_for_position_fast(self, extra_shape=(), dtype=_IMAGE_DTYPE):
+    def output_array_for_position_fast(self, extra_shape=(), dtype=IMAGE_DTYPE):
         """Make an array with the shape of assembled data filled with nan.
 
         :param tuple extra_shape: By default, a 2D array is generated to hold
@@ -31,7 +29,7 @@ class _GeometryMixin:
         :param numpy.dtype dtype: dtype of the output array.
         """
         shape = extra_shape + tuple(self.assembledShape())
-        if dtype == np.bool:
+        if dtype == bool:
             return np.full(shape, 0, dtype=dtype)
         return np.full(shape, np.nan, dtype=dtype)
 
@@ -54,7 +52,7 @@ class _GeometryMixin:
         pass
 
     @abc.abstractmethod
-    def output_array_for_dismantle_fast(self, extra_shape=(), dtype=_IMAGE_DTYPE):
+    def output_array_for_dismantle_fast(self, extra_shape=(), dtype=IMAGE_DTYPE):
         """Make an array with the shape of data in modules filled with nan.
 
         :param tuple extra_shape: By default, a 3D array is generated to hold
@@ -64,7 +62,7 @@ class _GeometryMixin:
         :param numpy.dtype dtype: dtype of the output array.
         """
         shape = extra_shape + (self.n_modules, *self.module_shape)
-        if dtype == np.bool:
+        if dtype == bool:
             return np.full(shape, 0, dtype=dtype)
         return np.full(shape, np.nan, dtype=dtype)
 

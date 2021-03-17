@@ -4,14 +4,12 @@ import pytest
 
 import numpy as np
 
+from pyfoamalgo.config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
+from pyfoamalgo.config import __XFEL_RAW_IMAGE_DTYPE__ as RAW_IMAGE_DTYPE
 from pyfoamalgo.geometry import EPix100Geometry, JungFrauGeometry
 from pyfoamalgo.geometry.geometry_utils import StackView
 
-
 _geom_path = osp.join(osp.dirname(osp.abspath(__file__)), "../")
-
-_IMAGE_DTYPE = np.float32
-_RAW_IMAGE_DTYPE = np.uint16
 
 
 class TestJungFrauGeometry:
@@ -35,7 +33,7 @@ class TestJungFrauGeometry:
         geom_file = osp.join(osp.expanduser("~"), "jungfrau.geom")
         try:
             cls.geom_32_cfel = JungFrauGeometry.from_crystfel_geom(
-                geom_file, n_rows=3, n_columns=2, module_numbers=(1, 2, 3, 6, 7, 8))
+                geom_file, n_rows=3, n_columns=2, module_numbers=[1, 2, 3, 6, 7, 8])
         except FileNotFoundError:
             module_coordinates = [
                 np.array([ 0.08452896,  0.07981445, 0.]),
@@ -49,43 +47,55 @@ class TestJungFrauGeometry:
             cls.geom_32_cfel = JungFrauGeometry(3, 2, module_coordinates)
         cls.cases.append((cls.geom_32_cfel, 6, (1607, 2260)))
 
-    @pytest.mark.parametrize("dtype", [np.float64, _IMAGE_DTYPE, _RAW_IMAGE_DTYPE, bool])
-    def testAssemblingArray(self, dtype):
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, RAW_IMAGE_DTYPE),
+                              (bool, bool)])
+    def testAssemblingArray(self, src_dtype, dst_dtype):
         for geom, n_modules, assembled_shape_gt in self.cases:
-            modules = np.ones((self.n_pulses, n_modules, *self.module_shape), dtype=dtype)
+            modules = np.ones((self.n_pulses, n_modules, *self.module_shape), dtype=src_dtype)
 
-            assembled = geom.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+            assembled = geom.output_array_for_position_fast((self.n_pulses,), dst_dtype)
             geom.position_all_modules(modules, assembled)
             assert assembled_shape_gt == assembled.shape[-2:]
 
             # test dismantle
-            dismantled = geom.output_array_for_dismantle_fast((self.n_pulses,), _IMAGE_DTYPE)
+            dismantled = geom.output_array_for_dismantle_fast((self.n_pulses,), dst_dtype)
             geom.dismantle_all_modules(assembled, dismantled)
             np.testing.assert_array_equal(modules, dismantled)
 
-    @pytest.mark.parametrize("dtype", [np.float64, _IMAGE_DTYPE, _RAW_IMAGE_DTYPE, bool])
-    def testAssemblingVector(self, dtype):
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, RAW_IMAGE_DTYPE),
+                              (bool, bool)])
+    def testAssemblingVector(self, src_dtype, dst_dtype):
         for geom, n_modules, assembled_shape_gt in self.cases:
             modules = StackView(
-                {i: np.ones((self.n_pulses, *self.module_shape), dtype=dtype) for i in range(n_modules)},
+                {i: np.ones((self.n_pulses, *self.module_shape), dtype=src_dtype) for i in range(n_modules)},
                 n_modules,
                 (self.n_pulses, ) + tuple(self.module_shape),
-                dtype,
+                src_dtype,
                 np.nan)
 
-            assembled = geom.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+            assembled = geom.output_array_for_position_fast((self.n_pulses,), dst_dtype)
             geom.position_all_modules(modules, assembled)
             assert assembled_shape_gt == assembled.shape[-2:]
 
-    @pytest.mark.parametrize("dtype", [_IMAGE_DTYPE, _RAW_IMAGE_DTYPE])
-    def testAssemblingArrayWithAsicEdgeIgnored(self, dtype):
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE)])
+    def testAssemblingArrayWithAsicEdgeIgnored(self, src_dtype, dst_dtype):
+        # the destination array must have a floating point dtype which allows nan
+
         ah, aw = self.asic_shape[0], self.asic_shape[1]
 
         # assembling with a geometry file is not tested
         for geom, n_modules, assembled_shape_gt in self.cases[:-1]:
-            modules = np.ones((self.n_pulses, n_modules, *self.module_shape), dtype=dtype)
+            modules = np.ones((self.n_pulses, n_modules, *self.module_shape), dtype=src_dtype)
 
-            assembled = geom.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+            assembled = geom.output_array_for_position_fast((self.n_pulses,), dst_dtype)
             geom.position_all_modules(modules, assembled, ignore_asic_edge=True)
 
             assert 0 == np.count_nonzero(~np.isnan(assembled[:, :, 0::aw]))
@@ -94,7 +104,8 @@ class TestJungFrauGeometry:
             assert 0 == np.count_nonzero(~np.isnan(assembled[:, ah - 1::ah, :]))
 
     def testMaskModule(self):
-        module1 = np.ones((self.n_pulses, *self.module_shape), dtype=_IMAGE_DTYPE)
+        module1 = np.ones((self.n_pulses, *self.module_shape),
+                          dtype=IMAGE_DTYPE)
         module2 = np.copy(module1)
 
         JungFrauGeometry.maskModule(module1)
@@ -127,48 +138,63 @@ class TestEPix100Geometry:
             (cls.geom_22_stack, 4, (1416, 1536)),
         ]
 
-    @pytest.mark.parametrize("dtype", [_IMAGE_DTYPE, _RAW_IMAGE_DTYPE, np.int16, bool])
-    def testAssemblingArray(self, dtype):
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE),
+                              (np.int16, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, RAW_IMAGE_DTYPE),
+                              (bool, bool)])
+    def testAssemblingArray(self, src_dtype, dst_dtype):
         for geom, n_modules, assembled_shape_gt in self.cases:
-            modules = np.ones((n_modules, *self.module_shape), dtype=dtype)
+            modules = np.ones((n_modules, *self.module_shape), dtype=src_dtype)
 
-            assembled = geom.output_array_for_position_fast(dtype=_IMAGE_DTYPE)
+            assembled = geom.output_array_for_position_fast(dtype=dst_dtype)
             geom.position_all_modules(modules, assembled)
             assert assembled_shape_gt == assembled.shape[-2:]
 
             # test dismantle
-            dismantled = geom.output_array_for_dismantle_fast(dtype=_IMAGE_DTYPE)
+            dismantled = geom.output_array_for_dismantle_fast(dtype=dst_dtype)
             geom.dismantle_all_modules(assembled, dismantled)
             np.testing.assert_array_equal(modules, dismantled)
 
-    @pytest.mark.parametrize("dtype", [_IMAGE_DTYPE, _RAW_IMAGE_DTYPE, np.int16, bool])
-    def testAssemblingVector(self, dtype):
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE),
+                              (np.int16, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, RAW_IMAGE_DTYPE),
+                              (bool, bool)])
+    def testAssemblingVector(self, src_dtype, dst_dtype):
         for geom, n_modules, assembled_shape_gt in self.cases:
             modules = StackView(
-                {i: np.ones(self.module_shape, dtype=dtype) for i in range(n_modules)},
+                {i: np.ones(self.module_shape, dtype=src_dtype) for i in range(n_modules)},
                 n_modules,
                 tuple(self.module_shape),
-                dtype,
+                src_dtype,
                 np.nan)
 
-            assembled = geom.output_array_for_position_fast(dtype=_IMAGE_DTYPE)
+            assembled = geom.output_array_for_position_fast(dtype=dst_dtype)
             geom.position_all_modules(modules, assembled)
             assert assembled_shape_gt == assembled.shape[-2:]
 
-    @pytest.mark.parametrize("dtype", [_IMAGE_DTYPE, _RAW_IMAGE_DTYPE, np.int16])
-    def testAssemblingWithAsicEdgeIgnored(self, dtype):
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE),
+                              (np.int16, IMAGE_DTYPE)])
+    def testAssemblingWithAsicEdgeIgnored(self, src_dtype, dst_dtype):
+        # the destination array must have a floating point dtype which allows nan
+
         mh, mw = self.module_shape[0], self.module_shape[1]
         for geom, n_modules, assembled_shape_gt in self.cases:
-            modules = np.ones((n_modules, *self.module_shape), dtype=dtype)
+            modules = np.ones((n_modules, *self.module_shape), dtype=src_dtype)
 
-            assembled = geom.output_array_for_position_fast(dtype=_IMAGE_DTYPE)
+            assembled = geom.output_array_for_position_fast(dtype=dst_dtype)
             geom.position_all_modules(modules, assembled, ignore_asic_edge=True)
             assert n_modules * mw * 2 == np.count_nonzero(np.isnan(assembled))
             assert 0 == np.count_nonzero(~np.isnan(assembled[0::mh, :]))
             assert 0 == np.count_nonzero(~np.isnan(assembled[mh - 1::mh, :]))
 
     def testMaskModule(self):
-        module1 = np.ones(self.module_shape, dtype=_IMAGE_DTYPE)
+        module1 = np.ones(self.module_shape, dtype=IMAGE_DTYPE)
         module2 = np.copy(module1)
 
         EPix100Geometry.maskModule(module1)

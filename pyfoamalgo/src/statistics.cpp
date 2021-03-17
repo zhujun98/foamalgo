@@ -67,6 +67,10 @@ PYBIND11_MODULE(statistics, m)
     return xt::histogram(src, bins, left, right);                                                     \
   }, py::arg("src").noconvert(), py::arg("left"), py::arg("right"), py::arg("bins"));
 
+  FOAM_HISTOGRAM_IMP(int)
+  FOAM_HISTOGRAM_IMP(unsigned int)
+  FOAM_HISTOGRAM_IMP(long long)
+  FOAM_HISTOGRAM_IMP(unsigned long long)
   FOAM_HISTOGRAM_IMP(float)
   FOAM_HISTOGRAM_IMP(double)
 

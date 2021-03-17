@@ -4,6 +4,7 @@ import math
 
 import numpy as np
 
+from pyfoamalgo.config import __NAN_DTYPES__, __ALL_DTYPES__
 from pyfoamalgo.statistics import (
     histogram1d, hist_with_stats, nanhist_with_stats, compute_statistics,
     _get_outer_edges, nanmean, nansum, nanstd, nanvar, nanmin, nanmax,
@@ -38,7 +39,7 @@ class TestStatistics:
         if isinstance(a, np.ndarray):
             assert a.dtype == b.dtype
 
-    @pytest.mark.parametrize("dtype", [np.float32, np.float64])
+    @pytest.mark.parametrize("dtype", __NAN_DTYPES__)
     @pytest.mark.parametrize("f_cpp, f_py",
                              [(nanmean, np.nanmean),
                               (nansum, np.nansum),
@@ -80,8 +81,9 @@ class TestStatistics:
                               (nanmin, np.nanmin),
                               (nanmax, np.nanmax)])
     def testCppStatisticsFallback(self, f_cpp, f_py):
-        # Test automatically falling back to np.nansum/np.nanmean
+        # Test automatically falling back to the numpy implementations
         dtype = np.int64
+        assert(dtype not in __NAN_DTYPES__)
 
         a1d = np.array([0, 1, 2], dtype=dtype)
         a2d = np.array([[0, 1, 2], [3, 6, 0]], dtype=dtype)
@@ -236,7 +238,7 @@ class TestStatistics:
         data = np.array([1, 1, 2, 1, 1])
         assert (1.2, 1.0, 0.4) == compute_statistics(data)
 
-    @pytest.mark.parametrize("dtype", [np.float32, np.float64, np.int64, np.uint16])
+    @pytest.mark.parametrize("dtype", __ALL_DTYPES__)
     def testHistogram1d(self, dtype):
         arr1d = (100 * np.random.rand(100)).astype(dtype)
         arr2d = arr1d.reshape((5, 20))
@@ -245,8 +247,7 @@ class TestStatistics:
             # Test default
             hist_np, edges_np = np.histogram(arr)
             hist, edges = histogram1d(arr)
-            # FIXME
-            np.testing.assert_array_almost_equal(hist_np[:-1], hist[:-1])
+            np.testing.assert_array_almost_equal(hist_np, hist)
             np.testing.assert_array_almost_equal(edges_np, edges)
             # assert hist_np.dtype == hist.dtype
             assert edges_np.dtype == edges.dtype

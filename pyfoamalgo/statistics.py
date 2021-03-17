@@ -16,6 +16,7 @@ from .lib.statistics import nanvar as _nanvar_cpp
 from .lib.statistics import nanmin as _nanmin_cpp
 from .lib.statistics import nanmax as _nanmax_cpp
 from .lib.statistics import histogram1d as _histogram1d_cpp
+from .config import __NAN_DTYPES__, __ALL_DTYPES__
 
 __all__ = [
     'hist_with_stats',
@@ -32,9 +33,6 @@ __all__ = [
 ]
 
 
-_NAN_CPP_TYPES = (np.float32, np.float64)
-
-
 def nansum(a, axis=None):
     """Faster numpy.nansum.
 
@@ -45,7 +43,7 @@ def nansum(a, axis=None):
     :param None/int/tuple axis: Axis or axes along which the sum is computed.
         The default is to compute the sum of the flattened array.
     """
-    if a.dtype in _NAN_CPP_TYPES:
+    if a.dtype in __NAN_DTYPES__:
         if axis is None:
             return _nansum_cpp(a)
         return _nansum_cpp(a, axis=axis)
@@ -66,7 +64,7 @@ def nanmean(a, axis=None):
     :param None/int/tuple axis: Axis or axes along which the mean is computed.
         The default is to compute the mean of the flattened array.
     """
-    if a.dtype in _NAN_CPP_TYPES:
+    if a.dtype in __NAN_DTYPES__:
         if axis == 0 and a.ndim == 3:
             return nanmeanImageArray(a)
         if axis is None:
@@ -89,7 +87,7 @@ def nanstd(a, axis=None, *, normalized=False):
     :param bool normalized: True for normalizing the result by nanmean
         along the same axis or axes.
     """
-    if a.dtype in _NAN_CPP_TYPES:
+    if a.dtype in __NAN_DTYPES__:
         if axis is None:
             ret = _nanstd_cpp(a)
         else:
@@ -115,7 +113,7 @@ def nanvar(a, axis=None, *, normalized=False):
     :param bool normalized: True for normalizing the result by square of
         nanmean along the same axis or axes.
     """
-    if a.dtype in _NAN_CPP_TYPES:
+    if a.dtype in __NAN_DTYPES__:
         if axis is None:
             ret = _nanvar_cpp(a)
         else:
@@ -138,7 +136,7 @@ def nanmin(a, axis=None):
     :param None/int/tuple axis: Axis or axes along which the mean is computed.
         The default is to compute the nanmin of the flattened array.
     """
-    if a.dtype in _NAN_CPP_TYPES:
+    if a.dtype in __NAN_DTYPES__:
         if axis is None:
             return _nanmin_cpp(a)
         return _nanmin_cpp(a, axis=axis)
@@ -156,7 +154,7 @@ def nanmax(a, axis=None):
     :param None/int/tuple axis: Axis or axes along which the mean is computed.
         The default is to compute the nanmax of the flattened array.
     """
-    if a.dtype in _NAN_CPP_TYPES:
+    if a.dtype in __NAN_DTYPES__:
         if axis is None:
             return _nanmax_cpp(a)
         return _nanmax_cpp(a, axis=axis)
@@ -181,7 +179,7 @@ def histogram1d(a, bins=10, range=None):
     if range is None:
         range = (a.min(), a.max())
 
-    if a.dtype in _NAN_CPP_TYPES:
+    if a.dtype in __ALL_DTYPES__:
         bin_edges = np.linspace(range[0], range[1], bins+1, dtype=a.dtype)
         return (_histogram1d_cpp(a.ravel(), range[0], range[1], bins),
                 bin_edges)
