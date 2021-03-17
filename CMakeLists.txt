@@ -53,7 +53,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/build_external_project.cmake)
 
 # tbb
 if(FOAM_USE_TBB OR XTENSOR_USE_TBB)
-    set(TBB_REQUIRED_VERSION 2020.2)
+    set(TBB_REQUIRED_VERSION 2020.3)
     string(REPLACE "." "_U" TBB_REQUIRED_VERSION_STR ${TBB_REQUIRED_VERSION})
 
     add_compile_definitions(TBB_SUPPRESS_DEPRECATED_MESSAGES)

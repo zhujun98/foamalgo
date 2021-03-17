@@ -185,6 +185,7 @@ if(NOT TBB_FOUND)
 
     if(TBB_INCLUDE_DIRS)
         if(EXISTS "${TBB_INCLUDE_DIRS}/oneapi/tbb/version.h")
+            # since version 2021.1
             file(READ "${TBB_INCLUDE_DIRS}/oneapi/tbb/version.h" _tbb_version_file)
         else()
             file(READ "${TBB_INCLUDE_DIRS}/tbb/tbb_stddef.h" _tbb_version_file)
