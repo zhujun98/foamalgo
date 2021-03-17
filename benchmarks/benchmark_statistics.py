@@ -54,8 +54,7 @@ def benchmark_histogram1d(f_cpp, f_py, shape, dtype):
     ret_py = f_py(data, bins=100)
     dt_py = time.perf_counter() - t0
 
-    # FIXME
-    np.testing.assert_allclose(ret_cpp[0][:-1], ret_py[0][:-1], rtol=1e-4)
+    np.testing.assert_allclose(ret_cpp[0], ret_py[0], rtol=1e-4)
     np.testing.assert_allclose(ret_cpp[1], ret_py[1], rtol=1e-4)
 
     print(f"\n----- {f_cpp.__name__} ------")
@@ -69,13 +68,12 @@ if __name__ == "__main__":
 
     s = (16, 1096, 1120)
 
-    for f_cpp, f_py in [(nansum, np.nansum),
-                        (nanmean, np.nanmean)]:
-        print(f"\n----- {f_cpp.__name__} ------")
-        benchmark_nan_without_axis(f_cpp, f_py, s, np.float32)
-        benchmark_nan_without_axis(f_cpp, f_py, s, np.float64)
-        benchmark_nan_keep_zero_axis(f_cpp, f_py, s, np.float32)
-        benchmark_nan_keep_zero_axis(f_cpp, f_py, s, np.float64)
+    for dtype in (np.float32, np.float64):
+        for f_cpp, f_py in [(nansum, np.nansum),
+                            (nanmean, np.nanmean)]:
+            print(f"\n----- {f_cpp.__name__} ------")
+            benchmark_nan_without_axis(f_cpp, f_py, s, dtype)
+            benchmark_nan_keep_zero_axis(f_cpp, f_py, s, dtype)
 
-    for dtype in [np.float64]:
-        benchmark_histogram1d(histogram1d, np.histogram, s, dtype)
+        for f_cpp, f_py in [(histogram1d, np.histogram)]:
+            benchmark_histogram1d(f_cpp, f_py, s, dtype)
