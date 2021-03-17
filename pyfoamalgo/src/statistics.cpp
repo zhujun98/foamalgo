@@ -54,6 +54,8 @@ PYBIND11_MODULE(statistics, m)
   FOAM_NAN_REDUCER(nanmean)
   FOAM_NAN_REDUCER(nanstd)
   FOAM_NAN_REDUCER(nanvar)
+  FOAM_NAN_REDUCER(nanmin)
+  FOAM_NAN_REDUCER(nanmax)
 
 
 #define FOAM_HISTOGRAM_IMP(VALUE_TYPE)                                                                \

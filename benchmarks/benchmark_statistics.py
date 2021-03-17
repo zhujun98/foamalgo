@@ -2,7 +2,9 @@ import time
 
 import numpy as np
 
-from pyfoamalgo import nanmean, nansum, nanstd, nanvar, histogram1d
+from pyfoamalgo import (
+    nanmean, nansum, nanstd, nanvar, nanmin, nanmax, histogram1d
+)
 
 
 def benchmark_nan_without_axis(f_cpp, f_py, shape, dtype):
@@ -70,7 +72,9 @@ if __name__ == "__main__":
 
     for dtype in (np.float32, np.float64):
         for f_cpp, f_py in [(nansum, np.nansum),
-                            (nanmean, np.nanmean)]:
+                            (nanmean, np.nanmean),
+                            (nanmin, np.nanmin),
+                            (nanmax, np.nanmax)]:
             print(f"\n----- {f_cpp.__name__} ------")
             benchmark_nan_without_axis(f_cpp, f_py, s, dtype)
             benchmark_nan_keep_zero_axis(f_cpp, f_py, s, dtype)

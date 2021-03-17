@@ -13,6 +13,8 @@ from .lib.statistics import nanmean as _nanmean_cpp
 from .lib.statistics import nansum as _nansum_cpp
 from .lib.statistics import nanstd as _nanstd_cpp
 from .lib.statistics import nanvar as _nanvar_cpp
+from .lib.statistics import nanmin as _nanmin_cpp
+from .lib.statistics import nanmax as _nanmax_cpp
 from .lib.statistics import histogram1d as _histogram1d_cpp
 
 __all__ = [
@@ -23,6 +25,8 @@ __all__ = [
     'nansum',
     'nanstd',
     'nanvar',
+    'nanmin',
+    'nanmax',
     'quick_min_max',
     'histogram1d',
 ]
@@ -122,6 +126,42 @@ def nanvar(a, axis=None, *, normalized=False):
     if normalized:
         return ret / nanmean(a, axis=axis) ** 2
     return ret
+
+
+def nanmin(a, axis=None):
+    """Faster numpy.nanmin.
+
+    It uses the C++ implementation when applicable. Otherwise, it falls
+    back to numpy.nanmin.
+
+    :param numpy.ndarray a: Data array.
+    :param None/int/tuple axis: Axis or axes along which the mean is computed.
+        The default is to compute the nanmin of the flattened array.
+    """
+    if a.dtype in _NAN_CPP_TYPES:
+        if axis is None:
+            return _nanmin_cpp(a)
+        return _nanmin_cpp(a, axis=axis)
+
+    return np.nanmin(a, axis=axis)
+
+
+def nanmax(a, axis=None):
+    """Faster numpy.nanmax.
+
+    It uses the C++ implementation when applicable. Otherwise, it falls
+    back to numpy.nanmax.
+
+    :param numpy.ndarray a: Data array.
+    :param None/int/tuple axis: Axis or axes along which the mean is computed.
+        The default is to compute the nanmax of the flattened array.
+    """
+    if a.dtype in _NAN_CPP_TYPES:
+        if axis is None:
+            return _nanmax_cpp(a)
+        return _nanmax_cpp(a, axis=axis)
+
+    return np.nanmax(a, axis=axis)
 
 
 def histogram1d(a, bins=10, range=None):

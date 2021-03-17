@@ -6,7 +6,8 @@ import numpy as np
 
 from pyfoamalgo.statistics import (
     histogram1d, hist_with_stats, nanhist_with_stats, compute_statistics,
-    _get_outer_edges, nanmean, nansum, nanstd, nanvar, quick_min_max
+    _get_outer_edges, nanmean, nansum, nanstd, nanvar, nanmin, nanmax,
+    quick_min_max
 )
 
 
@@ -38,7 +39,11 @@ class TestStatistics:
             assert a.dtype == b.dtype
 
     @pytest.mark.parametrize("dtype", [np.float32, np.float64])
-    @pytest.mark.parametrize("f_cpp, f_py", [(nanmean, np.nanmean), (nansum, np.nansum)])
+    @pytest.mark.parametrize("f_cpp, f_py",
+                             [(nanmean, np.nanmean),
+                              (nansum, np.nansum),
+                              (nanmin, np.nanmin),
+                              (nanmax, np.nanmax)])
     def testCppStatistics(self, f_cpp, f_py, dtype):
         a1d = np.array([np.nan, 1, 2], dtype=dtype)
         a2d = np.array([[np.nan, 1, 2], [3, 6, np.nan]], dtype=dtype)
@@ -71,8 +76,10 @@ class TestStatistics:
                              [(nanmean, np.nanmean),
                               (nansum, np.nansum),
                               (nanstd, np.nanstd),
-                              (nanvar, np.nanvar)])
-    def testCppStatisticsExtra(self, f_cpp, f_py):
+                              (nanvar, np.nanvar),
+                              (nanmin, np.nanmin),
+                              (nanmax, np.nanmax)])
+    def testCppStatisticsFallback(self, f_cpp, f_py):
         # Test automatically falling back to np.nansum/np.nanmean
         dtype = np.int64
 
