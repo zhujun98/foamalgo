@@ -62,7 +62,7 @@ PYBIND11_MODULE(statistics, m)
                            VALUE_TYPE right,                                                          \
                            size_t bins)                                                               \
   {                                                                                                   \
-    return xt::histogram(src, left, right, bins);                                                     \
+    return xt::histogram(src, bins, left, right);                                                     \
   }, py::arg("src").noconvert(), py::arg("left"), py::arg("right"), py::arg("bins"));
 
   FOAM_HISTOGRAM_IMP(float)
