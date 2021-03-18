@@ -6,7 +6,7 @@ jobs:
 
   strategy:
     matrix:
-      gcc7:
+      gcc8:
         CC: gcc-8
         CXX: g++-8
         PYTHON_VERSION: 3.7
