@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 
+from pyfoamalgo.config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
 from pyfoamalgo.geometry import stack_detector_modules
 
 
@@ -28,7 +29,7 @@ class TestStackDetectorModules:
     def test_stack_1M_detector(self):
         ppt_name = 'image.data'
         shape = (4, 1, 256, 256)
-        dtype = np.float32
+        dtype = IMAGE_DTYPE
         train_data = {
             'SPB_DET_AGIPD1M-1/DET/11CH0:xtdf':
                 {ppt_name: np.ones(shape, dtype=dtype)},
@@ -66,7 +67,7 @@ class TestStackDetectorModules:
             shape = module_shape + (n_cells,)
         else:
             shape = (n_cells,) + module_shape
-        dtype = np.float32
+        dtype = IMAGE_DTYPE
         train_data = {
             'FXE_XAD_JF1M/DET/RECEIVER-1:daqOutput':
                 {ppt_name: np.ones(shape, dtype=dtype)},
@@ -88,7 +89,7 @@ class TestStackDetectorModules:
     def test_stack_generalized_detector_ts(self, memory_cell_last):
         ppt_name = 'data.image.pixels'
         shape = (708, 768)
-        dtype = np.float32
+        dtype = IMAGE_DTYPE
         train_data = {
             'MID_EXP_EPIX-1/DET/RECEIVER:daqOutput':
                 {ppt_name: np.ones(shape, dtype=dtype)},

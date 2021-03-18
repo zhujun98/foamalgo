@@ -50,7 +50,7 @@ pyfoamalgo
     git clone https://github.com/zhujun98/foamalgo.git
 
     cd foamalgo
-    export CC=gcc-8 GXX=g++-8  # Specify the compiler in your system which supports C++17
+    export CC=gcc-9 CXX=g++-9  # Specify the compiler in your system which supports C++17
     export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
     pip install . -v
 

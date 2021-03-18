@@ -12,11 +12,11 @@ import time
 
 import numpy as np
 
+from pyfoamalgo.config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
+from pyfoamalgo.config import __XFEL_RAW_IMAGE_DTYPE__ as RAW_IMAGE_DTYPE
 
-_IMAGE_DTYPE = np.float32
-_RAW_IMAGE_DTYPE = np.uint16
-
-_data_sources = [(_RAW_IMAGE_DTYPE, 'raw'), (_IMAGE_DTYPE, 'calibrated')]
+_data_sources = [(RAW_IMAGE_DTYPE, 'raw'),
+                 (IMAGE_DTYPE, 'calibrated')]
 
 _geom_path = osp.join(osp.dirname(osp.abspath(__file__)), "../pyfoamalgo/geometry")
 
@@ -36,7 +36,7 @@ def _benchmark_1m_imp(geom_fast_cls, geom_cls, geom_file, quad_positions=None):
             geom = geom_cls.from_h5_file_and_quad_positions(geom_file, quad_positions)
         else:
             geom = geom_cls.from_crystfel_geom(geom_file)
-        assembled = geom.output_array_for_position_fast((n_pulses,), dtype=_IMAGE_DTYPE)
+        assembled = geom.output_array_for_position_fast((n_pulses,), dtype=IMAGE_DTYPE)
         t0 = time.perf_counter()
         geom.position_all_modules(modules, out=assembled)
         dt_geom = time.perf_counter() - t0
@@ -44,7 +44,7 @@ def _benchmark_1m_imp(geom_fast_cls, geom_cls, geom_file, quad_positions=None):
         # stack only
 
         geom = geom_fast_cls()
-        assembled = np.full((n_pulses, *geom.assembledShape()), np.nan, dtype=_IMAGE_DTYPE)
+        assembled = np.full((n_pulses, *geom.assembledShape()), np.nan, dtype=IMAGE_DTYPE)
         t0 = time.perf_counter()
         geom.position_all_modules(modules, assembled)
         dt_foam_stack = time.perf_counter() - t0
@@ -55,7 +55,7 @@ def _benchmark_1m_imp(geom_fast_cls, geom_cls, geom_file, quad_positions=None):
             geom = geom_fast_cls.from_h5_file_and_quad_positions(geom_file, quad_positions)
         else:
             geom = geom_fast_cls.from_crystfel_geom(geom_file)
-        assembled = np.full((n_pulses, *geom.assembledShape()), np.nan, dtype=_IMAGE_DTYPE)
+        assembled = np.full((n_pulses, *geom.assembledShape()), np.nan, dtype=IMAGE_DTYPE)
         t0 = time.perf_counter()
         geom.position_all_modules(modules, assembled)
         dt_foam = time.perf_counter() - t0
@@ -64,7 +64,7 @@ def _benchmark_1m_imp(geom_fast_cls, geom_cls, geom_file, quad_positions=None):
               f"  dt (foam stack only): {dt_foam_stack:.4f}, dt (foam): {dt_foam:.4f}, "
               f"dt (geom): {dt_geom:.4f}")
 
-        if modules.dtype == _IMAGE_DTYPE:
+        if modules.dtype == IMAGE_DTYPE:
             t0 = time.perf_counter()
             geom.dismantle_all_modules(assembled, modules)
             dt_foam_dismantle = time.perf_counter() - t0
@@ -121,7 +121,7 @@ def benchmark_jungfrau():
         n_pulses = 16
         modules = np.ones((n_pulses, n_row * n_col, *geom.module_shape), dtype=from_dtype)
 
-        assembled = geom.output_array_for_position_fast((n_pulses,), _IMAGE_DTYPE)
+        assembled = geom.output_array_for_position_fast((n_pulses,), IMAGE_DTYPE)
 
         t0 = time.perf_counter()
         geom.position_all_modules(modules, assembled)
@@ -130,7 +130,7 @@ def benchmark_jungfrau():
         print(f"\nposition all modules for JungFrauGeometry (from {from_str} data) - \n"
               f"  dt (foam stack only): {dt_assemble:.4f}")
 
-        if modules.dtype == _IMAGE_DTYPE:
+        if modules.dtype == IMAGE_DTYPE:
             t0 = time.perf_counter()
             geom.dismantle_all_modules(assembled, modules)
             dt_dismantle = time.perf_counter() - t0
@@ -138,7 +138,7 @@ def benchmark_jungfrau():
             print(f"\ndismantle all modules for JungFrauGeometry (from {from_str} data) - \n"
                   f"  dt (foam stack only): {dt_dismantle:.4f}")
 
-    module = np.ones((n_pulses, *geom.module_shape), dtype=_IMAGE_DTYPE)
+    module = np.ones((n_pulses, *geom.module_shape), dtype=IMAGE_DTYPE)
     t0 = time.perf_counter()
     JungFrauGeometryFast.maskModule(module)
     dt_mask_cpp = time.perf_counter() - t0
@@ -153,7 +153,7 @@ def benchmark_jungfrau():
             module[..., :, j * aw] = np.nan
             module[..., :, (j + 1) * aw - 1] = np.nan
 
-    module = np.ones((n_pulses, *geom.module_shape), dtype=_IMAGE_DTYPE)
+    module = np.ones((n_pulses, *geom.module_shape), dtype=IMAGE_DTYPE)
     t0 = time.perf_counter()
     _mask_module_py(module)
     dt_mask_py = time.perf_counter() - t0

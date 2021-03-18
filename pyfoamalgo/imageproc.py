@@ -127,7 +127,7 @@ def mask_image_data(data, *,
         if data.ndim == 3:
             raise ValueError("'arr' must be 2D when 'out' is specified!")
 
-        if out.dtype != np.bool:
+        if out.dtype != bool:
             raise ValueError("Type of 'out' must be bool!")
 
         if image_mask is None:

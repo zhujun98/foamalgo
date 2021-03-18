@@ -17,9 +17,6 @@ from .geometry_base import _1MGeometryMixin
 from .geometry_utils import use_doc
 
 
-_IMAGE_DTYPE = np.float32
-
-
 class DSSC_1MGeometry(_1MGeometryMixin, _DSSC_1MGeometryCpp):
     """Geometry for DSSC 1M."""
     @classmethod

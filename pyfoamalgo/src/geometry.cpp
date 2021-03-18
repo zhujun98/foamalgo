@@ -1,11 +1,9 @@
 /**
- * Distributed under the terms of the BSD 3-Clause License.
+ * Distributed under the terms of the GNU General Public License v3.0.
  *
- * The full license is in the file BSD_LICENSE, distributed with this software.
+ * The full license is in the file LICENSE, distributed with this software.
  *
- * Author: Jun Zhu <jun.zhu@xfel.eu>
- * Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
- * All rights reserved.
+ * Copyright (C) 2020, Jun Zhu. All rights reserved.
  */
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
@@ -59,11 +57,9 @@ void declareGeometry(py::module &m, const std::string& detector_name)
     &Geometry::positionAllModules,                                                                               \
     py::arg("src").noconvert(), py::arg("dst").noconvert(), py::arg("ignore_asic_edge") = false);
 
-  FOAM_POSITION_ALL_MODULES(double, float)
   FOAM_POSITION_ALL_MODULES(float, float)
   FOAM_POSITION_ALL_MODULES(uint16_t, float)
   FOAM_POSITION_ALL_MODULES(int16_t, float) // for ePix100
-  FOAM_POSITION_ALL_MODULES(bool, float)
   FOAM_POSITION_ALL_MODULES(uint16_t, uint16_t)
   FOAM_POSITION_ALL_MODULES(bool, bool)
 
@@ -88,6 +84,7 @@ void declareGeometry(py::module &m, const std::string& detector_name)
     py::arg("src").noconvert(), py::arg("dst").noconvert());
 
   FOAM_DISMANTLE_ALL_MODULES(float, float)
+  FOAM_DISMANTLE_ALL_MODULES(uint16_t, float)
   FOAM_DISMANTLE_ALL_MODULES(uint16_t, uint16_t)
   FOAM_DISMANTLE_ALL_MODULES(bool, bool)
 }

@@ -6,92 +6,115 @@ import numpy as np
 
 import extra_geom
 
+from pyfoamalgo.config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
+from pyfoamalgo.config import __XFEL_RAW_IMAGE_DTYPE__ as RAW_IMAGE_DTYPE
 from pyfoamalgo.geometry import DSSC_1MGeometry, LPD_1MGeometry, AGIPD_1MGeometry
 from pyfoamalgo.geometry.geometry_utils import StackView
 
 _geom_path = osp.join(osp.dirname(osp.abspath(__file__)), "../")
 
-_IMAGE_DTYPE = np.float32
-_RAW_IMAGE_DTYPE = np.uint16
+# Note:: When initializing the output array in `output_array_for_position_fast`,
+#        there is a bug in extra_geom when the dtype is bool.
 
 
 class _Test1MGeometryMixin:
-    @pytest.mark.parametrize("dtype", [_IMAGE_DTYPE, _RAW_IMAGE_DTYPE, bool])
-    def testAssemblingNoPulse(self, dtype):
-        modules = np.ones((self.n_modules, *self.module_shape), dtype=dtype)
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, RAW_IMAGE_DTYPE),
+                              (bool, bool)])
+    def testAssemblingNoPulse(self, src_dtype, dst_dtype):
+        modules = np.ones((self.n_modules, *self.module_shape), dtype=src_dtype)
 
-        out_stack = self.geom_stack.output_array_for_position_fast(dtype=_IMAGE_DTYPE)
+        out_stack = self.geom_stack.output_array_for_position_fast(dtype=dst_dtype)
         self.geom_stack.position_all_modules(modules, out_stack)
 
         assert (1024, 1024) == out_stack.shape[-2:]
 
-        out_fast = self.geom_fast.output_array_for_position_fast(dtype=_IMAGE_DTYPE)
+        out_fast = self.geom_fast.output_array_for_position_fast(dtype=dst_dtype)
         self.geom_fast.position_all_modules(modules, out_fast)
 
-        out_gt = self.geom.output_array_for_position_fast(dtype=_IMAGE_DTYPE)
+        out_gt = self.geom.output_array_for_position_fast(dtype=dst_dtype)
         self.geom.position_all_modules(modules, out_gt)
 
         assert out_gt.shape == out_fast.shape
-        np.testing.assert_array_equal(out_fast, out_gt)
+        if dst_dtype != bool:
+            np.testing.assert_array_equal(out_fast, out_gt)
 
         # test dismantle
-        dismantled_out = self.geom_fast.output_array_for_dismantle_fast(dtype=_IMAGE_DTYPE)
+        dismantled_out = self.geom_fast.output_array_for_dismantle_fast(dtype=dst_dtype)
         self.geom_fast.dismantle_all_modules(out_fast, dismantled_out)
 
-        np.testing.assert_array_equal(modules, dismantled_out)
+        if dst_dtype != bool:
+            np.testing.assert_array_equal(modules, dismantled_out)
 
-    @pytest.mark.parametrize("dtype", [_IMAGE_DTYPE, _RAW_IMAGE_DTYPE, bool])
-    def testAssemblingArray(self, dtype):
-        modules = np.ones((self.n_pulses, self.n_modules, *self.module_shape), dtype=dtype)
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, RAW_IMAGE_DTYPE),
+                              (bool, bool)])
+    def testAssemblingArray(self, src_dtype, dst_dtype):
+        modules = np.ones((self.n_pulses, self.n_modules, *self.module_shape), dtype=src_dtype)
 
-        out_stack = self.geom_stack.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+        out_stack = self.geom_stack.output_array_for_position_fast((self.n_pulses,), dst_dtype)
         self.geom_stack.position_all_modules(modules, out_stack)
 
         assert (1024, 1024) == out_stack.shape[-2:]
 
-        out_fast = self.geom_fast.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+        out_fast = self.geom_fast.output_array_for_position_fast((self.n_pulses,), dst_dtype)
         self.geom_fast.position_all_modules(modules, out_fast)
 
-        out_gt = self.geom.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+        out_gt = self.geom.output_array_for_position_fast((self.n_pulses,), dst_dtype)
         self.geom.position_all_modules(modules, out_gt)
 
         assert out_gt.shape == out_fast.shape
-        np.testing.assert_array_equal(out_fast, out_gt)
+        if dst_dtype != bool:
+            np.testing.assert_array_equal(out_fast, out_gt)
 
         # test dismantle
-        dismantled_out = self.geom_fast.output_array_for_dismantle_fast((self.n_pulses,), dtype=_IMAGE_DTYPE)
+        dismantled_out = self.geom_fast.output_array_for_dismantle_fast((self.n_pulses,), dtype=dst_dtype)
         self.geom_fast.dismantle_all_modules(out_fast, dismantled_out)
 
-        np.testing.assert_array_equal(modules, dismantled_out)
+        if dst_dtype != bool:
+            np.testing.assert_array_equal(modules, dismantled_out)
 
-    @pytest.mark.parametrize("dtype", [_IMAGE_DTYPE, _RAW_IMAGE_DTYPE, bool])
-    def testAssemblingVector(self, dtype):
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, RAW_IMAGE_DTYPE),
+                              (bool, bool)])
+    def testAssemblingVector(self, src_dtype, dst_dtype):
         modules = StackView(
-            {i: np.ones((self.n_pulses, *self.module_shape), dtype=dtype) for i in range(self.n_modules)},
+            {i: np.ones((self.n_pulses, *self.module_shape), dtype=src_dtype) for i in range(self.n_modules)},
             self.n_modules,
             (self.n_pulses, ) + tuple(self.module_shape),
-            dtype,
+            src_dtype,
             np.nan)
 
-        out_stack = self.geom_stack.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+        out_stack = self.geom_stack.output_array_for_position_fast((self.n_pulses,), dst_dtype)
         self.geom_stack.position_all_modules(modules, out_stack)
 
         assert (1024, 1024) == out_stack.shape[-2:]
 
-        out_fast = self.geom_fast.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+        out_fast = self.geom_fast.output_array_for_position_fast((self.n_pulses,), dst_dtype)
         self.geom_fast.position_all_modules(modules, out_fast)
 
-        out_gt = self.geom.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+        out_gt = self.geom.output_array_for_position_fast((self.n_pulses,), dst_dtype)
         self.geom.position_all_modules(modules, out_gt)
 
         assert out_gt.shape == out_fast.shape
-        np.testing.assert_equal(out_fast, out_gt)
+        if dst_dtype != bool:
+            np.testing.assert_equal(out_fast, out_gt)
 
-    @pytest.mark.parametrize("dtype", [_IMAGE_DTYPE, _RAW_IMAGE_DTYPE])
-    def testAssemblingArrayWithTileEdgeIgnored(self, dtype):
-        modules = np.ones((self.n_pulses, self.n_modules, *self.module_shape), dtype=dtype)
+    @pytest.mark.parametrize("src_dtype,dst_dtype",
+                             [(IMAGE_DTYPE, IMAGE_DTYPE),
+                              (RAW_IMAGE_DTYPE, IMAGE_DTYPE)])
+    def testAssemblingArrayWithTileEdgeIgnored(self, src_dtype, dst_dtype):
+        # the destination array must have a floating point dtype which allows nan
 
-        out_stack = self.geom_stack.output_array_for_position_fast((self.n_pulses,), _IMAGE_DTYPE)
+        modules = np.ones((self.n_pulses, self.n_modules, *self.module_shape), dtype=src_dtype)
+
+        out_stack = self.geom_stack.output_array_for_position_fast((self.n_pulses,), dst_dtype)
         # TODO: test ignore_tile_edge = False
         self.geom_stack.position_all_modules(modules, out_stack, ignore_tile_edge=True)
 

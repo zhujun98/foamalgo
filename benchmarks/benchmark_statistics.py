@@ -2,6 +2,7 @@ import time
 
 import numpy as np
 
+from pyfoamalgo.config import __NAN_DTYPES__
 from pyfoamalgo import (
     nanmean, nansum, nanstd, nanvar, nanmin, nanmax, histogram1d
 )
@@ -70,7 +71,7 @@ if __name__ == "__main__":
 
     s = (16, 1096, 1120)
 
-    for dtype in (np.float32, np.float64):
+    for dtype in __NAN_DTYPES__:
         for f_cpp, f_py in [(nansum, np.nansum),
                             (nanmean, np.nanmean),
                             (nanmin, np.nanmin),

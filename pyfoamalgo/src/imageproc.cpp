@@ -1,11 +1,9 @@
 /**
- * Distributed under the terms of the BSD 3-Clause License.
+ * Distributed under the terms of the GNU General Public License v3.0.
  *
- * The full license is in the file BSD_LICENSE, distributed with this software.
+ * The full license is in the file LICENSE, distributed with this software.
  *
- * Author: Jun Zhu <jun.zhu@xfel.eu>
- * Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
- * All rights reserved.
+ * Copyright (C) 2020, Jun Zhu. All rights reserved.
  */
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
@@ -41,11 +39,8 @@ PYBIND11_MODULE(imageproc, m)
     { return nanmeanImageArray(src1, src2); },                                                  \
     py::arg("src1").noconvert(), py::arg("src2").noconvert());
 
-  FOAM_NANMEAN_IMAGE_ARRAY_IMPL(double)
   FOAM_NANMEAN_IMAGE_ARRAY_IMPL(float)
-  FOAM_NANMEAN_IMAGE_ARRAY_WITH_FILTER_IMPL(double)
   FOAM_NANMEAN_IMAGE_ARRAY_WITH_FILTER_IMPL(float)
-  FOAM_NANMEAN_IMAGE_ARRAY_BINARY_IMPL(double)
   FOAM_NANMEAN_IMAGE_ARRAY_BINARY_IMPL(float)
 
 #define FOAM_MOVING_AVG_IMAGE_DATA_IMPL(VALUE_TYPE, N_DIM)                                     \
@@ -53,9 +48,7 @@ PYBIND11_MODULE(imageproc, m)
     &movingAvgImageData<xt::pytensor<VALUE_TYPE, N_DIM>>,                                      \
     py::arg("src").noconvert(), py::arg("data").noconvert(), py::arg("count"));
 
-  FOAM_MOVING_AVG_IMAGE_DATA_IMPL(double, 2)
   FOAM_MOVING_AVG_IMAGE_DATA_IMPL(float, 2)
-  FOAM_MOVING_AVG_IMAGE_DATA_IMPL(double, 3)
   FOAM_MOVING_AVG_IMAGE_DATA_IMPL(float, 3)
 
   //
@@ -67,7 +60,6 @@ PYBIND11_MODULE(imageproc, m)
     &imageDataNanMask<xt::pytensor<VALUE_TYPE, N_DIM>, xt::pytensor<bool, N_DIM>>,            \
     py::arg("src").noconvert(), py::arg("out").noconvert());
 
-  FOAM_IMAGE_DATA_NAN_MASK_IMPL(double, 2)
   FOAM_IMAGE_DATA_NAN_MASK_IMPL(float, 2)
 
 #define FOAM_MASK_IMAGE_DATA_IMPL(FUNCTOR, VALUE_TYPE, N_DIM)                                 \
@@ -75,9 +67,7 @@ PYBIND11_MODULE(imageproc, m)
     &FUNCTOR<xt::pytensor<VALUE_TYPE, N_DIM>>, py::arg("src").noconvert());
 
 #define FOAM_MASK_IMAGE_DATA(FUNCTOR)                                                         \
-  FOAM_MASK_IMAGE_DATA_IMPL(FUNCTOR, double, 2)                                               \
   FOAM_MASK_IMAGE_DATA_IMPL(FUNCTOR, float, 2)                                                \
-  FOAM_MASK_IMAGE_DATA_IMPL(FUNCTOR, double, 3)                                               \
   FOAM_MASK_IMAGE_DATA_IMPL(FUNCTOR, float, 3)
 
   FOAM_MASK_IMAGE_DATA(maskImageDataZero)
@@ -90,9 +80,7 @@ PYBIND11_MODULE(imageproc, m)
     py::arg("src").noconvert(), py::arg("lb"), py::arg("ub"));
 
 #define FOAM_MASK_IMAGE_DATA_THRESHOLD(FUNCTOR)                                              \
-  FOAM_MASK_IMAGE_DATA_THRESHOLD_IMPL(FUNCTOR, double, 2)                                    \
   FOAM_MASK_IMAGE_DATA_THRESHOLD_IMPL(FUNCTOR, float, 2)                                     \
-  FOAM_MASK_IMAGE_DATA_THRESHOLD_IMPL(FUNCTOR, double, 3)                                    \
   FOAM_MASK_IMAGE_DATA_THRESHOLD_IMPL(FUNCTOR, float, 3)
 
   FOAM_MASK_IMAGE_DATA_THRESHOLD(maskImageDataZero)
@@ -105,7 +93,6 @@ PYBIND11_MODULE(imageproc, m)
     py::arg("src").noconvert(), py::arg("lb"), py::arg("ub"), py::arg("out").noconvert());
 
 #define FOAM_MASK_IMAGE_DATA_THRESHOLD_WITH_OUT(FUNCTOR)                                              \
-  FOAM_MASK_IMAGE_DATA_THRESHOLD_WITH_OUT_IMPL(FUNCTOR, double, 2)                                    \
   FOAM_MASK_IMAGE_DATA_THRESHOLD_WITH_OUT_IMPL(FUNCTOR, float, 2)
 
   FOAM_MASK_IMAGE_DATA_THRESHOLD_WITH_OUT(maskImageDataZero)
@@ -118,9 +105,7 @@ PYBIND11_MODULE(imageproc, m)
     py::arg("src").noconvert(), py::arg("mask").noconvert());
 
 #define FOAM_MASK_IMAGE_DATA_IMAGE(FUNCTOR)                                                \
-  FOAM_MASK_IMAGE_DATA_IMAGE_IMPL(FUNCTOR, double, 2)                                      \
   FOAM_MASK_IMAGE_DATA_IMAGE_IMPL(FUNCTOR, float, 2)                                       \
-  FOAM_MASK_IMAGE_DATA_IMAGE_IMPL(FUNCTOR, double, 3)                                      \
   FOAM_MASK_IMAGE_DATA_IMAGE_IMPL(FUNCTOR, float, 3)
 
   FOAM_MASK_IMAGE_DATA_IMAGE(maskImageDataZero)
@@ -133,7 +118,6 @@ PYBIND11_MODULE(imageproc, m)
     py::arg("src").noconvert(), py::arg("mask").noconvert(), py::arg("out").noconvert());
 
 #define FOAM_MASK_IMAGE_DATA_IMAGE_WITH_OUT(FUNCTOR)                                                \
-  FOAM_MASK_IMAGE_DATA_IMAGE_WITH_OUT_IMPL(FUNCTOR, double, 2)                                      \
   FOAM_MASK_IMAGE_DATA_IMAGE_WITH_OUT_IMPL(FUNCTOR, float, 2)
 
   FOAM_MASK_IMAGE_DATA_IMAGE_WITH_OUT(maskImageDataZero)
@@ -146,9 +130,7 @@ PYBIND11_MODULE(imageproc, m)
     py::arg("src").noconvert(), py::arg("mask").noconvert(), py::arg("lb"), py::arg("ub"));
 
 #define FOAM_MASK_IMAGE_DATA_BOTH(FUNCTOR)                                                \
-  FOAM_MASK_IMAGE_DATA_BOTH_IMPL(FUNCTOR, double, 2)                                      \
   FOAM_MASK_IMAGE_DATA_BOTH_IMPL(FUNCTOR, float, 2)                                       \
-  FOAM_MASK_IMAGE_DATA_BOTH_IMPL(FUNCTOR, double, 3)                                      \
   FOAM_MASK_IMAGE_DATA_BOTH_IMPL(FUNCTOR, float, 3)
 
   FOAM_MASK_IMAGE_DATA_BOTH(maskImageDataZero)
@@ -161,7 +143,6 @@ PYBIND11_MODULE(imageproc, m)
     py::arg("src").noconvert(), py::arg("mask").noconvert(), py::arg("lb"), py::arg("ub"), py::arg("out").noconvert());
 
 #define FOAM_MASK_IMAGE_DATA_BOTH_WITH_OUT(FUNCTOR)                                                \
-  FOAM_MASK_IMAGE_DATA_BOTH_WITH_OUT_IMPL(FUNCTOR, double, 2)                                      \
   FOAM_MASK_IMAGE_DATA_BOTH_WITH_OUT_IMPL(FUNCTOR, float, 2)
 
   FOAM_MASK_IMAGE_DATA_BOTH_WITH_OUT(maskImageDataZero)
@@ -177,9 +158,7 @@ PYBIND11_MODULE(imageproc, m)
     &correctImageData<OffsetPolicy, xt::pytensor<VALUE_TYPE, N_DIM>>,                       \
     py::arg("src").noconvert(), py::arg("offset").noconvert());
 
-  FOAM_CORRECT_OFFSET_IMPL(double, 2)
   FOAM_CORRECT_OFFSET_IMPL(float, 2)
-  FOAM_CORRECT_OFFSET_IMPL(double, 3)
   FOAM_CORRECT_OFFSET_IMPL(float, 3)
 
 #define FOAM_CORRECT_DSSC_OFFSET_IMPL(VALUE_TYPE, N_DIM)                                    \
@@ -188,7 +167,6 @@ PYBIND11_MODULE(imageproc, m)
     &correctImageData<DsscOffsetPolicy, xt::pytensor<VALUE_TYPE, N_DIM>>,                   \
     py::arg("src").noconvert(), py::arg("offset").noconvert());
 
-  FOAM_CORRECT_DSSC_OFFSET_IMPL(double, 3)
   FOAM_CORRECT_DSSC_OFFSET_IMPL(float, 3)
 
 #define FOAM_CORRECT_INTRA_DARK_IMPL(VALUE_TYPE)                                            \
@@ -197,7 +175,6 @@ PYBIND11_MODULE(imageproc, m)
     &correctImageData<xt::pytensor<VALUE_TYPE, 3>>,                                         \
     py::arg("src").noconvert());
 
-  FOAM_CORRECT_INTRA_DARK_IMPL(double)
   FOAM_CORRECT_INTRA_DARK_IMPL(float)
 
 #define FOAM_CORRECT_GAIN_IMPL(VALUE_TYPE, N_DIM)                                           \
@@ -206,9 +183,7 @@ PYBIND11_MODULE(imageproc, m)
     &correctImageData<GainPolicy, xt::pytensor<VALUE_TYPE, N_DIM>>,                         \
     py::arg("src").noconvert(), py::arg("gain").noconvert());
 
-  FOAM_CORRECT_GAIN_IMPL(double, 2)
   FOAM_CORRECT_GAIN_IMPL(float, 2)
-  FOAM_CORRECT_GAIN_IMPL(double, 3)
   FOAM_CORRECT_GAIN_IMPL(float, 3)
 
 #define FOAM_CORRECT_GAIN_AND_OFFSET_IMPL(VALUE_TYPE, N_DIM)                                    \
@@ -218,8 +193,6 @@ PYBIND11_MODULE(imageproc, m)
     &correctImageData<GainOffsetPolicy, xt::pytensor<VALUE_TYPE, N_DIM>>,                       \
     py::arg("src").noconvert(), py::arg("gain").noconvert(), py::arg("offset").noconvert());
 
-  FOAM_CORRECT_GAIN_AND_OFFSET_IMPL(double, 2)
   FOAM_CORRECT_GAIN_AND_OFFSET_IMPL(float, 2)
-  FOAM_CORRECT_GAIN_AND_OFFSET_IMPL(double, 3)
   FOAM_CORRECT_GAIN_AND_OFFSET_IMPL(float, 3)
 }

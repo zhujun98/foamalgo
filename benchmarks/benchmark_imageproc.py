@@ -11,6 +11,7 @@ import time
 
 import numpy as np
 
+from pyfoamalgo.config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
 from pyfoamalgo import (
     correct_image_data, mask_image_data, nanmean_image_data, nanmean_images
 )
@@ -66,8 +67,7 @@ def bench_nanmean_image_array(shape):
     data = np.random.rand(*shape)
     data[::2, ::2, ::2] = np.nan
 
-    _run_nanmean_image_array(data, np.float32)
-    _run_nanmean_image_array(data, np.float64)
+    _run_nanmean_image_array(data, IMAGE_DTYPE)
 
 
 def _run_mask_image_array(data, mask, data_type, keep_nan=False):
@@ -132,13 +132,11 @@ def _run_mask_image_array(data, mask, data_type, keep_nan=False):
 def bench_mask_image_array(shape):
     data = np.random.rand(*shape)
     data[::4, ::4, ::4] = np.nan
-    mask = np.zeros(shape[-2:], dtype=np.bool)
+    mask = np.zeros(shape[-2:], dtype=bool)
     mask[::10, ::10] = True
 
-    _run_mask_image_array(data, mask, np.float32, keep_nan=False)
-    _run_mask_image_array(data, mask, np.float64, keep_nan=False)
-    _run_mask_image_array(data, mask, np.float32, keep_nan=True)
-    _run_mask_image_array(data, mask, np.float64, keep_nan=True)
+    _run_mask_image_array(data, mask, IMAGE_DTYPE, keep_nan=False)
+    _run_mask_image_array(data, mask, IMAGE_DTYPE, keep_nan=True)
 
 
 def _run_correct_image_array(data, data_type, gain, offset):
@@ -199,8 +197,7 @@ def bench_correct_gain_offset(shape):
     offset = np.random.randn(*shape)
     data = np.random.rand(*shape)
 
-    _run_correct_image_array(data, np.float32, gain, offset)
-    _run_correct_image_array(data, np.float64, gain, offset)
+    _run_correct_image_array(data, IMAGE_DTYPE, gain, offset)
 
 
 if __name__ == "__main__":
