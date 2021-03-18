@@ -104,8 +104,7 @@ class TestJungFrauGeometry:
             assert 0 == np.count_nonzero(~np.isnan(assembled[:, ah - 1::ah, :]))
 
     def testMaskModule(self):
-        module1 = np.ones((self.n_pulses, *self.module_shape),
-                          dtype=IMAGE_DTYPE)
+        module1 = np.ones((self.n_pulses, *self.module_shape), dtype=IMAGE_DTYPE)
         module2 = np.copy(module1)
 
         JungFrauGeometry.maskModule(module1)
