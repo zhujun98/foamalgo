@@ -9,14 +9,14 @@ import math
 import numpy as np
 
 from .imageproc import mask_image_data, nanmeanImageArray
-from .lib.statistics import nanmean as _nanmean_cpp
-from .lib.statistics import nansum as _nansum_cpp
-from .lib.statistics import nanstd as _nanstd_cpp
-from .lib.statistics import nanvar as _nanvar_cpp
-from .lib.statistics import nanmin as _nanmin_cpp
-from .lib.statistics import nanmax as _nanmax_cpp
-from .lib.statistics import histogram1d as _histogram1d_cpp
 from .config import __NAN_DTYPES__, __ALL_DTYPES__
+from pyfoamalgo.lib.statistics import nanmean as _nanmean_cpp
+from pyfoamalgo.lib.statistics import nansum as _nansum_cpp
+from pyfoamalgo.lib.statistics import nanstd as _nanstd_cpp
+from pyfoamalgo.lib.statistics import nanvar as _nanvar_cpp
+from pyfoamalgo.lib.statistics import nanmin as _nanmin_cpp
+from pyfoamalgo.lib.statistics import nanmax as _nanmax_cpp
+from pyfoamalgo.lib.statistics import histogram1d as _histogram1d_cpp
 
 __all__ = [
     'hist_with_stats',

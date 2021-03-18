@@ -5,10 +5,8 @@ The full license is in the file LICENSE, distributed with this software.
 
 Copyright (C) 2020, Jun Zhu. All rights reserved.
 """
-import numpy as np
-
-from ..lib.geometry import EPix100Geometry as _EPix100GeometryCpp
-from ..lib.geometry import JungFrauGeometry as _JungFrauGeometryCpp
+from pyfoamalgo.lib.geometry import EPix100Geometry as _EPix100GeometryCpp
+from pyfoamalgo.lib.geometry import JungFrauGeometry as _JungFrauGeometryCpp
 from .geometry_base import _GeneralizedGeometryMixin
 from .geometry_utils import use_doc
 

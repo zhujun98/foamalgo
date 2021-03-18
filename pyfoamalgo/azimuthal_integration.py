@@ -7,7 +7,9 @@ Author: Jun Zhu <jun.zhu@xfel.eu>
 Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
 All rights reserved.
 """
-from .lib.azimuthal_integrator import AzimuthalIntegrator, ConcentricRingsFinder
+from pyfoamalgo.lib.azimuthal_integrator import (
+    AzimuthalIntegrator, ConcentricRingsFinder
+)
 
 __all__ = [
     'AzimuthalIntegrator',

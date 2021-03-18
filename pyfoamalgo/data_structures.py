@@ -15,7 +15,7 @@ from threading import Lock
 
 import numpy as np
 
-from .lib.imageproc import movingAvgImageData
+from pyfoamalgo.lib.imageproc import movingAvgImageData
 
 
 __all__ = [

@@ -9,7 +9,7 @@ All rights reserved.
 """
 import numpy as np
 
-from .lib.imageproc import (
+from pyfoamalgo.lib.imageproc import (
     nanmeanImageArray,
     imageDataNanMask, maskImageDataNan, maskImageDataZero,
     correctGain, correctOffset, correctDsscOffset, correctGainOffset

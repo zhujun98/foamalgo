@@ -11,8 +11,8 @@ import numpy as np
 from scipy import fft
 
 from .imageproc import mask_image_data
-from .lib.canny import cannyEdge
-from .lib.smooth import gaussianBlur
+from pyfoamalgo.lib.canny import cannyEdge
+from pyfoamalgo.lib.smooth import gaussianBlur
 
 __all__ = [
     'edge_detect',
