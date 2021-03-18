@@ -43,6 +43,11 @@ PYBIND11_MODULE(imageproc, m)
   FOAM_NANMEAN_IMAGE_ARRAY_WITH_FILTER_IMPL(float)
   FOAM_NANMEAN_IMAGE_ARRAY_BINARY_IMPL(float)
 
+  // It is also used in nanmean so that we need the binding for double
+  FOAM_NANMEAN_IMAGE_ARRAY_IMPL(double)
+  FOAM_NANMEAN_IMAGE_ARRAY_WITH_FILTER_IMPL(double)
+  FOAM_NANMEAN_IMAGE_ARRAY_BINARY_IMPL(double)
+
 #define FOAM_MOVING_AVG_IMAGE_DATA_IMPL(VALUE_TYPE, N_DIM)                                     \
   m.def("movingAvgImageData",                                                                  \
     &movingAvgImageData<xt::pytensor<VALUE_TYPE, N_DIM>>,                                      \

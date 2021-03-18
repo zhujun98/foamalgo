@@ -180,7 +180,8 @@ def histogram1d(a, bins=10, range=None):
         range = (a.min(), a.max())
 
     if a.dtype in __ALL_DTYPES__:
-        bin_edges = np.linspace(range[0], range[1], bins+1, dtype=a.dtype)
+        be_dtype = np.float32 if a.dtype == np.float32 else np.float64
+        bin_edges = np.linspace(range[0], range[1], bins+1, dtype=be_dtype)
         return (_histogram1d_cpp(a.ravel(), range[0], range[1], bins),
                 bin_edges)
     return np.histogram(a, bins=bins, range=range)

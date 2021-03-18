@@ -58,7 +58,7 @@ def benchmark_histogram1d(f_cpp, f_py, shape, dtype):
     dt_py = time.perf_counter() - t0
 
     np.testing.assert_allclose(ret_cpp[0], ret_py[0], rtol=1e-4)
-    np.testing.assert_allclose(ret_cpp[1], ret_py[1], rtol=1e-4)
+    np.testing.assert_array_almost_equal(ret_cpp[1], ret_py[1])
 
     print(f"\n----- {f_cpp.__name__} ------")
     print(f"\ndtype = {dtype} - \ndt (cpp): {dt_cpp:.4f}, dt (numpy): {dt_py:.4f}")

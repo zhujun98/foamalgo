@@ -1,44 +1,42 @@
-import unittest
-
 import pytest
 
 import numpy as np
 
 from pyfoamalgo.config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
+from pyfoamalgo.config import __NAN_DTYPES__
 from pyfoamalgo import (
     correct_image_data, mask_image_data, nanmean_image_data, nanmean_images
 )
 from pyfoamalgo.lib.imageproc import movingAvgImageData
 
 
-class TestImageProc(unittest.TestCase):
-    def testNanmeanImageData(self):
-        dtype = IMAGE_DTYPE
-
+class TestImageProc:
+    @pytest.mark.parametrize("dtype", __NAN_DTYPES__)
+    def testNanmeanImageData(self, dtype):
         arr1d = np.ones(2, dtype=dtype)
         arr2d = np.ones((2, 2), dtype=dtype)
         arr3d = np.ones((2, 2, 2), dtype=dtype)
         arr4d = np.ones((2, 2, 2, 2), dtype=dtype)
 
         # test invalid shapes
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             nanmean_image_data(arr4d)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             nanmean_image_data(arr1d)
 
         # kept is an empty list
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             nanmean_image_data(arr3d, kept=[])
 
         # invalid input
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             nanmean_image_data(arr2d, arr2d)
 
         # input is a 2D array
         data = np.random.randn(2, 2)
         ret = nanmean_image_data(data)
         np.testing.assert_array_equal(data, ret)
-        self.assertIsNot(ret, data)
+        assert ret is not data
 
         # input is a 3D array
         data = np.array([[[np.nan,       2, np.nan], [     1, 2, -np.inf]],
@@ -61,20 +59,18 @@ class TestImageProc(unittest.TestCase):
             np.testing.assert_array_almost_equal(np.nanmean(data[0:3:2, ...], axis=0),
                                                  nanmean_image_data(data, kept=[0, 2]))
 
-    def testNanMeanImages(self):
-        dtype = IMAGE_DTYPE
-
-        arr1d = np.ones(2, dtype=dtype)
+    @pytest.mark.parametrize("dtype", __NAN_DTYPES__)
+    def testNanMeanImages(self, dtype):
         arr2d = np.ones((2, 2), dtype=dtype)
-        arr3d = np.ones((2, 2, 2), dtype=dtype)
 
         # test two images have different shapes
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             nanmean_images(arr2d, np.ones((2, 3), dtype=dtype))
 
         # test two images have different dtype
-        with self.assertRaises(TypeError):
-            nanmean_images(arr2d, np.ones((2, 3), dtype=np.float64))
+        with pytest.raises(TypeError):
+            nanmean_images(
+                arr2d, np.ones((2, 3), dtype=np.float64 if dtype == np.float32 else np.float32))
 
         # input are a list/tuple of two images
         img1 = np.array([[1, 1, 2], [np.inf, np.nan, 0]], dtype=dtype)
@@ -91,31 +87,31 @@ class TestImageProc(unittest.TestCase):
         arr4d = np.ones((2, 2, 2, 2), dtype=dtype)
 
         # test invalid input
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             movingAvgImageData()
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             movingAvgImageData(arr1d, arr1d, 2)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             movingAvgImageData(arr4d, arr4d, 2)
 
         # count is 0
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             movingAvgImageData(arr2d, arr2d, 0)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             movingAvgImageData(arr3d, arr3d, 0)
 
         # inconsistent shape
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             movingAvgImageData(arr2d, arr3d)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             movingAvgImageData(arr2d, np.ones((2, 3), dtype=dtype), 2)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             movingAvgImageData(arr3d, np.ones((2, 3, 2), dtype=dtype), 2)
 
         # inconsistent dtype
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             movingAvgImageData(arr2d, np.ones((2, 2), dtype=np.float64), 2)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             movingAvgImageData(arr3d, np.ones((2, 2, 2), dtype=np.float64), 2)
 
         # ------------
@@ -180,29 +176,29 @@ class TestImageProc(unittest.TestCase):
         arr4d = np.ones((2, 2, 2, 2), dtype=dtype)
 
         # test invalid input
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data()
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data(arr1d, offset=arr1d)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data(arr4d, gain=arr4d)
 
         # test incorrect shape
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data(np.ones((2, 2, 2)), offset=arr2d)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data(np.ones((2, 2, 2)), gain=arr2d)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data(np.ones((2, 2)), offset=arr3d)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data(np.ones((2, 2)), gain=arr3d)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data(np.ones((2, 2)), gain=arr2d, offset=arr3d)
 
         # test incorrect dtype
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data(arr3d, offset=np.ones((2, 2, 2), dtype=np.float64))
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             correct_image_data(arr3d, gain=arr3d, offset=np.ones((2, 2, 2), dtype=np.float64))
 
         # test without gain and offset
