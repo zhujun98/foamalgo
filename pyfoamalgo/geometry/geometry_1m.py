@@ -10,9 +10,9 @@ from itertools import product
 import numpy as np
 import h5py
 
-from ..lib.geometry_1m import AGIPD_1MGeometry as _AGIPD_1MGeometryCpp
-from ..lib.geometry_1m import LPD_1MGeometry as _LPD_1MGeometryCpp
-from ..lib.geometry_1m import DSSC_1MGeometry as _DSSC_1MGeometryCpp
+from pyfoamalgo.lib.geometry_1m import AGIPD_1MGeometry as _AGIPD_1MGeometryCpp
+from pyfoamalgo.lib.geometry_1m import LPD_1MGeometry as _LPD_1MGeometryCpp
+from pyfoamalgo.lib.geometry_1m import DSSC_1MGeometry as _DSSC_1MGeometryCpp
 from .geometry_base import _1MGeometryMixin
 from .geometry_utils import use_doc
 

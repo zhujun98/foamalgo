@@ -13,6 +13,18 @@
 import os.path as osp
 import sys
 
+# caveat: Without specifying the correct system path to make RTD import
+#         the modules in the local directory, RTD will import the installed
+#         modules and the autodoc will never change.
+sys.path.insert(0, osp.abspath('../..'))
+
+autodoc_mock_imports = [
+    'pyfoamalgo.lib',
+    'numpy',
+    'scipy',
+    'h5py'
+]
+
 # -- Project information -----------------------------------------------------
 
 project = 'foamalgo'
@@ -24,20 +36,17 @@ author = 'Jun Zhu'
 # built documents.
 #
 # The short X.Y version.
-import pyfoamalgo
-# This is the released version in conda-forge
-version = pyfoamalgo.__version__
-# The full version, including alpha/beta/rc tags.
+version_file = osp.join("../..", 'pyfoamalgo/version.py')
+try:
+    exec(open(version_file).read())
+except IOError:
+    print(f"Failed to load pyfoamalgo version file for packaging. " +
+          f"'{version_file}' not found!")
+    sys.exit(-1)
+# The short X.Y version
+version = __version__
+# # The full version, including alpha/beta/rc tags.
 release = version
-
-# caveat: Without specifying the correct system path to make RTD import
-#         the modules in the local directory, RTD will import the installed
-#         modules and the autodoc will never change.
-sys.path.insert(0, osp.abspath('../..'))
-
-autodoc_mock_imports = [
-    'pyfoamalgo.lib',
-]
 
 # The master toctree document.
 master_doc = 'index'
