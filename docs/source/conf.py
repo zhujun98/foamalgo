@@ -36,11 +36,17 @@ author = 'Jun Zhu'
 # built documents.
 #
 # The short X.Y version.
-# import pyfoamalgo
-# # This is the released version in conda-forge
-# version = pyfoamalgo.__version__
+version_file = osp.join("../..", 'pyfoamalgo/version.py')
+try:
+    exec(open(version_file).read())
+except IOError:
+    print(f"Failed to load pyfoamalgo version file for packaging. " +
+          f"'{version_file}' not found!")
+    sys.exit(-1)
+# The short X.Y version
+version = __version__
 # # The full version, including alpha/beta/rc tags.
-# release = version
+release = version
 
 # The master toctree document.
 master_doc = 'index'

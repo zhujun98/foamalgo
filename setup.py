@@ -23,18 +23,6 @@ from distutils.version import LooseVersion
 from distutils.util import strtobool
 
 
-def find_version():
-    with open(osp.join('pyfoamalgo', '__init__.py')) as fp:
-        for line in fp:
-            m = re.search(r'^__version__ = "(\d+\.\d+\.\d[a-z]*\d*)"', line, re.M)
-            if m is None:
-                # could be a hotfix
-                m = re.search(r'^__version__ = "(\d.){3}\d"', line, re.M)
-            if m is not None:
-                return m.group(1)
-        raise RuntimeError("Unable to find version string.")
-
-
 @contextlib.contextmanager
 def changed_cwd(dirname):
     oldcwd = os.getcwd()
@@ -234,9 +222,21 @@ class BinaryDistribution(Distribution):
         return True
 
 
+this_directory = os.path.abspath(os.path.dirname(__file__))
+version_file = os.path.join(this_directory, 'pyfoamalgo/version.py')
+
+try:
+    exec(open(version_file).read())
+except IOError:
+    print(f"Failed to load pyfoamalgo version file for packaging. " +
+          f"'{version_file}' not found!")
+    sys.exit(-1)
+
+VERSION = __version__
+
 setup(
     name='pyfoamalgo',
-    version=find_version(),
+    version=VERSION,
     author='Jun Zhu',
     author_email='zhujun981661@gmail.com',
     description='',
