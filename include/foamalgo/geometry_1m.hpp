@@ -33,7 +33,9 @@ namespace foam
 {
 
 /**
- * Base class for geometry of 1M detectors, i.e. AGIPD-1M, LPD-1M and DSSC-1M.
+ * @class Detector1MGeometryBase
+ * @brief Base class for geometry of 1M detectors like AGIPD-1M, LPD-1M and DSSC-1M.
+ *
  * These kind of detectors consist of four quadrants, with each quadrant consisting
  * of four modules. Each module is further combined by multiple tiles. However, the
  * number of tiles and number of tiles depends on the detector type.
@@ -459,8 +461,8 @@ void Detector1MGeometryBase<G>::dismantleModule(M&& src, N& dst, T&& pos) const
 }
 
 /**
- * AGIPD-1M geometry
- *
+ * @class AGIPD_1MGeometry
+ * @brief AGIPD-1M geometry
  *
  * Layout of AGIPD-1M:              Tile layout for each module:
  * (looking along the beam)
@@ -675,8 +677,8 @@ void AGIPD_1MGeometry::dismantleModuleImp(M&& src, N& dst, T&& pos) const
 }
 
 /**
- * LPD-1M geometry
- *
+ * @class LPD_1MGeometry
+ * @brief LPD-1M geometry
  *
  * Layout of LPD-1M:                   Tile layout for each module:
  * (looking along the beam)
@@ -887,8 +889,8 @@ void LPD_1MGeometry::dismantleModuleImp(M&& src, N& dst, T&& pos) const
 }
 
 /**
- * DSSC-1M geometry
- *
+ * @class DSSC_1MGeometry
+ * @brief DSSC-1M geometry
  *
  * Layout of DSSC-1M:
  * (looking along the beam)

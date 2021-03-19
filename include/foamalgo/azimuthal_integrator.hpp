@@ -226,7 +226,9 @@ enum class AzimuthalIntegrationMethod
 
 
 /**
- * class for 1D azimuthal integration of image data.
+ * @class AzimuthalIntegrator
+ * @brief Perform 1D azimuthal integration of image data.
+ *
  */
 template<typename T = double>
 class AzimuthalIntegrator
@@ -258,7 +260,7 @@ public:
   ~AzimuthalIntegrator() = default;
 
   /**
-   * Calculate the azimuthal integration (1d) of an image.
+   * Calculate the 1D azimuthal integration of an image.
    *
    * @param src: source image. Shape = (y, x)
    * @param npt: number of integration points.
@@ -272,7 +274,7 @@ public:
                    AzimuthalIntegrationMethod method=AzimuthalIntegrationMethod::HISTOGRAM);
 
   /**
-   * Calculate the azimuthal integrations (1d) of an array of images.
+   * Calculate the 1D azimuthal integrations of an array of images.
    *
    * @param src: source image. Shape = (indices, y, x)
    * @param npt: number of integration points.
@@ -359,7 +361,8 @@ auto AzimuthalIntegrator<T>::integrate1d(E&& src,
 }
 
 /**
- * class for finding the center of concentric rings in an image.
+ * @class ConcentricRingsFinder
+ * @brief Detect the center of concentric rings in an image.
  */
 template<typename T = double>
 class ConcentricRingsFinder

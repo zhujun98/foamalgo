@@ -7,14 +7,14 @@ Using the conda package
 foamalgo
 """"""""
 
-.. code::
+.. code:: shell
 
     conda install -c conda-forge foamalgo
 
 pyfoamalgo
 """"""""""
 
-.. code::
+.. code:: shell
 
     conda install -c conda-forge pyfoamalgo
 
@@ -27,7 +27,7 @@ From source
 foamalgo
 """"""""
 
-.. code::
+.. code:: shell
 
     conda install -c anaconda cmake
     conda install -c conda-forge tbb-devel xsimd xtensor xtensor-blas
@@ -42,7 +42,7 @@ foamalgo
 pyfoamalgo
 """"""""""
 
-.. code::
+.. code:: shell
 
     conda install -c anaconda cmake
     conda install -c conda-forge tbb-devel xsimd xtensor xtensor-blas numpy xtensor-python
@@ -62,7 +62,7 @@ pyfoamalgo
 On the Maxwell cluster
 ----------------------
 
-.. code::
+.. code:: shell
 
     module load anaconda3
 
