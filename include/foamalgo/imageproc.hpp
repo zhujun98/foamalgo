@@ -89,7 +89,7 @@ inline auto nanmeanImageArrayImp(E&& src, const std::vector<size_t>& keep = {})
 #endif
 
 /**
- * Calculate the nanmean of the selected images from an array of images.
+ * @brief Calculate the nanmean of the selected images from an array of images.
  *
  * @param src: image data. shape = (indices, y, x)
  * @param keep: a list of selected indices.
@@ -108,6 +108,12 @@ inline auto nanmeanImageArray(E&& src, const std::vector<size_t>& keep)
 #endif
 }
 
+/**
+ * @brief Calculate the nanmean of an array of images.
+ *
+ * @param src: image data. shape = (indices, y, x)
+ * @return: the nanmean image. shape = (y, x)
+ */
 template<typename E, EnableIf<std::decay_t<E>, IsImageArray> = false>
 inline auto nanmeanImageArray(E&& src)
 {
@@ -120,7 +126,7 @@ inline auto nanmeanImageArray(E&& src)
 }
 
 /**
- * Calculate the nanmean of two images.
+ * @brief Calculate the nanmean of two images.
  *
  * @param src1: image data. shape = (y, x)
  * @param src2: image data. shape = (y, x)
@@ -167,7 +173,7 @@ inline auto nanmeanImageArray(E&& src1, E&& src2)
 }
 
 /**
- * Inplace convert nan using 0 in an image.
+ * @brief Inplace convert nan using 0 in an image.
  *
  * @param src: image data. shape = (y, x)
  */
@@ -187,7 +193,7 @@ inline void maskImageDataZero(E& src)
 }
 
 /**
- * Maintain an identical API with maskImageDataZero.
+ * @brief Maintain an identical API with maskImageDataZero.
  *
  * @param src: image data. shape = (y, x)
  */
@@ -195,7 +201,7 @@ template <typename E, EnableIf<E, IsImage> = false>
 inline void maskImageDataNan(E& src) {}
 
 /**
- * Get the nan mask of an image.
+ * @brief Get the nan mask of an image.
  *
  * This function is a complementary to maskImageDataNan since the overload
  * maskImageDataNan(E& src, N& out) is ambiguous because of another overload
@@ -221,7 +227,7 @@ inline void imageDataNanMask(const E& src, N& out)
 }
 
 /**
- * Inplace mask an image using 0 with threshold mask. Nan pixels in
+ * @brief Inplace mask an image using 0 with threshold mask. Nan pixels in
  * the image are also converted into 0.
  *
  * @param src: image data. shape = (y, x)
@@ -246,7 +252,7 @@ inline void maskImageDataZero(E& src, T lb, T ub)
 }
 
 /**
- * Inplace mask an image using 0 with threshold mask. Nan pixels in
+ * @brief Inplace mask an image using 0 with threshold mask. Nan pixels in
  * the image are also converted into 0.
  *
  * @param src: image data. shape = (y, x)
@@ -279,7 +285,7 @@ inline void maskImageDataZero(E& src, T lb, T ub, N& out)
 }
 
 /**
- * Inplace mask an image using nan with threshold mask.
+ * @brief Inplace mask an image using nan with threshold mask.
  *
  * @param src: image data. shape = (y, x)
  * @param lb: lower threshold
@@ -305,7 +311,7 @@ inline void maskImageDataNan(E& src, T lb, T ub)
 }
 
 /**
- * Inplace mask an image using nan with threshold mask.
+ * @brief Inplace mask an image using nan with threshold mask.
  *
  * @param src: image data. shape = (y, x)
  * @param lb: lower threshold
@@ -339,7 +345,7 @@ inline void maskImageDataNan(E& src, T lb, T ub, N& out)
 }
 
 /**
- * Inplace mask an image using 0 with an image mask. Nan pixels in
+ * @brief Inplace mask an image using 0 with an image mask. Nan pixels in
  * the image are also converted into 0.
  *
  * @param src: image data. shape = (y, x)
@@ -364,7 +370,7 @@ inline void maskImageDataZero(E& src, const M& mask)
 }
 
 /**
- * Inplace mask an image using 0 with an image mask. Nan pixels in
+ * @brief Inplace mask an image using 0 with an image mask. Nan pixels in
  * the image are also converted into 0.
  *
  * @param src: image data. shape = (y, x)
@@ -395,7 +401,7 @@ inline void maskImageDataZero(E& src, const M& mask, M& out)
 }
 
 /**
- * Inplace mask an image using nan with an image mask.
+ * @brief Inplace mask an image using nan with an image mask.
  *
  * @param src: image data. shape = (y, x)
  * @param mask: image mask. shape = (y, x)
@@ -420,7 +426,7 @@ inline void maskImageDataNan(E& src, const M& mask)
 }
 
 /**
- * Inplace mask an image using nan with an image mask.
+ * @brief Inplace mask an image using nan with an image mask.
  *
  * @param src: image data. shape = (y, x)
  * @param out: output array to place the overall mask. shape = (y, x)
@@ -453,7 +459,7 @@ inline void maskImageDataNan(E& src, const M& mask, N& out)
 }
 
 /**
- * Inplace mask an image using 0 with both threshold mask and an image mask.
+ * @brief Inplace mask an image using 0 with both threshold mask and an image mask.
  * Nan pixels in the image are also converted into 0.
  *
  * @param src: image data. shape = (y, x)
@@ -486,7 +492,7 @@ inline void maskImageDataZero(E& src, const M& mask, T lb, T ub)
 }
 
 /**
- * Inplace mask an image using 0 with both threshold mask and an image mask.
+ * @brief Inplace mask an image using 0 with both threshold mask and an image mask.
  * Nan pixels in the image are also converted into 0.
  *
  * @param src: image data. shape = (y, x)
@@ -527,7 +533,7 @@ inline void maskImageDataZero(E& src, const M& mask, T lb, T ub, N& out)
 }
 
 /**
- * Inplace mask an image using nan with both threshold mask and an image mask.
+ * @brief Inplace mask an image using nan with both threshold mask and an image mask.
  *
  * @param src: image data. shape = (y, x)
  * @param mask: image mask. shape = (y, x)
@@ -561,7 +567,7 @@ inline void maskImageDataNan(E& src, const M& mask, T lb, T ub)
 }
 
 /**
- * Inplace mask an image using nan with both threshold mask and an image mask.
+ * @brief Inplace mask an image using nan with both threshold mask and an image mask.
  *
  * @param src: image data. shape = (y, x)
  * @param lb: lower threshold
@@ -601,7 +607,7 @@ inline void maskImageDataNan(E& src, const M& mask, T lb, T ub, N& out)
 }
 
 /**
- * Inplace convert nan using 0 in an array of images.
+ * @brief Inplace convert nan using 0 in an array of images.
  *
  * @param src: image data. shape = (indices, y, x)
  */
@@ -633,7 +639,7 @@ inline void maskImageDataZero(E& src)
 }
 
 /**
- * Maintain an identical API with maskImageDataZero.
+ * @brief Maintain an identical API with maskImageDataZero.
  *
  * @param src: image data. shape = (indices, y, x)
  */
@@ -641,7 +647,7 @@ template <typename E, EnableIf<E, IsImageArray> = false>
 inline void maskImageDataNan(E& src) {}
 
 /**
- * Inplace mask an array of images using 0 with threshold mask. Nan pixels in
+ * @brief Inplace mask an array of images using 0 with threshold mask. Nan pixels in
  * those images are also converted into 0.
  *
  * @param src: image data. shape = (slices, y, x)
@@ -679,7 +685,7 @@ inline void maskImageDataZero(E& src, T lb, T ub)
 }
 
 /**
- * Inplace mask an array of images using nan with threshold mask.
+ * @brief Inplace mask an array of images using nan with threshold mask.
  *
  * @param src: image data. shape = (slices, y, x)
  * @param lb: lower threshold
@@ -718,7 +724,7 @@ inline void maskImageDataNan(E& src, T lb, T ub)
 }
 
 /**
- * Inplace mask an array of images using 0 with an image mask. Nan pixels in
+ * @brief Inplace mask an array of images using 0 with an image mask. Nan pixels in
  * those images are also converted into 0.
  *
  * @param src: image data. shape = (indices, y, x)
@@ -759,7 +765,7 @@ inline void maskImageDataZero(E& src, const M& mask)
 }
 
 /**
- * Inplace mask an array of images using nan with an image mask.
+ * @brief Inplace mask an array of images using nan with an image mask.
  *
  * @param src: image data. shape = (indices, y, x)
  * @param mask: image mask. shape = (y, x)
@@ -799,7 +805,7 @@ inline void maskImageDataNan(E& src, const M& mask)
 }
 
 /**
- * Inplace mask an array of images using 0 with both threshold mask and an image mask.
+ * @brief Inplace mask an array of images using 0 with both threshold mask and an image mask.
  * Nan pixels in those images are also converted into 0.
  *
  * @param src: image data. shape = (indices, y, x)
@@ -847,7 +853,7 @@ inline void maskImageDataZero(E& src, const M& mask, T lb, T ub)
 }
 
 /**
- * Inplace mask an array of images using nan with both threshold mask and an image mask.
+ * @brief Inplace mask an array of images using nan with both threshold mask and an image mask.
  *
  * @param src: image data. shape = (indices, y, x)
  * @param mask: image mask. shape = (y, x)
@@ -895,7 +901,7 @@ inline void maskImageDataNan(E& src, const M& mask, T lb, T ub)
 }
 
 /**
- * Inplace apply moving average for an image
+ * @brief Inplace apply moving average for an image
  *
  * @param src: moving average of image data. shape = (y, x)
  * @param data: new image data. shape = (y, x)
@@ -921,7 +927,7 @@ inline void movingAvgImageData(E& src, const E& data, size_t count)
 }
 
 /**
- * Inplace apply moving average for an array of images.
+ * @brief Inplace apply moving average for an array of images.
  *
  * @param src: moving average of image data. shape = (indices, y, x)
  * @param data: new image data. shape = (indices, y, x)
@@ -1067,7 +1073,7 @@ inline void correctImageDataImp(E& src, const E& constants)
 } //detail
 
 /**
- * Inplace apply either gain or offset correct for an array of images.
+ * @brief Inplace apply either gain or offset correct for an array of images.
  *
  * @tparam Policy: correction policy (OffsetPolicy or GainPolicy)
  *
@@ -1083,13 +1089,13 @@ inline void correctImageData(E& src, const E& constants)
 }
 
 /**
-* Inplace apply either gain or offset correct for an image.
-*
-* @tparam Policy: correction policy (OffsetPolicy or GainPolicy)
-*
-* @param src: image data. shape = (y, x)
-* @param constants: correction constants, which has the same shape as src.
-*/
+ * @brief Inplace apply either gain or offset correct for an image.
+ *
+ * @tparam Policy: correction policy (OffsetPolicy or GainPolicy)
+ *
+ * @param src: image data. shape = (y, x)
+ * @param constants: correction constants, which has the same shape as src.
+ */
 template <typename Policy, typename E, EnableIf<E, IsImage> = false>
 inline void correctImageData(E& src, const E& constants)
 {
@@ -1098,12 +1104,12 @@ inline void correctImageData(E& src, const E& constants)
 }
 
 /**
-* Inplace apply both gain and offset correct for an array of images.
-*
-* @param src: image data. shape = (indices, y, x)
-* @param gain: gain correction constants, which has the same shape as src.
-* @param offset: offset correction constants, which has the same shape as src.
-*/
+ * @brief Inplace apply both gain and offset correct for an array of images.
+ *
+ * @param src: image data. shape = (indices, y, x)
+ * @param gain: gain correction constants, which has the same shape as src.
+ * @param offset: offset correction constants, which has the same shape as src.
+ */
 template <typename Policy, typename E, EnableIf<E, IsImageArray> = false>
 inline void correctImageData(E& src, const E& gain, const E& offset)
 {
@@ -1134,12 +1140,12 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
 }
 
 /**
-* Inplace apply both gain and offset correct for an image.
-*
-* @param src: image data. shape = (y, x)
-* @param gain: gain correction constants, which has the same shape as src.
-* @param offset: offset correction constants, which has the same shape as src.
-*/
+ * @brief Inplace apply both gain and offset correct for an image.
+ *
+ * @param src: image data. shape = (y, x)
+ * @param gain: gain correction constants, which has the same shape as src.
+ * @param offset: offset correction constants, which has the same shape as src.
+ */
 template <typename Policy, typename E, EnableIf<E, IsImage> = false>
 inline void correctImageData(E& src, const E& gain, const E& offset)
 {
@@ -1152,7 +1158,7 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
 }
 
 /**
- * Inplace apply interleaved intra-dark correction for an array of images.
+ * @brief Inplace apply interleaved intra-dark correction for an array of images.
  * In other words, for every other image in the array starting from the
  * first one, it will be subtracted by the image next to it.
  *

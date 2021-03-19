@@ -68,11 +68,14 @@ enum class GeometryLayout
 };
 
 /**
- * Base class for generalized detector geometry. For detectors like JungFrau,
- * it is possible to use a single module or the combination of multiple modules
- * during experiments. Unlike the 1M detectors, the number of modules is variable
- * and the way of stacking them is still unclear. On the other hand, each module
- * is consisting of multiple ASICs and there is no tile.
+ * @class DetectorGeometry
+ * @brief Base class for generalized detector geometry.
+ *
+ * For detectors like JungFrau, it is possible to use a single module or the
+ * combination of multiple modules during experiments. Unlike the 1M detectors,
+ * the number of modules is variable and the way of stacking them is still unclear.
+ * On the other hand, each module is consisting of multiple ASICs and there is
+ * no tile.
  *
  * When more than one modules are combined, the layout of modules is defined by
  * the enum class GeometryLayout:

@@ -10,13 +10,16 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+import os
 import os.path as osp
+import subprocess
 import sys
 
-# caveat: Without specifying the correct system path to make RTD import
-#         the modules in the local directory, RTD will import the installed
-#         modules and the autodoc will never change.
 sys.path.insert(0, osp.abspath('../..'))
+
+read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+if read_the_docs_build:
+    subprocess.call('cd ..; doxygen', shell=True)
 
 autodoc_mock_imports = [
     'pyfoamalgo.lib',
@@ -62,7 +65,12 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
     'nbsphinx',
+    'breathe'
 ]
+
+# Breathe configuration
+breathe_projects = {"foamalgo": "../xml"}
+breathe_default_project = "foamalgo"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

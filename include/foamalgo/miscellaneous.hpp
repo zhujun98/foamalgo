@@ -16,12 +16,12 @@
 namespace foam {
 
 /**
- * Calculate the intersection area of two rectangles.
-
+ * @brief Calculate the intersection area of two rectangles.
+ *
+ * @note (x, y) is the coordinate of the closest corner to the origin.
+ *
  * @param rect1: (x1, y1, w1, h1) of rectangle 1.
  * @param rect2: (x2, y2, w2, h2) of rectangle 2.
- *
- * Note: (x, y) is the coordinate of the closest corner to the origin.
  *
  * @returns: (x, y, w, h) of the intersection area.
  */

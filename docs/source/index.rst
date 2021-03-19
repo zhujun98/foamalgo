@@ -41,3 +41,5 @@ and benefits the offline analysis as well.
 .. toctree::
    :maxdepth: 1
    :caption: DEVELOPMENT
+
+   developer/documentation.rst
