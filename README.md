@@ -27,7 +27,7 @@ and benefits the offline analysis as well.
 
 Relevant articles, presentations and papers:
 
-- [Data Analysis Solutions at European XFEL](https://indico.cern.ch/event/881752/)
+- [Data Analysis Approaches at EuXFEL](https://indico.cern.ch/event/881752/)  by *P. Schmidt*
 
 ## Installation
 
