@@ -23,7 +23,11 @@ which is the framework for real-time (online) data analysis and visualization
 of big data from various large detectors at European XFEL and has stood 
 the test of 24/7 operations. By separating the algorithm code in a 
 stand-alone library, it facilitates the maintanance of the large code base
-and benefits the offline analysis as well. 
+and benefits the offline analysis as well.
+
+Relevant articles, presentations and papers:
+
+- [Data Analysis Solutions at European XFEL](https://indico.cern.ch/event/881752/)
 
 ## Installation
 
