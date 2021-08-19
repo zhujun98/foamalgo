@@ -9,13 +9,15 @@ jobs:
       gcc8:
         CC: gcc-8
         CXX: g++-8
+        LLVM_VERSION: 0
         PYTHON_VERSION: 3.7
-        UBUNTU_NAME: xenial
-        IMAGE_NAME: 'ubuntu-16.04'
+        UBUNTU_NAME: bionic
+        IMAGE_NAME: 'ubuntu-18.04'
         BENCHMARK: 1
       gcc9:
         CC: gcc-9
         CXX: g++-9
+        LLVM_VERSION: 0
         PYTHON_VERSION: 3.8
         UBUNTU_NAME: focal
         IMAGE_NAME: 'ubuntu-20.04'
@@ -24,8 +26,8 @@ jobs:
         CXX: clang++-7
         LLVM_VERSION: 7
         PYTHON_VERSION: 3.6
-        UBUNTU_NAME: xenial
-        IMAGE_NAME: 'ubuntu-16.04'
+        UBUNTU_NAME: bionic
+        IMAGE_NAME: 'ubuntu-18.04'
         BUILD_SERIAL: 1
       clang9:
         CC: clang-9
@@ -43,12 +45,12 @@ jobs:
 
     - script: |
         sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
-        if [[ $(LLVM_VERSION) ]]; then
+        if [[ $(LLVM_VERSION) != 0 ]]; then
           wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo add-apt-repository "deb http://apt.llvm.org/$(UBUNTU_NAME)/ llvm-toolchain-${UBUNTU_NAME}-$(LLVM_VERSION) main"
           sudo apt-get update
           sudo apt-get install --no-install-suggests --no-install-recommends clang-$(LLVM_VERSION)
-        else:
+        elif [[ $(CXX) == g++-8 ]]; then
           sudo apt-get update
           sudo apt-get install --no-install-suggests --no-install-recommends $CXX
         fi
