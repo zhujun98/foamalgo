@@ -48,27 +48,17 @@ class BuildExt(build_ext):
 
     description = "Build the C++ extensions for pyfoamalgo"
     user_options = [
-        ('use-tbb', None, 'build with intel TBB'),
-        ('xtensor-use-tbb', None, 'build xtensor with intel TBB'),
+        ('disable-tbb', None, 'disable intel TBB'),
         # https://quantstack.net/xsimd.html
         ('use-xsimd', None, 'build with XSIMD'),
-        ('xtensor-use-xsimd', None, 'build xtensor with XSIMD'),
         ('with-tests', None, 'build cpp unittests'),
     ] + build_ext.user_options
 
     def initialize_options(self):
         super().initialize_options()
 
-        build_serial = strtobool(os.environ.get('BUILD_SERIAL_FOAM', '0'))
-        build_para = '0' if build_serial else '1'
-        self.use_tbb = strtobool(
-            os.environ.get('FOAM_USE_TBB', build_para))
-        self.xtensor_use_tbb = strtobool(
-            os.environ.get('XTENSOR_USE_TBB', build_para))
-        self.use_xsimd = strtobool(
-            os.environ.get('FOAM_USE_XSIMD', build_para))
-        self.xtensor_use_xsimd = strtobool(
-            os.environ.get('XTENSOR_USE_XSIMD', build_para))
+        self.disable_tbb = strtobool(os.environ.get('DISABLE_TBB', '0'))
+        self.disable_xsimd = strtobool(os.environ.get('DISABLE_XSIMD', '0'))
 
         self.with_tests = strtobool(os.environ.get('BUILD_FOAM_TESTS', '0'))
 
@@ -108,14 +98,14 @@ class BuildExt(build_ext):
             return 'ON' if x else 'OFF'
 
         cmake_options.append(
-            f'-DFOAM_USE_TBB={_opt_switch(self.use_tbb)}')
+            f'-DFOAM_USE_TBB={_opt_switch(not self.disable_tbb)}')
         cmake_options.append(
-            f'-DXTENSOR_USE_TBB={_opt_switch(self.xtensor_use_tbb)}')
+            f'-DXTENSOR_USE_TBB={_opt_switch(not self.disable_tbb)}')
 
         cmake_options.append(
-            f'-DFOAM_USE_XSIMD={_opt_switch(self.use_xsimd)}')
+            f'-DFOAM_USE_XSIMD={_opt_switch(not self.disable_xsimd)}')
         cmake_options.append(
-            f'-DXTENSOR_USE_XSIMD={_opt_switch(self.xtensor_use_xsimd)}')
+            f'-DXTENSOR_USE_XSIMD={_opt_switch(not self.disable_xsimd)}')
 
         cmake_options.append(
             f'-DBUILD_FOAM_TESTS={_opt_switch(self.with_tests)}')
@@ -146,7 +136,7 @@ class BuildExt(build_ext):
                 pass
 
             # placeholder
-            # if self.use_tbb or self.xtensor_use_tbb:
+            # if not self.disable_tbb:
             #     self._move_shared_libs('tbb', build_temp, build_lib)
 
     def _move_thirdparty_exec_files(self):
@@ -268,15 +258,16 @@ setup(
             'pytest',
         ],
     },
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: POSIX :: Linux',
         'Operating System :: MacOS',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Physics',
     ]

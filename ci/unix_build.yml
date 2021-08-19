@@ -1,14 +1,17 @@
 steps:
   - script: |
-      conda create --yes --quiet --name foamalgo --python=$(PYTHON_VERSION)
+      conda create --yes --quiet --name foamalgo python=$(PYTHON_VERSION)
       conda env update -f environment-dev.yml
     displayName: "Create Anaconda environment"
 
   - script: |
       source activate foamalgo
       export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
-      if [[ $(BUILD_SERIAL) == '1' ]]; then
-        export BUILD_SERIAL_FOAM=1;
+      if [[ $(DISABLE_TBB) == '1' ]]; then
+        export DISABLE_TBB=1;
+      fi
+      if [[ $(DISABLE_XSIMD) == '1' ]]; then
+        export DISABLE_XSIMD=1;
       fi
       pip install -e .[test]
       python setup.py build_ext --inplace --with-tests
