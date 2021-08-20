@@ -7,7 +7,7 @@ print(pyfoamalgo.__version__)
 
 from pyfoamalgo.config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
 from pyfoamalgo import (
-    correct_image_data, mask_image_data, nanmean_image_data, nanmean_images
+    correct_image_data, mask_image_data, nanmean_image_data
 )
 
 
@@ -39,7 +39,7 @@ def _run_nanmean_image_array(data, data_type):
 
     # two images
     t0 = time.perf_counter()
-    data_cpp = nanmean_images(data[0, ...], data[1, ...])
+    data_cpp = nanmean_image_data(data[0, ...], data[1, ...])
     dt_cpp_two = time.perf_counter() - t0
 
     t0 = time.perf_counter()

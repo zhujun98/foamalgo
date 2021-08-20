@@ -7,8 +7,6 @@ Author: Jun Zhu <jun.zhu@xfel.eu>, Ebad Kamil <ebad.kamil@xfel.eu>
 Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
 All rights reserved.
 """
-import numpy as np
-
 from pyfoamalgo.lib.imageproc import (
     nanmeanImageArray,
     imageDataNanMask, maskImageDataNan, maskImageDataZero,
@@ -17,45 +15,36 @@ from pyfoamalgo.lib.imageproc import (
 
 __all__ = [
     'nanmean_image_data',
-    'nanmean_images',
     'correct_image_data',
     'mask_image_data',
 ]
 
 
-def nanmean_image_data(data, *, kept=None):
-    """Compute nanmean of an array of images of a tuple/list of two images.
+def nanmean_image_data(*args, kept=None):
+    """Compute nanmean of an array of images or a tuple/list of two images.
 
-    :param numpy.array data: a 2D or 3D array. If the input is a 2D array, a
-        copy will be returned. This seemingly awkward 'feature' is a sugar for
-        having clean code in EXtra-foam in order to deal train- and
-        pulse-resolved detectors at the same time.
-    :param None/list kept: Indices of the kept images.
+    :param args: One input which is a 2D or 3D array or two inputs which
+        are both 2D arrays. If the input is a single 2D array, a copy will be
+        returned. This seemingly awkward 'feature' is a sugar for having
+        clean code in EXtra-foam in order to deal train- and pulse-resolved
+        detectors at the same time.
+    :param None/list kept: Indices of the kept images. Ignored if args has
+        more than one items.
 
     :return: nanmean of the input data.
     :rtype: numpy.ndarray.
     """
-    if data.ndim == 2:
-        return data.copy()
+    if len(args) > 1:
+        return nanmeanImageArray(*args)
+
+    images = args[0]
+    if images.ndim == 2:
+        return images.copy()
 
     if kept is None:
-        return nanmeanImageArray(data)
+        return nanmeanImageArray(images)
 
-    return nanmeanImageArray(data, kept)
-
-
-def nanmean_images(image1, image2):
-    """Compute nanmean of two images.
-
-    There is no copy overhead.
-
-    :param numpy.array image1: The first image, Shape = (y, x).
-    :param numpy.array image2: The second image, Shape = (y, x).
-
-    :return: nanmean of the two input images.
-    :rtype: numpy.ndarray.
-    """
-    return nanmeanImageArray(image1, image2)
+    return nanmeanImageArray(images, kept)
 
 
 def correct_image_data(data, *,
