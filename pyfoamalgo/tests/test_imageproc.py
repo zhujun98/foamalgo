@@ -5,7 +5,7 @@ import numpy as np
 from pyfoamalgo.config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
 from pyfoamalgo.config import __NAN_DTYPES__
 from pyfoamalgo import (
-    correct_image_data, mask_image_data, nanmean_image_data, nanmean_images
+    correct_image_data, mask_image_data, nanmean_image_data
 )
 from pyfoamalgo.lib.imageproc import movingAvgImageData
 
@@ -23,14 +23,16 @@ class TestImageProc:
             nanmean_image_data(arr4d)
         with pytest.raises(TypeError):
             nanmean_image_data(arr1d)
+        with pytest.raises(TypeError):
+            nanmean_image_data(arr2d, arr2d, arr2d)
+
+        # ---
+        # input is an array of images
+        # ---
 
         # kept is an empty list
         with pytest.raises(ValueError):
             nanmean_image_data(arr3d, kept=[])
-
-        # invalid input
-        with pytest.raises(TypeError):
-            nanmean_image_data(arr2d, arr2d)
 
         # input is a 2D array
         data = np.random.randn(2, 2)
@@ -59,24 +61,24 @@ class TestImageProc:
             np.testing.assert_array_almost_equal(np.nanmean(data[0:3:2, ...], axis=0),
                                                  nanmean_image_data(data, kept=[0, 2]))
 
-    @pytest.mark.parametrize("dtype", __NAN_DTYPES__)
-    def testNanMeanImages(self, dtype):
-        arr2d = np.ones((2, 2), dtype=dtype)
+        # ---
+        # input are two images
+        # ---
 
         # test two images have different shapes
         with pytest.raises(ValueError):
-            nanmean_images(arr2d, np.ones((2, 3), dtype=dtype))
+            nanmean_image_data(arr2d, np.ones((2, 3), dtype=dtype))
 
         # test two images have different dtype
         with pytest.raises(TypeError):
-            nanmean_images(
+            nanmean_image_data(
                 arr2d, np.ones((2, 3), dtype=np.float64 if dtype == np.float32 else np.float32))
 
         # input are a list/tuple of two images
         img1 = np.array([[1, 1, 2], [np.inf, np.nan, 0]], dtype=dtype)
         img2 = np.array([[np.nan, 0, 4], [2, np.nan, -np.inf]], dtype=dtype)
         expected = np.array([[1., 0.5, 3], [np.inf, np.nan, -np.inf]])
-        np.testing.assert_array_almost_equal(expected, nanmean_images(img1, img2))
+        np.testing.assert_array_almost_equal(expected, nanmean_image_data(img1, img2))
 
     def testMovingAverage(self):
         dtype = IMAGE_DTYPE
