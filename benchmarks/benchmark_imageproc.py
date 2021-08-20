@@ -11,6 +11,9 @@ import time
 
 import numpy as np
 
+import pyfoamalgo
+print(pyfoamalgo.__version__)
+
 from pyfoamalgo.config import __XFEL_IMAGE_DTYPE__ as IMAGE_DTYPE
 from pyfoamalgo import (
     correct_image_data, mask_image_data, nanmean_image_data, nanmean_images
