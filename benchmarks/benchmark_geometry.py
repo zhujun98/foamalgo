@@ -1,12 +1,3 @@
-"""
-Distributed under the terms of the BSD 3-Clause License.
-
-The full license is in the file LICENSE, distributed with this software.
-
-Author: Jun Zhu <jun.zhu@xfel.eu>
-Copyright (C) European X-Ray Free-Electron Laser Facility GmbH.
-All rights reserved.
-"""
 import os.path as osp
 import time
 
@@ -21,10 +12,11 @@ _data_sources = [(RAW_IMAGE_DTYPE, 'raw'),
 _geom_path = osp.join(osp.dirname(osp.abspath(__file__)), "../pyfoamalgo/geometry")
 
 
-def _benchmark_1m_imp(geom_fast_cls, geom_cls, geom_file, quad_positions=None):
+def _benchmark_1m_imp(geom_fast_cls, geom_cls, geom_file,
+                      quad_positions=None,
+                      n_pulses=32):
 
     for from_dtype, from_str in _data_sources:
-        n_pulses = 64
         modules = np.ones((n_pulses,
                            geom_fast_cls.n_modules,
                            geom_fast_cls.module_shape[0],

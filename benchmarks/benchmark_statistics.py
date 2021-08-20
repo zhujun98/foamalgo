@@ -69,7 +69,7 @@ if __name__ == "__main__":
     print("Benchmark statistics functions")
     print("*" * 80)
 
-    s = (16, 1096, 1120)
+    s = (32, 1096, 1120)
 
     for dtype in __NAN_DTYPES__:
         for f_cpp, f_py in [(nansum, np.nansum),
