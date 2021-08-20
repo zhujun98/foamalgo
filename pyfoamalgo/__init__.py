@@ -5,6 +5,8 @@ The full license is in the file LICENSE, distributed with this software.
 
 Copyright (C) 2020, Jun Zhu. All rights reserved.
 """
+from .version import __version__
+
 from .azimuthal_integration import *
 from .computer_vision import *
 from .data_structures import *
