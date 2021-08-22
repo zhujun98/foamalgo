@@ -24,17 +24,18 @@ From source
 
 `foamalgo` requires a modern C++ compiler which supports C++17.
 
+.. code:: shell
+
+    conda create --yes --quiet --name foamalgo --python=3.7
+    conda env update -f environment-dev.yml
+    git clone https://github.com/zhujun98/foamalgo.git
+    cd foamalgo
+
 foamalgo
 """"""""
 
 .. code:: shell
 
-    conda install -c anaconda cmake
-    conda install -c conda-forge tbb-devel xsimd xtensor xtensor-blas
-
-    git clone https://github.com/zhujun98/foamalgo.git
-
-    cd foamalgo
     mkdir build && cd build
     cmake -DCMAKE_INSTALL_PREFIX=your_install_prefix
     make install
@@ -44,12 +45,6 @@ pyfoamalgo
 
 .. code:: shell
 
-    conda install -c anaconda cmake
-    conda install -c conda-forge tbb-devel xsimd xtensor xtensor-blas numpy xtensor-python
-
-    git clone https://github.com/zhujun98/foamalgo.git
-
-    cd foamalgo
     export CC=gcc-9 CXX=g++-9  # Specify the compiler in your system which supports C++17
     export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
     pip install . -v
