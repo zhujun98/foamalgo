@@ -1,5 +1,8 @@
-breathe
-sphinx>=3.2.0
+# More recent version of breathe has an
+# annoying bug regarding resolution of
+# template overloads
+breathe==4.27.0
+sphinx==3.5.4
 sphinx_rtd_theme
 nbsphinx
 ipython
