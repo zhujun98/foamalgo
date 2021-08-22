@@ -1,10 +1,7 @@
 steps:
   - script: |
       conda create --yes --quiet --name foamalgo --python=$(PYTHON_VERSION)
-      source activate foamalgo
-      conda install -y cmake -c anaconda
-      conda install -y -c conda-forge xsimd xtensor xtensor-blas numpy xtensor-python
-      conda install -y -c conda-forge tbb-devel=2020.3
+      conda env update -f environment-dev.yml
     displayName: "Create Anaconda environment"
 
   - script: |
