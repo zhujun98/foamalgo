@@ -190,6 +190,7 @@ def bench_correct_gain_offset(shape):
     gain = np.random.randn(*shape)
     offset = np.random.randn(*shape)
     data = np.random.rand(*shape)
+    data[::2, ::2, ::2] = np.nan
 
     _run_correct_image_array(data, IMAGE_DTYPE, gain, offset)
 
