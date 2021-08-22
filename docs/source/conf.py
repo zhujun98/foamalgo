@@ -15,6 +15,8 @@ import os.path as osp
 import subprocess
 import sys
 
+import sphinx_rtd_theme
+
 sys.path.insert(0, osp.abspath('../..'))
 
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
@@ -89,6 +91,7 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
