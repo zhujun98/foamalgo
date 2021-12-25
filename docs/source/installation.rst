@@ -26,7 +26,6 @@ From source
 
 .. code:: shell
 
-    conda create --yes --quiet --name foamalgo --python=3.7
     conda env update -f environment-dev.yml
     git clone https://github.com/zhujun98/foamalgo.git
     cd foamalgo
@@ -64,8 +63,6 @@ Bugs and workarounds
     pip install --no-binary=h5py h5py
 
 
-
-
 On the Maxwell cluster
 ----------------------
 
@@ -74,12 +71,12 @@ On the Maxwell cluster
     module load anaconda3
 
     # It is highly recommended to create an independent environment.
-    conda create -n foam python=3.7
-    conda activate foam
+    conda create -n foamalgo python=3.7
+    conda activate foamalgo
 
     conda install -c conda-forge pyfoamalgo
     conda install jupyter
-    python -m ipykernel install --user --name foam --display-name "foam"
+    python -m ipykernel install --user --name foamalgo --display-name "foamalgo"
 
 Now, you should be able to start a Jupyter notebook via https://max-jhub.desy.de/ and
 select the newly created kernel.

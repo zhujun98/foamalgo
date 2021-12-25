@@ -2,8 +2,8 @@ name: foamalgo
 channels:
   - conda-forge
 dependencies:
-  - cmake
-  - tbb-devel=2020.2
+  - cmake>=3.13
+  - tbb-devel=2021.4
   - xtensor=0.23.10
   - xsimd=7.6.0
   - xtensor-blas=0.19.2

@@ -25,15 +25,16 @@ jobs:
         CC: clang-7
         CXX: clang++-7
         LLVM_VERSION: 7
-        PYTHON_VERSION: 3.6
+        PYTHON_VERSION: 3.7
         UBUNTU_NAME: bionic
         IMAGE_NAME: 'ubuntu-18.04'
-        BUILD_SERIAL: 1
+        DISABLE_TBB: 1
+        DISABLE_XSIMD: 1
       clang9:
         CC: clang-9
         CXX: clang++-9
         LLVM_VERSION: 9
-        PYTHON_VERSION: 3.7
+        PYTHON_VERSION: 3.9
         UBUNTU_NAME: focal
         IMAGE_NAME: 'ubuntu-20.04'
 
@@ -65,12 +66,14 @@ jobs:
 
   strategy:
     matrix:
-      macOS_10_14:
-        PYTHON_VERSION: 3.7
-        IMAGE_NAME: 'macos-10.14'
       macOS_10_15:
         PYTHON_VERSION: 3.7
-        IMAGE_NAME: 'macos-10.15'
+        IMAGE_NAME: 'macOS-10.15'
+        DISABLE_TBB: 1
+      macOS_latest:
+        PYTHON_VERSION: 3.9
+        IMAGE_NAME: 'macOS-latest'
+        DISABLE_TBB: 1
 
   pool:
     vmImage: $(IMAGE_NAME)
