@@ -69,11 +69,9 @@ jobs:
       macOS_10_15:
         PYTHON_VERSION: 3.7
         IMAGE_NAME: 'macOS-10.15'
-        DISABLE_TBB: 1
       macOS_latest:
         PYTHON_VERSION: 3.9
         IMAGE_NAME: 'macOS-latest'
-        DISABLE_TBB: 1
 
   pool:
     vmImage: $(IMAGE_NAME)
