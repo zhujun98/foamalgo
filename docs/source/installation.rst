@@ -49,9 +49,21 @@ pyfoamalgo
     export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
     pip install . -v
 
-.. warning::
 
-    There is a compiler bug related to GCC-7: https://github.com/xtensor-stack/xtensor/issues/2289.
+Bugs and workarounds
+"""""""""""""""""""""""
+
+- There is a compiler bug related to GCC-7: https://github.com/xtensor-stack/xtensor/issues/2289.
+
+- Install `h5py` on MacOS with m1 chip.
+
+.. code:: shell
+
+    brew install hdf5
+    export HDF5_DIR=/opt/homebrew/Cellar/hdf5/<version>
+    pip install --no-binary=h5py h5py
+
+
 
 
 On the Maxwell cluster
