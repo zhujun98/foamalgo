@@ -42,27 +42,19 @@ OPTION(BUILD_FOAM_PYTHON "Build FOAM Python bindings" OFF)
 # dependencies
 # ============
 
-set(xsimd_REQUIRED_VERSION 7.6.0)
-set(xtl_REQUIRED_VERSION 0.7.2)
-set(xtensor_REQUIRED_VERSION 0.23.10)
-set(xtensor-blas_REQUIRED_VERSION 0.19.1)
-
 set(thirdparty_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty)
 
 include(${PROJECT_SOURCE_DIR}/cmake/build_external_project.cmake)
 
 # tbb
 if(FOAM_USE_TBB OR XTENSOR_USE_TBB)
-    set(TBB_REQUIRED_VERSION 2020.3)
-    string(REPLACE "." "_U" TBB_REQUIRED_VERSION_STR ${TBB_REQUIRED_VERSION})
-
     add_compile_definitions(TBB_SUPPRESS_DEPRECATED_MESSAGES)
 
     find_package(TBB QUIET)
-    if(TBB_FOUND AND ${TBB_VERSION_MAJOR}.${TBB_VERSION_MINOR} VERSION_GREATER_EQUAL TBB_REQUIRED_VERSION)
+    if(TBB_FOUND)
         set(TBB_LIBRARY ${TBB_LIBRARIES_RELEASE})
     else()
-        message(STATUS "Downloading TBB ${TBB_REQUIRED_VERSION_STR}")
+        message(STATUS "Downloading TBB")
 
         configure_file(cmake/downloadTbb.cmake.in ${thirdparty_BINARY_DIR}/tbb-stage/CMakeLists.txt)
         setup_external_project( tbb )
@@ -72,7 +64,7 @@ if(FOAM_USE_TBB OR XTENSOR_USE_TBB)
                   CONFIG_DIR TBB_DIR
                   MAKE_ARGS tbb_build_dir=${thirdparty_BINARY_DIR}/tbb-build
                             tbb_build_prefix=tbb_cmake_build)
-        find_package(TBB ${TBB_REQUIRED_VERSION} EXACT CONFIG REQUIRED COMPONENTS tbb tbbmalloc)
+        find_package(TBB CONFIG REQUIRED COMPONENTS tbb tbbmalloc)
 
         get_target_property(TBB_INCLUDE_DIRS TBB::tbb INTERFACE_INCLUDE_DIRECTORIES)
         get_target_property(TBB_LIBRARY TBB::tbb IMPORTED_LOCATION_RELEASE)
@@ -88,7 +80,7 @@ endif()
 
 # xsimd
 if(FOAM_USE_XSIMD OR XTENSOR_USE_XSIMD)
-    find_package(xsimd ${xsimd_REQUIRED_VERSION} QUIET)
+    find_package(xsimd QUIET)
 
     if(xsimd_FOUND)
         message(STATUS "Found xsimd: ${xsimd_VERSION}, ${xsimd_INCLUDE_DIRS}")
@@ -105,21 +97,18 @@ if(FOAM_USE_XSIMD OR XTENSOR_USE_XSIMD)
 
 endif()
 
-# xtl
-find_package(xtl ${xtl_REQUIRED_VERSION} QUIET)
-if(xtl_FOUND)
-    message(STATUS "Found xtl: ${xtl_VERSION}, ${xtl_INCLUDE_DIRS}")
-else()
-    configure_file(cmake/downloadXtl.cmake.in thirdparty/xtl-stage/CMakeLists.txt)
-    build_external_project( xtl )
-    set(xtl_DIR ${xtl_BINARY_DIR})
-endif()
-
 # xtensor
-find_package(xtensor ${xtensor_REQUIRED_VERSION} QUIET)
+find_package(xtensor QUIET)
 if(xtensor_FOUND)
     message(STATUS "Found xtensor: ${xtensor_VERSION}, ${xtensor_INCLUDE_DIRS}")
 else()
+    find_package(xtl QUIET)
+    if(NOT xtl_FOUND)
+        configure_file(cmake/downloadXtl.cmake.in thirdparty/xtl-stage/CMakeLists.txt)
+        build_external_project( xtl )
+        set(xtl_DIR ${xtl_BINARY_DIR})
+    endif()
+
     configure_file(cmake/downloadXtensor.cmake.in thirdparty/xtensor-stage/CMakeLists.txt)
     build_external_project( xtensor )
     # required by xtensor-python
@@ -131,7 +120,7 @@ find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 message(STATUS "BLAS VENDOR:    " ${BLA_VENDOR})
 message(STATUS "BLAS LIBRARIES: " ${BLAS_LIBRARIES})
-find_package(xtensor-blas ${xtensor-blas_REQUIRED_VERSION} QUIET)
+find_package(xtensor-blas QUIET)
 if(xtensor-blas_FOUND)
     message(STATUS "Found xtensor-blas: ${xtensor-blas_VERSION}, ${xtensor-blas_INCLUDE_DIRS}")
 else()

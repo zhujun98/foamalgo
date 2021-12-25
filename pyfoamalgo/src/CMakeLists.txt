@@ -9,18 +9,15 @@
 # dependencies
 # ============
 
-set(pybind11_REQUIRED_VERSION 2.6.2)
-set(xtensor-python_REQUIRED_VERSION 0.25.3)
-
 find_package(NumPy REQUIRED)
 message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")
 
 # pybind11
-find_package(pybind11 ${pybind11_REQUIRED_VERSION} REQUIRED)
+find_package(pybind11 REQUIRED)
 message(STATUS "Found pybind11: ${pybind11_VERSION}, ${pybind11_INCLUDE_DIRS}")
 
 # xtensor-python
-find_package(xtensor-python ${xtensor-python_REQUIRED_VERSION} REQUIRED)
+find_package(xtensor-python REQUIRED)
 message(STATUS "Found xtensor-python: ${xtensor-python_VERSION}, ${xtensor-python_INCLUDE_DIRS}")
 
 # ============
