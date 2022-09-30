@@ -17,11 +17,6 @@ jobs:
         CXX: g++-9
         LLVM_VERSION: 0
         PYTHON_VERSION: 3.10
-      clang7:
-        CC: clang-7
-        CXX: clang++-7
-        LLVM_VERSION: 7
-        PYTHON_VERSION: 3.9
         DISABLE_TBB: 1
         DISABLE_XSIMD: 1
       clang9:
@@ -58,13 +53,9 @@ jobs:
 
   strategy:
     matrix:
-      macOS_11:
+      macOS_latest:
         PYTHON_VERSION: 3.9
-        IMAGE_NAME: 'macOS-11'
-        DISABLE_TBB: 1
-      macOS_12:
-        PYTHON_VERSION: 3.9
-        IMAGE_NAME: 'macOS-12'
+        IMAGE_NAME: 'macOS-latest'
         DISABLE_TBB: 1
 
   pool:
