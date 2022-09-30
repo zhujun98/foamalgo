@@ -10,24 +10,18 @@ jobs:
         CC: gcc-8
         CXX: g++-8
         LLVM_VERSION: 0
-        PYTHON_VERSION: 3.7
-        UBUNTU_NAME: bionic
-        IMAGE_NAME: 'ubuntu-18.04'
+        PYTHON_VERSION: 3.9
         BENCHMARK: 1
       gcc9:
         CC: gcc-9
         CXX: g++-9
         LLVM_VERSION: 0
-        PYTHON_VERSION: 3.8
-        UBUNTU_NAME: focal
-        IMAGE_NAME: 'ubuntu-20.04'
+        PYTHON_VERSION: 3.10
       clang7:
         CC: clang-7
         CXX: clang++-7
         LLVM_VERSION: 7
-        PYTHON_VERSION: 3.7
-        UBUNTU_NAME: bionic
-        IMAGE_NAME: 'ubuntu-18.04'
+        PYTHON_VERSION: 3.9
         DISABLE_TBB: 1
         DISABLE_XSIMD: 1
       clang9:
@@ -35,11 +29,9 @@ jobs:
         CXX: clang++-9
         LLVM_VERSION: 9
         PYTHON_VERSION: 3.9
-        UBUNTU_NAME: focal
-        IMAGE_NAME: 'ubuntu-20.04'
 
   pool:
-    vmImage: $(IMAGE_NAME)
+    vmImage: 'ubuntu-20.04'
 
   steps:
     - checkout: self
@@ -67,12 +59,12 @@ jobs:
   strategy:
     matrix:
       macOS_10_15:
-        PYTHON_VERSION: 3.7
-        IMAGE_NAME: 'macOS-10.15'
+        PYTHON_VERSION: 3.9
+        IMAGE_NAME: 'macOS-11'
         DISABLE_TBB: 1
       macOS_latest:
         PYTHON_VERSION: 3.9
-        IMAGE_NAME: 'macOS-latest'
+        IMAGE_NAME: 'macOS-12'
         DISABLE_TBB: 1
 
   pool:
