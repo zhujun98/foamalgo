@@ -6,27 +6,32 @@ jobs:
 
   strategy:
     matrix:
-      gcc8:
-        CC: gcc-8
-        CXX: g++-8
-        LLVM_VERSION: 0
-        PYTHON_VERSION: 3.9
-        BENCHMARK: 1
-      gcc9:
+      ubuntu20_gcc9:
         CC: gcc-9
         CXX: g++-9
         LLVM_VERSION: 0
-        PYTHON_VERSION: 3.10
+        IMAGE_NAME: 'ubuntu-20.04'
+        PYTHON_VERSION: 3.9
+        BENCHMARK: 1
+
+      ubuntu22_gcc9:
+        CC: gcc-9
+        CXX: g++-9
+        LLVM_VERSION: 0
+        IMAGE_NAME: 'ubuntu-22.04'
+        PYTHON_VERSION: 3.9
         DISABLE_TBB: 1
         DISABLE_XSIMD: 1
-      clang9:
+
+      ubuntu20_clang9:
         CC: clang-9
         CXX: clang++-9
         LLVM_VERSION: 9
-        PYTHON_VERSION: 3.9
+        IMAGE_NAME: 'ubuntu-20.04'
+        PYTHON_VERSION: 3.10
 
   pool:
-    vmImage: 'ubuntu-20.04'
+    vmImage: $(IMAGE_NAME)
 
   steps:
     - checkout: self
@@ -53,10 +58,17 @@ jobs:
 
   strategy:
     matrix:
-      macOS_latest:
+      macOS_11:
         PYTHON_VERSION: 3.9
-        IMAGE_NAME: 'macOS-latest'
+        IMAGE_NAME: 'macOS-11'
         DISABLE_TBB: 1
+        DISABLE_XSIMD: 1
+
+      macOS_12:
+        PYTHON_VERSION: 3.10
+        IMAGE_NAME: 'macOS-12'
+        DISABLE_TBB: 1
+        DISABLE_XSIMD: 1
 
   pool:
     vmImage: $(IMAGE_NAME)

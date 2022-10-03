@@ -17,6 +17,10 @@ function(define_foam_compile_flags MODULE_NAME)
 
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
+    if (APPLE AND ${FOAM_USE_TBB})
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -faligned-allocation")
+    endif()
+
     if( ${MODULE_NAME} STREQUAL "foam_py" )
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")
 
