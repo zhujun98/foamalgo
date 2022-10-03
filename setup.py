@@ -13,11 +13,9 @@ import os.path as osp
 import re
 import shutil
 import sys
-import sysconfig
 import subprocess
 from setuptools import setup, Command, find_packages, Distribution, Extension
 from setuptools.command.build_ext import build_ext
-from setuptools.command.test import test as _TestCommand
 from distutils.command.clean import clean
 from distutils.version import LooseVersion
 from distutils.util import strtobool
@@ -44,13 +42,12 @@ ext_modules = [
 ]
 
 
-class BuildExt(build_ext):
+class Build(build_ext):
 
     description = "Build the C++ extensions for pyfoamalgo"
     user_options = [
         ('disable-tbb', None, 'disable intel TBB'),
-        # https://quantstack.net/xsimd.html
-        ('use-xsimd', None, 'build with XSIMD'),
+        ('disable-xsimd', None, 'disable XSIMD'),
         ('with-tests', None, 'build cpp unittests'),
     ] + build_ext.user_options
 
@@ -59,7 +56,6 @@ class BuildExt(build_ext):
 
         self.disable_tbb = strtobool(os.environ.get('DISABLE_TBB', '0'))
         self.disable_xsimd = strtobool(os.environ.get('DISABLE_XSIMD', '0'))
-
         self.with_tests = strtobool(os.environ.get('BUILD_FOAM_TESTS', '0'))
 
     def run(self):
@@ -172,15 +168,10 @@ class BuildExt(build_ext):
                         osp.join(build_lib, 'pyfoamalgo', lib))
 
 
-class TestCommand(_TestCommand):
-    def _get_build_dir(self, dirname):
-        version = sys.version_info
-        return f"{dirname}.{sysconfig.get_platform()}-{version[0]}.{version[1]}"
-
+class Test(build_ext):
     def run(self):
         # build and run cpp test
-        build_temp = osp.join('build', self._get_build_dir('temp'))
-        with changed_cwd(build_temp):
+        with changed_cwd(self.build_temp):
             self.spawn(['make', 'ftest'])
 
         # run Python test
@@ -189,7 +180,7 @@ class TestCommand(_TestCommand):
         sys.exit(errno)
 
 
-class BenchmarkCommand(Command):
+class Benchmark(Command):
 
     user_options = []
 
@@ -237,9 +228,9 @@ setup(
     tests_require=['pytest'],
     cmdclass={
         'clean': clean,
-        'build_ext': BuildExt,
-        'test': TestCommand,
-        'benchmark': BenchmarkCommand,
+        'build_ext': Build,
+        'test': Test,
+        'benchmark': Benchmark,
     },
     distclass=BinaryDistribution,
     package_data={
