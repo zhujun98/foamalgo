@@ -6,11 +6,13 @@
 # Copyright (C) 2020, Jun Zhu. All rights reserved.
 ################################################################################
 
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
+
 # Download and unpack googletest at configure time
 configure_file(downloadGTest.cmake.in googletest-download/CMakeLists.txt)
 
 execute_process(
-    COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+    COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -Wno-dev .
     RESULT_VARIABLE result
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download
 )
@@ -37,6 +39,8 @@ add_subdirectory(
     ${CMAKE_CURRENT_BINARY_DIR}/googletest-src
     ${CMAKE_CURRENT_BINARY_DIR}/googletest-build EXCLUDE_FROM_ALL
 )
+
+set(CMAKE_WARN_DEPRECATED ON CACHE BOOL "" FORCE)
 
 set(GTEST_INCLUDE_DIRS "${gtest_SOURCE_DIR}/include")
 set(GMOCK_INCLUDE_DIRS "${gmock_SOURCE_DIR}/include")
