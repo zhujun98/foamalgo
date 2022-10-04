@@ -8,7 +8,7 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
 #include "tbb/parallel_for.h"
 #include "tbb/blocked_range2d.h"
 #endif

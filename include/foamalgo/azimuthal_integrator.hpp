@@ -13,7 +13,7 @@
 
 #include <cmath>
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
 #include <mutex> // There is a bug in "tbb/mutex.h".
 #include "tbb/parallel_for.h"
 #endif
@@ -191,7 +191,7 @@ auto histogramAI(E1&& src, const E2& geometry, T q_min, T q_max, size_t n_bins, 
   size_t np = src.shape()[0];
   image_type hist = xt::zeros<value_type>({ np, n_bins });
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, np),
     [&src, &geometry, &hist, q_min, q_max, n_bins, min_count]
     (const tbb::blocked_range<int> &block)
@@ -206,7 +206,7 @@ auto histogramAI(E1&& src, const E2& geometry, T q_min, T q_max, size_t n_bins, 
         detail::histogramAIImp(xt::view(src, k, xt::all(), xt::all()), geometry, hist_view,
                                q_min, q_max, n_bins, min_count);
       }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
     }
   );
 #endif
@@ -432,7 +432,7 @@ std::array<T, 2> ConcentricRingsFinder<T>::search(E&& src, T cx0, T cy0, size_t 
   size_t npt = estimateNPoints(src, cx0, cy0);
 
   int initial_space = 10;
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   std::mutex mtx;
   tbb::parallel_for(tbb::blocked_range<int>(-initial_space, initial_space),
     [&src, cx0, cy0, npt, min_count, &cx_max, &cy_max, &max_s, initial_space, &mtx, this]
@@ -456,7 +456,7 @@ std::array<T, 2> ConcentricRingsFinder<T>::search(E&& src, T cx0, T cy0, size_t 
           auto bounds = xt::minmax(ret.second)();
           auto curr_max = static_cast<T>(bounds[1]);
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
           {
             std::scoped_lock lock(mtx);
 #endif
@@ -466,12 +466,12 @@ std::array<T, 2> ConcentricRingsFinder<T>::search(E&& src, T cx0, T cy0, size_t 
               cx_max = cx;
               cy_max = cy;
             }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
           }
 #endif
         }
       }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
     }
   );
 #endif

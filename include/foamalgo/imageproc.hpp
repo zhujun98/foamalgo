@@ -16,7 +16,7 @@
 #include "xtensor/xmath.hpp"
 #include "xtensor/xindex_view.hpp"
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
 #include "tbb/parallel_for.h"
 #include "tbb/blocked_range2d.h"
 #endif
@@ -28,7 +28,7 @@
 namespace foam
 {
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
 namespace detail
 {
 
@@ -99,7 +99,7 @@ template<typename E, EnableIf<std::decay_t<E>, IsImageArray> = false>
 inline auto nanmeanImageArray(E&& src, const std::vector<size_t>& keep)
 {
   if (keep.empty()) throw std::invalid_argument("keep cannot be empty!");
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   return detail::nanmeanImageArrayImp(std::forward<E>(src), keep);
 #else
   using value_type = typename std::decay_t<E>::value_type;
@@ -117,7 +117,7 @@ inline auto nanmeanImageArray(E&& src, const std::vector<size_t>& keep)
 template<typename E, EnableIf<std::decay_t<E>, IsImageArray> = false>
 inline auto nanmeanImageArray(E&& src)
 {
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   return detail::nanmeanImageArrayImp(std::forward<E>(src));
 #else
   using value_type = typename std::decay_t<E>::value_type;
@@ -140,7 +140,7 @@ inline auto nanmeanImageArray(E&& src1, E&& src2)
 
   utils::checkShape(shape, src2.shape(), "Images have different shapes");
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   auto mean = std::decay_t<E>({shape[0], shape[1]});
 
   tbb::parallel_for(tbb::blocked_range2d<int>(0, shape[0], 0, shape[1]),
@@ -617,7 +617,7 @@ inline void maskImageDataZero(E& src)
   using value_type = typename E::value_type;
   auto shape = src.shape();
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
     [&src, &shape] (const tbb::blocked_range<int> &block)
     {
@@ -659,7 +659,7 @@ template <typename E, typename T,
 inline void maskImageDataZero(E& src, T lb, T ub)
 {
   using value_type = typename E::value_type;
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   auto shape = src.shape();
 
   auto nan = std::numeric_limits<value_type>::quiet_NaN();
@@ -698,7 +698,7 @@ inline void maskImageDataNan(E& src, T lb, T ub)
   using value_type = typename E::value_type;
 
   auto nan = std::numeric_limits<value_type>::quiet_NaN();
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   auto shape = src.shape();
 
   tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
@@ -740,7 +740,7 @@ inline void maskImageDataZero(E& src, const M& mask)
   utils::checkShape(shape, mask.shape(), "Image and mask have different shapes", 1);
 
   auto nan = std::numeric_limits<value_type>::quiet_NaN();
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
     [&src, &mask, nan, &shape] (const tbb::blocked_range<int> &block)
     {
@@ -758,7 +758,7 @@ inline void maskImageDataZero(E& src, const M& mask)
           }
         }
       }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
     }
   );
 #endif
@@ -780,7 +780,7 @@ inline void maskImageDataNan(E& src, const M& mask)
   utils::checkShape(shape, mask.shape(), "Image and mask have different shapes", 1);
 
   auto nan = std::numeric_limits<value_type>::quiet_NaN();
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
     [&src, &mask, nan, &shape] (const tbb::blocked_range<int> &block)
     {
@@ -798,7 +798,7 @@ inline void maskImageDataNan(E& src, const M& mask)
           }
         }
       }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
     }
   );
 #endif
@@ -821,7 +821,7 @@ inline void maskImageDataZero(E& src, const M& mask, T lb, T ub)
   utils::checkShape(shape, mask.shape(), "Image and mask have different shapes", 1);
 
   auto nan = std::numeric_limits<value_type>::quiet_NaN();
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
     [&src, &mask, lb, ub, nan, &shape] (const tbb::blocked_range<int> &block)
     {
@@ -846,7 +846,7 @@ inline void maskImageDataZero(E& src, const M& mask, T lb, T ub)
           }
         }
       }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
     }
   );
 #endif
@@ -868,7 +868,7 @@ inline void maskImageDataNan(E& src, const M& mask, T lb, T ub)
   utils::checkShape(shape, mask.shape(), "Image and mask have different shapes", 1);
 
   auto nan = std::numeric_limits<value_type>::quiet_NaN();
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
     [&src, &mask, lb, ub, nan, &shape] (const tbb::blocked_range<int> &block)
     {
@@ -894,7 +894,7 @@ inline void maskImageDataNan(E& src, const M& mask, T lb, T ub)
           }
         }
       }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
     }
   );
 #endif
@@ -943,7 +943,7 @@ inline void movingAvgImageData(E& src, const E& data, size_t count)
 
   utils::checkShape(shape, data.shape(), "Inconsistent data shapes");
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
     [&src, &data, count, &shape] (const tbb::blocked_range<int> &block)
     {
@@ -961,7 +961,7 @@ inline void movingAvgImageData(E& src, const E& data, size_t count)
           }
         }
       }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
     }
   );
 #endif
@@ -1051,7 +1051,7 @@ template <typename Policy, typename E>
 inline void correctImageDataImp(E& src, const E& constants)
 {
   auto shape = src.shape();
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
     [&src, &constants, &shape] (const tbb::blocked_range<int> &block)
     {
@@ -1064,7 +1064,7 @@ inline void correctImageDataImp(E& src, const E& constants)
         auto&& src_view = xt::view(src, i, xt::all(), xt::all());
         Policy::correct(src_view, xt::view(constants, i, xt::all(), xt::all()));
       }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
     }
   );
 #endif
@@ -1118,7 +1118,7 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
   utils::checkShape(shape, gain.shape(), "data and gain constants have different shapes");
   utils::checkShape(shape, offset.shape(), "data and offset constants have different shapes");
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
   tbb::parallel_for(tbb::blocked_range<int>(0, shape[0]),
     [&src, &gain, &offset, &shape] (const tbb::blocked_range<int> &block)
     {
@@ -1133,7 +1133,7 @@ inline void correctImageData(E& src, const E& gain, const E& offset)
                         xt::view(gain, i, xt::all(), xt::all()),
                         xt::view(offset, i, xt::all(), xt::all()));
       }
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
     }
   );
 #endif

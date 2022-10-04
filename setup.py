@@ -46,7 +46,7 @@ class Build(build_ext):
 
     description = "Build the C++ extensions for pyfoamalgo"
     user_options = [
-        ('disable-tbb', None, 'disable intel TBB'),
+        ('disable-tbb', None, 'disable oneTBB'),
         ('disable-xsimd', None, 'disable XSIMD'),
         ('with-tests', None, 'build cpp unittests'),
     ] + build_ext.user_options
@@ -56,7 +56,7 @@ class Build(build_ext):
 
         self.disable_tbb = strtobool(os.environ.get('DISABLE_TBB', '0'))
         self.disable_xsimd = strtobool(os.environ.get('DISABLE_XSIMD', '0'))
-        self.with_tests = strtobool(os.environ.get('BUILD_FOAM_TESTS', '0'))
+        self.with_tests = strtobool(os.environ.get('BUILD_FOAMALGO_CPP_TESTS', '0'))
 
     def run(self):
         try:
@@ -68,7 +68,7 @@ class Build(build_ext):
 
         cmake_version = LooseVersion(
             re.search(r'version\s*([\d.]+)', out.decode()).group(1))
-        cmake_minimum_version_required = '3.13.0'
+        cmake_minimum_version_required = '3.15.0'
         if cmake_version < cmake_minimum_version_required:
             raise RuntimeError(f"CMake >= {cmake_minimum_version_required} "
                                f"is required!")
@@ -87,24 +87,24 @@ class Build(build_ext):
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={build_type}",
             f"-DCMAKE_PREFIX_PATH={os.getenv('CMAKE_PREFIX_PATH')}",
-            f"-DBUILD_FOAM_PYTHON=ON",
+            f"-DBUILD_PYFOAMALGO=ON",
         ]
 
         def _opt_switch(x):
             return 'ON' if x else 'OFF'
 
         cmake_options.append(
-            f'-DFOAM_USE_TBB={_opt_switch(not self.disable_tbb)}')
+            f'-DFOAMALGO_USE_TBB={_opt_switch(not self.disable_tbb)}')
         cmake_options.append(
             f'-DXTENSOR_USE_TBB={_opt_switch(not self.disable_tbb)}')
 
         cmake_options.append(
-            f'-DFOAM_USE_XSIMD={_opt_switch(not self.disable_xsimd)}')
+            f'-DFOAMALGO_USE_XSIMD={_opt_switch(not self.disable_xsimd)}')
         cmake_options.append(
             f'-DXTENSOR_USE_XSIMD={_opt_switch(not self.disable_xsimd)}')
 
         cmake_options.append(
-            f'-DBUILD_FOAM_TESTS={_opt_switch(self.with_tests)}')
+            f'-DBUILD_FOAMALGO_CPP_TESTS={_opt_switch(self.with_tests)}')
 
         max_jobs = os.environ.get('BUILD_FOAM_MAX_JOBS', str(mp.cpu_count()))
         build_options = ['--', '-j', max_jobs]
