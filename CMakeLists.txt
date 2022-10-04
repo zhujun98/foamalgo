@@ -3,7 +3,7 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 #
-# Copyright (C) 2020, Jun Zhu. All rights reserved.
+# Author: Jun Zhu
 ################################################################################
 
 cmake_minimum_required(VERSION 3.15.0)  # modify "setup.py" file at the same time
