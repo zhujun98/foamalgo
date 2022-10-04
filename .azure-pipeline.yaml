@@ -61,13 +61,13 @@ jobs:
       macOS_11:
         PYTHON_VERSION: 3.9
         IMAGE_NAME: 'macOS-11'
-        DISABLE_TBB: 1
+        DISABLE_TBB: 1  # worked on MacOS 12.6 with M1 chip
         DISABLE_XSIMD: 1
 
       macOS_12:
         PYTHON_VERSION: 3.10
         IMAGE_NAME: 'macOS-12'
-        DISABLE_TBB: 1
+        DISABLE_TBB: 1  # worked on MacOS 12.6 with M1 chip
         DISABLE_XSIMD: 1
 
   pool:
