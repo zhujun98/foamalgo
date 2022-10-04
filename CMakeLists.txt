@@ -3,10 +3,10 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 #
-# Copyright (C) 2020, Jun Zhu. All rights reserved.
+# Author: Jun Zhu
 ################################################################################
 
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.15.0)  # modify "setup.py" file at the same time
 
 project(foamalgo LANGUAGES CXX VERSION 0.1.2)
 
@@ -31,13 +31,20 @@ configure_file(foamalgo_version.in ${FOAMALGO_HEADER_DIR}/foamalgo_version.hpp @
 # options
 # =======
 
-OPTION(FOAM_USE_TBB "Build foamalgo (xtensor is not included) with intel TBB" ON)
+OPTION(FOAMALGO_USE_TBB "Build ${PROJECT_NAME} (xtensor is not included) with oneTBB" ON)
 
-OPTION(FOAM_USE_XSIMD "Build foamalgo (xtensor is not included) with XSIMD" ON)
+OPTION(FOAMALGO_USE_XSIMD "Build ${PROJECT_NAME} (xtensor is not included) with XSIMD" ON)
 
-OPTION(BUILD_FOAM_TESTS "Build c++ unit test" ON)
+OPTION(BUILD_FOAMALGO_CPP_TESTS "Build c++ unittests" OFF)
 
-OPTION(BUILD_FOAM_PYTHON "Build FOAM Python bindings" OFF)
+OPTION(BUILD_PYFOAMALGO "Build Python bindings" OFF)
+
+if (NOT DEFINED XTENSOR_USE_TBB)
+    set(XTENSOR_USE_TBB OFF)
+endif()
+if (NOT DEFINED XTENSOR_USE_XSIMD)
+    set(XTENSOR_USE_XSIMD OFF)
+endif()
 
 # dependencies
 # ============
@@ -45,26 +52,25 @@ OPTION(BUILD_FOAM_PYTHON "Build FOAM Python bindings" OFF)
 set(thirdparty_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty)
 
 # tbb
-if(FOAM_USE_TBB OR XTENSOR_USE_TBB)
+if(FOAMALGO_USE_TBB OR XTENSOR_USE_TBB)
     find_package(TBB 2021.5 REQUIRED)
-    message(STATUS "TBB FOUND: ${TBB_VERSION}")
+    message(STATUS "TBB FOUND: ${TBB_VERSION}, ${TBB_LIBRARIES}")
 
-    if(FOAM_USE_TBB)
-        message(STATUS "Build foamalgo with intel TBB")
-        add_compile_definitions(FOAM_USE_TBB)
+    if(FOAMALGO_USE_TBB)
+        message(STATUS "Build ${PROJECT_NAME} with oneTBB")
+        add_compile_definitions(FOAMALGO_USE_TBB)
     endif()
 endif()
 
 # xsimd
-if(FOAM_USE_XSIMD OR XTENSOR_USE_XSIMD)
+if(FOAMALGO_USE_XSIMD OR XTENSOR_USE_XSIMD)
     find_package(xsimd REQUIRED)
     message(STATUS "Found xsimd: ${xsimd_VERSION}, ${xsimd_INCLUDE_DIRS}")
 
-    if(FOAM_USE_XSIMD)
-        message(STATUS "Build foamalgo with XSIMD")
-        add_compile_definitions(FOAM_USE_XSIMD)
+    if(FOAMALGO_USE_XSIMD)
+        message(STATUS "Build ${PROJECT_NAME} with XSIMD")
+        add_compile_definitions(FOAMALGO_USE_XSIMD)
     endif()
-
 endif()
 
 # xtensor
@@ -82,18 +88,18 @@ message(STATUS "Found xtensor-blas: ${xtensor-blas_VERSION}, ${xtensor-blas_INCL
 # foamalgo
 
 set(FOAM_HEADERS
-    ${FOAMALGO_HEADER_DIR}/canny.hpp
-    ${FOAMALGO_HEADER_DIR}/foamalgo_config.hpp
-    ${FOAMALGO_HEADER_DIR}/foamalgo_version.hpp
-    ${FOAMALGO_HEADER_DIR}/geometry.hpp
-    ${FOAMALGO_HEADER_DIR}/geometry_1m.hpp
-    ${FOAMALGO_HEADER_DIR}/imageproc.hpp
-    ${FOAMALGO_HEADER_DIR}/miscellaneous.hpp
-    ${FOAMALGO_HEADER_DIR}/smooth.hpp
-    ${FOAMALGO_HEADER_DIR}/statistics.hpp
-    ${FOAMALGO_HEADER_DIR}/traits.hpp
-    ${FOAMALGO_HEADER_DIR}/utilities.hpp
-    )
+        ${FOAMALGO_HEADER_DIR}/canny.hpp
+        ${FOAMALGO_HEADER_DIR}/foamalgo_config.hpp
+        ${FOAMALGO_HEADER_DIR}/foamalgo_version.hpp
+        ${FOAMALGO_HEADER_DIR}/geometry.hpp
+        ${FOAMALGO_HEADER_DIR}/geometry_1m.hpp
+        ${FOAMALGO_HEADER_DIR}/imageproc.hpp
+        ${FOAMALGO_HEADER_DIR}/miscellaneous.hpp
+        ${FOAMALGO_HEADER_DIR}/smooth.hpp
+        ${FOAMALGO_HEADER_DIR}/statistics.hpp
+        ${FOAMALGO_HEADER_DIR}/traits.hpp
+        ${FOAMALGO_HEADER_DIR}/utilities.hpp
+        )
 
 # check header files
 foreach(header IN LISTS FOAM_HEADERS)
@@ -105,15 +111,17 @@ endforeach()
 add_library(${PROJECT_NAME} INTERFACE)
 
 target_include_directories(${PROJECT_NAME}
-    INTERFACE
-        $<BUILD_INTERFACE:${FOAMALGO_INCLUDE_DIR}>
-        $<INSTALL_INTERFACE:include>)
+        INTERFACE
+            $<BUILD_INTERFACE:${FOAMALGO_INCLUDE_DIR}>
+            $<INSTALL_INTERFACE:include>
+        )
 
 target_link_libraries(${PROJECT_NAME}
-    INTERFACE
-        xtensor
-        xtensor-blas
-        $<$<BOOL:${FOAM_USE_XSIMD}>:xsimd>)
+        INTERFACE
+            xtensor
+            xtensor-blas
+            $<$<BOOL:${FOAMALGO_USE_XSIMD}>:xsimd>
+        )
 
 # ============
 # Build flags
@@ -130,7 +138,7 @@ string(STRIP "${FOAM_COMPILER_STR}" FOAM_COMPILER_STR)
 # Unit test
 # ============
 
-if(BUILD_FOAM_TESTS)
+if(BUILD_FOAMALGO_CPP_TESTS)
     add_subdirectory(tests)
 endif()
 
@@ -175,6 +183,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
 # FOAM_PYTHON
 # ============
 
-if(BUILD_FOAM_PYTHON)
+if(BUILD_PYFOAMALGO)
     add_subdirectory(pyfoamalgo/src)
 endif()

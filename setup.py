@@ -3,7 +3,7 @@ Distributed under the terms of the GNU General Public License v3.0.
 
 The full license is in the file LICENSE, distributed with this software.
 
-Copyright (C) 2020, Jun Zhu. All rights reserved.
+Author: Jun Zhu
 """
 import contextlib
 import glob
@@ -46,7 +46,7 @@ class Build(build_ext):
 
     description = "Build the C++ extensions for pyfoamalgo"
     user_options = [
-        ('disable-tbb', None, 'disable intel TBB'),
+        ('disable-tbb', None, 'disable oneTBB'),
         ('disable-xsimd', None, 'disable XSIMD'),
         ('with-tests', None, 'build cpp unittests'),
     ] + build_ext.user_options
@@ -56,7 +56,7 @@ class Build(build_ext):
 
         self.disable_tbb = strtobool(os.environ.get('DISABLE_TBB', '0'))
         self.disable_xsimd = strtobool(os.environ.get('DISABLE_XSIMD', '0'))
-        self.with_tests = strtobool(os.environ.get('BUILD_FOAM_TESTS', '0'))
+        self.with_tests = strtobool(os.environ.get('BUILD_FOAMALGO_CPP_TESTS', '0'))
 
     def run(self):
         try:
@@ -68,7 +68,7 @@ class Build(build_ext):
 
         cmake_version = LooseVersion(
             re.search(r'version\s*([\d.]+)', out.decode()).group(1))
-        cmake_minimum_version_required = '3.13.0'
+        cmake_minimum_version_required = '3.15.0'
         if cmake_version < cmake_minimum_version_required:
             raise RuntimeError(f"CMake >= {cmake_minimum_version_required} "
                                f"is required!")
@@ -77,34 +77,33 @@ class Build(build_ext):
             self.build_cmake(ext)
 
     def build_cmake(self, ext):
-        ext_dir = osp.abspath(osp.dirname(self.get_ext_fullpath(ext.name)))
         build_type = 'debug' if self.debug else 'release'
-        build_lib = osp.join(os.getcwd(), self.build_lib)
-        saved_cwd = osp.join(ext_dir, "pyfoamalgo/lib")
+        lib_output_dir = osp.join(
+            osp.abspath(osp.dirname(self.get_ext_fullpath(ext.name))), "pyfoamalgo/lib")
 
         cmake_options = [
-            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={saved_cwd}",
+            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={lib_output_dir}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={build_type}",
             f"-DCMAKE_PREFIX_PATH={os.getenv('CMAKE_PREFIX_PATH')}",
-            f"-DBUILD_FOAM_PYTHON=ON",
+            f"-DBUILD_PYFOAMALGO=ON",
         ]
 
         def _opt_switch(x):
             return 'ON' if x else 'OFF'
 
         cmake_options.append(
-            f'-DFOAM_USE_TBB={_opt_switch(not self.disable_tbb)}')
+            f'-DFOAMALGO_USE_TBB={_opt_switch(not self.disable_tbb)}')
         cmake_options.append(
             f'-DXTENSOR_USE_TBB={_opt_switch(not self.disable_tbb)}')
 
         cmake_options.append(
-            f'-DFOAM_USE_XSIMD={_opt_switch(not self.disable_xsimd)}')
+            f'-DFOAMALGO_USE_XSIMD={_opt_switch(not self.disable_xsimd)}')
         cmake_options.append(
             f'-DXTENSOR_USE_XSIMD={_opt_switch(not self.disable_xsimd)}')
 
         cmake_options.append(
-            f'-DBUILD_FOAM_TESTS={_opt_switch(self.with_tests)}')
+            f'-DBUILD_FOAMALGO_CPP_TESTS={_opt_switch(self.with_tests)}')
 
         max_jobs = os.environ.get('BUILD_FOAM_MAX_JOBS', str(mp.cpu_count()))
         build_options = ['--', '-j', max_jobs]
@@ -122,50 +121,6 @@ class Build(build_ext):
             print("-- Running cmake --build for foamalgo")
             self.spawn(['cmake', '--build', '.'] + build_options)
             print("-- Finished cmake --build for foamalgo")
-
-            if self.inplace:
-                build_lib = saved_cwd
-
-            try:
-                os.makedirs(build_lib)
-            except OSError:
-                pass
-
-            # placeholder
-            # if not self.disable_tbb:
-            #     self._move_shared_libs('tbb', build_temp, build_lib)
-
-    def _move_thirdparty_exec_files(self):
-        for filename in self._thirdparty_exec_files:
-            src = filename
-            dst = os.path.join(self.build_lib, filename)
-
-            parent_directory = os.path.dirname(dst)
-            if not os.path.exists(parent_directory):
-                os.makedirs(parent_directory)
-
-            if not os.path.exists(dst):
-                self.announce(f"copy {src} to {dst}", level=1)
-                shutil.copy(src, dst)
-
-    def _move_shared_libs(self, lib_name, build_temp, build_lib):
-        self._move_shared_libs_unix(lib_name, build_temp, build_lib)
-
-    def _move_shared_libs_unix(self, lib_name, build_temp, build_lib):
-        if sys.platform == 'darwin':
-            lib_pattern = f"lib{lib_name}*.dylib"
-        else:
-            lib_pattern = f"lib{lib_name}*.so*"
-
-        libs = glob.glob(lib_pattern)
-
-        if not libs:
-            raise Exception(f"Could not find shared library with pattern: "
-                            f"{lib_pattern}")
-        # TODO: deal with libraries with symlinks
-        for lib in libs:
-            shutil.move(osp.join(build_temp, lib),
-                        osp.join(build_lib, 'pyfoamalgo', lib))
 
 
 class Test(build_ext):

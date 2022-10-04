@@ -3,7 +3,7 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 #
-# Copyright (C) 2020, Jun Zhu. All rights reserved.
+# Author: Jun Zhu
 ################################################################################
 
 # foamalgo cmake module
@@ -24,17 +24,17 @@ if(NOT TARGET @PROJECT_NAME@)
   get_target_property(@PROJECT_NAME@_INCLUDE_DIR @PROJECT_NAME@ INTERFACE_INCLUDE_DIRECTORIES)
 endif()
 
-if(FOAM_USE_XSIMD)
+if(FOAMALGO_USE_XSIMD)
     find_dependency(xsimd)
     target_link_libraries(@PROJECT_NAME@ INTERFACE xsimd)
-    target_compile_definitions(@PROJECT_NAME@ INTERFACE FOAM_USE_XSIMD)
+    target_compile_definitions(@PROJECT_NAME@ INTERFACE FOAMALGO_USE_XSIMD)
 endif()
 
-if(FOAM_USE_TBB)
+if(FOAMALGO_USE_TBB)
     find_dependency(TBB)
     target_include_directories(@PROJECT_NAME@ INTERFACE ${TBB_INCLUDE_DIRS})
     target_link_libraries(@PROJECT_NAME@ INTERFACE ${TBB_LIBRARIES})
-    target_compile_definitions(@PROJECT_NAME@ INTERFACE FOAM_USE_TBB)
+    target_compile_definitions(@PROJECT_NAME@ INTERFACE FOAMALGO_USE_TBB)
 endif()
 
 set_and_check(foamalgo_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")

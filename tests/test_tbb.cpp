@@ -6,7 +6,7 @@
 #include <vector>
 #include <algorithm>
 
-#if defined(FOAM_USE_TBB)
+#if defined(FOAMALGO_USE_TBB)
 
 #include "tbb/parallel_for.h"
 #include "tbb/blocked_range.h"
@@ -106,4 +106,4 @@ TEST(TestTBB, GeneralSubStringFinder) {
 
 } //foam::test
 
-#endif // FOAM_USE_TBB
+#endif // FOAMALGO_USE_TBB

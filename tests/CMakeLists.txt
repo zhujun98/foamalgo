@@ -3,7 +3,7 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 #
-# Copyright (C) 2020, Jun Zhu. All rights reserved.
+# Author: Jun Zhu
 ################################################################################
 
 set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
@@ -47,24 +47,24 @@ set(GMOCK_INCLUDE_DIRS "${gmock_SOURCE_DIR}/include")
 
 find_package(Threads REQUIRED)
 
-set(_FOAM_UNITTESTS
-    test_tbb.cpp
-    test_azimuthal_integrator.cpp
-    test_canny.cpp
-    test_geometry.cpp
-    test_geometry_1m.cpp
-    test_imageproc.cpp
-    test_smooth.cpp
-    test_statistics.cpp
-    test_traits.cpp
-    )
+set(FOAM_UNITTESTS
+        test_tbb.cpp
+        test_azimuthal_integrator.cpp
+        test_canny.cpp
+        test_geometry.cpp
+        test_geometry_1m.cpp
+        test_imageproc.cpp
+        test_smooth.cpp
+        test_statistics.cpp
+        test_traits.cpp
+        )
 
-set(_FOAM_UNITTEST_TARGETS_NEED_BLAS)
+set(FOAM_UNITTESTS_REQUIRED_BLAS)
 
 # Failed in compilation in macOS
 if (NOT APPLE)
-    list(APPEND _FOAM_UNITTESTS test_blas.cpp)
-    list(APPEND _FOAM_UNITTEST_TARGETS_NEED_BLAS test_blas)
+    list(APPEND FOAM_UNITTESTS test_blas.cpp)
+    list(APPEND FOAM_UNITTESTS_REQUIRED_BLAS test_blas)
 endif()
 
 set(CMAKE_BUILD_RPATH "${CMAKE_PREFIX_PATH}/lib")
@@ -72,28 +72,30 @@ set(CMAKE_BUILD_RPATH "${CMAKE_PREFIX_PATH}/lib")
 include(defineFoamCompilerFlags)
 define_foam_compile_flags(foam_test)
 
-foreach(pathname IN LISTS _FOAM_UNITTESTS)
+foreach(pathname IN LISTS FOAM_UNITTESTS)
     get_filename_component(filename ${pathname} NAME)
     string(REPLACE ".cpp" "" targetname ${filename})
     add_executable(${targetname} main.cpp ${filename})
     target_include_directories(${targetname}
-        PRIVATE
-            $<$<OR:$<BOOL:${FOAM_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_INCLUDE_DIRS}>
-            ${GTEST_INCLUDE_DIRS}
-            ${GMOCK_INCLUDE_DIRS}
-    )
-    target_link_libraries(${targetname}
-        PRIVATE
-            foamalgo
-            $<$<OR:$<BOOL:${FOAM_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARY}>
-            gtest
-            pthread)
-
-    if (${targetname} IN_LIST _FOAM_UNITTEST_TARGETS_NEED_BLAS)
-        target_link_libraries(${targetname}
             PRIVATE
-                ${BLAS_LIBRARIES}
-                ${LAPACK_LIBRARIES})
+                $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_INCLUDE_DIRS}>
+                ${GTEST_INCLUDE_DIRS}
+                ${GMOCK_INCLUDE_DIRS}
+            )
+    target_link_libraries(${targetname}
+            PRIVATE
+                foamalgo
+                $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARIES}>
+                gtest
+                pthread
+            )
+
+    if (${targetname} IN_LIST FOAM_UNITTESTS_REQUIRED_BLAS)
+        target_link_libraries(${targetname}
+                PRIVATE
+                    ${BLAS_LIBRARIES}
+                    ${LAPACK_LIBRARIES}
+                )
     endif()
 
     add_custom_target(f${targetname}
@@ -102,22 +104,24 @@ foreach(pathname IN LISTS _FOAM_UNITTESTS)
     )
 endforeach()
 
-add_executable(test_foamalgo main.cpp ${_FOAM_UNITTESTS})
+add_executable(test_foamalgo main.cpp ${FOAM_UNITTESTS})
 
 target_include_directories(test_foamalgo
-    PRIVATE
-        $<$<OR:$<BOOL:${FOAM_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_INCLUDE_DIRS}>
-        ${GTEST_INCLUDE_DIRS}
-        ${GMOCK_INCLUDE_DIRS})
+        PRIVATE
+            $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_INCLUDE_DIRS}>
+            ${GTEST_INCLUDE_DIRS}
+            ${GMOCK_INCLUDE_DIRS}
+        )
 
 target_link_libraries(test_foamalgo
-    PRIVATE
-        gtest
-        pthread
-        foamalgo
-        $<$<OR:$<BOOL:${FOAM_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARY}>
-        ${BLAS_LIBRARIES}
-        ${LAPACK_LIBRARIES})
+        PRIVATE
+            gtest
+            pthread
+            foamalgo
+            $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARIES}>
+            ${BLAS_LIBRARIES}
+            ${LAPACK_LIBRARIES}
+        )
 
 add_custom_target(ftest
     COMMAND test_foamalgo

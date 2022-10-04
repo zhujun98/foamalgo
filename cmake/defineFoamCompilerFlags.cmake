@@ -17,10 +17,6 @@ function(define_foam_compile_flags MODULE_NAME)
 
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
-    if (APPLE AND ${FOAM_USE_TBB})
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -faligned-allocation")
-    endif()
-
     if( ${MODULE_NAME} STREQUAL "foam_py" )
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")
 
@@ -43,6 +39,7 @@ function(define_foam_compile_flags MODULE_NAME)
 
         message(STATUS "=============================  foamalgo unit test  ================================")
     endif()
+
     message(STATUS "")
     message(STATUS "    C++ Compiler:               ${FOAM_COMPILER_STR}")
     message(STATUS "    Build type:                 ${CMAKE_BUILD_TYPE}")
@@ -51,8 +48,8 @@ function(define_foam_compile_flags MODULE_NAME)
     message(STATUS "    Linker flags (Release):     ${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
     message(STATUS "    Linker flags (Debug):       ${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_DEBUG}")
     message(STATUS "")
-    message(STATUS "    USE TBB in FOAM/XTENSOR:    ${FOAM_USE_TBB}/${XTENSOR_USE_TBB}")
-    message(STATUS "    USE XSIMD in FOAM/XTENSOR:  ${FOAM_USE_XSIMD}/${XTENSOR_USE_XSIMD}")
+    message(STATUS "    USE TBB in FOAM/XTENSOR:    ${FOAMALGO_USE_TBB}/${XTENSOR_USE_TBB}")
+    message(STATUS "    USE XSIMD in FOAM/XTENSOR:  ${FOAMALGO_USE_XSIMD}/${XTENSOR_USE_XSIMD}")
     message(STATUS "")
     message(STATUS "==================================================================================")
 

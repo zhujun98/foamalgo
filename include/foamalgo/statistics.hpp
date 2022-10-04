@@ -3,7 +3,7 @@
  *
  * The full license is in the file LICENSE, distributed with this software.
  *
- * Copyright (C) 2020, Jun Zhu. All rights reserved.
+ * Author: Jun Zhu
  */
 #ifndef FOAM_STATISTICS_HPP
 #define FOAM_STATISTICS_HPP
