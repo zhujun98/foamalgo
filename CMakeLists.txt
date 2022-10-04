@@ -54,7 +54,7 @@ set(thirdparty_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty)
 # tbb
 if(FOAMALGO_USE_TBB OR XTENSOR_USE_TBB)
     find_package(TBB 2021.5 REQUIRED)
-    message(STATUS "TBB FOUND: ${TBB_VERSION}")
+    message(STATUS "TBB FOUND: ${TBB_VERSION}, ${TBB_LIBRARIES}")
 
     if(FOAMALGO_USE_TBB)
         message(STATUS "Build ${PROJECT_NAME} with oneTBB")

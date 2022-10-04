@@ -85,7 +85,7 @@ foreach(pathname IN LISTS FOAM_UNITTESTS)
     target_link_libraries(${targetname}
             PRIVATE
                 foamalgo
-                $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARY}>
+                $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARIES}>
                 gtest
                 pthread
             )
@@ -118,7 +118,7 @@ target_link_libraries(test_foamalgo
             gtest
             pthread
             foamalgo
-            $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARY}>
+            $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARIES}>
             ${BLAS_LIBRARIES}
             ${LAPACK_LIBRARIES}
         )

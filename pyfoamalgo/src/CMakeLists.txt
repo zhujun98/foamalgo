@@ -66,7 +66,7 @@ foreach(pathname IN LISTS FOAM_MODULES)
     target_link_libraries(${modulename}
             PRIVATE
                 foamalgo
-                $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARY}>
+                $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARIES}>
                 pybind11::pybind11
                 xtensor-python
             )
