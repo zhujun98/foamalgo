@@ -6,11 +6,11 @@
 # Author: Jun Zhu
 ################################################################################
 
-cmake_minimum_required(VERSION 3.15.0)  # modify "setup.py" file at the same time
+cmake_minimum_required(VERSION 3.24)  # modify "setup.py" and "environment-dev.yml" at the same time
 
 project(foamalgo LANGUAGES CXX VERSION 0.1.2)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
