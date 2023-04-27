@@ -215,8 +215,8 @@ def quick_min_max(x, q=None):
 
     # Let np.nanquantile to handle the case when q is outside [0, 1]
     # caveat: nanquantile is about 30 times slower than nanmin/nanmax
-    return np.nanquantile(x, 1 - q, interpolation='nearest'), \
-           np.nanquantile(x, q, interpolation='nearest')
+    return np.nanquantile(x, 1 - q, method='nearest'), \
+           np.nanquantile(x, q, method='nearest')
 
 
 def _get_outer_edges(arr, bin_range):
