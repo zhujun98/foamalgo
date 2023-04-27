@@ -44,15 +44,13 @@ pyfoamalgo
 
 .. code:: shell
 
-    export CC=gcc-9 CXX=g++-9  # Specify the compiler in your system which supports C++17
+    export CC=gcc-10 CXX=g++-10  # Specify the compiler in your system which supports C++20
     export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
     pip install . -v
 
 
 Bugs and workarounds
 """""""""""""""""""""""
-
-- There is a compiler bug related to GCC-7: https://github.com/xtensor-stack/xtensor/issues/2289.
 
 - Install `h5py` on MacOS with m1 chip.
 
@@ -71,7 +69,7 @@ On the Maxwell cluster
     module load anaconda3
 
     # It is highly recommended to create an independent environment.
-    conda create -n foamalgo python=3.7
+    conda create -n foamalgo python=3.9.12
     conda activate foamalgo
 
     conda install -c conda-forge pyfoamalgo
