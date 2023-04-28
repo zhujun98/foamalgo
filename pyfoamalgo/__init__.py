@@ -8,7 +8,6 @@ Author: Jun Zhu
 from .version import __version__
 
 from .azimuthal_integration import *
-from .computer_vision import *
 from .data_structures import *
 from .imageproc import *
 from .miscellaneous import *
@@ -19,7 +18,6 @@ from .statistics import *
 __all__ = []
 
 __all__ += azimuthal_integration.__all__
-__all__ += computer_vision.__all__
 __all__ += data_structures.__all__
 __all__ += imageproc.__all__
 __all__ += miscellaneous.__all__

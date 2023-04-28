@@ -6,27 +6,27 @@ jobs:
 
   strategy:
     matrix:
-      ubuntu20_gcc9:
-        CC: gcc-9
-        CXX: g++-9
+      ubuntu_20_gcc10:
+        CC: gcc-10
+        CXX: g++-10
         LLVM_VERSION: 0
         IMAGE_NAME: 'ubuntu-20.04'
         PYTHON_VERSION: 3.9
         BENCHMARK: 1
 
-      ubuntu22_gcc9:
-        CC: gcc-9
-        CXX: g++-9
+      ubuntu_latest_gcc11:
+        CC: gcc-11
+        CXX: g++-11
         LLVM_VERSION: 0
-        IMAGE_NAME: 'ubuntu-22.04'
-        PYTHON_VERSION: 3.9
+        IMAGE_NAME: 'ubuntu-latest'
+        PYTHON_VERSION: 3.10
         DISABLE_TBB: 1
         DISABLE_XSIMD: 1
 
-      ubuntu20_clang9:
-        CC: clang-9
-        CXX: clang++-9
-        LLVM_VERSION: 9
+      ubuntu_20_clang11:
+        CC: clang-11
+        CXX: clang++-11
+        LLVM_VERSION: 11
         IMAGE_NAME: 'ubuntu-20.04'
         PYTHON_VERSION: 3.10
 
@@ -43,9 +43,6 @@ jobs:
           sudo add-apt-repository "deb http://apt.llvm.org/$(UBUNTU_NAME)/ llvm-toolchain-${UBUNTU_NAME}-$(LLVM_VERSION) main"
           sudo apt-get update
           sudo apt-get install --no-install-suggests --no-install-recommends clang-$(LLVM_VERSION)
-        elif [[ $(CXX) == g++-8 ]]; then
-          sudo apt-get update
-          sudo apt-get install --no-install-suggests --no-install-recommends $CXX
         fi
       displayName: "Install build toolchain"
 
@@ -58,15 +55,9 @@ jobs:
 
   strategy:
     matrix:
-      macOS_11:
-        PYTHON_VERSION: 3.9
-        IMAGE_NAME: 'macOS-11'
-        DISABLE_TBB: 1  # worked on MacOS 12.6 with M1 chip
-        DISABLE_XSIMD: 1
-
-      macOS_12:
+      macOS_latest:
         PYTHON_VERSION: 3.10
-        IMAGE_NAME: 'macOS-12'
+        IMAGE_NAME: 'macOS-latest'
         DISABLE_TBB: 1  # worked on MacOS 12.6 with M1 chip
         DISABLE_XSIMD: 1
 

@@ -68,7 +68,7 @@ class Build(build_ext):
 
         cmake_version = LooseVersion(
             re.search(r'version\s*([\d.]+)', out.decode()).group(1))
-        cmake_minimum_version_required = '3.15.0'
+        cmake_minimum_version_required = '3.24'
         if cmake_version < cmake_minimum_version_required:
             raise RuntimeError(f"CMake >= {cmake_minimum_version_required} "
                                f"is required!")

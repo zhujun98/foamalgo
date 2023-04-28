@@ -50,22 +50,12 @@ find_package(Threads REQUIRED)
 set(FOAM_UNITTESTS
         test_tbb.cpp
         test_azimuthal_integrator.cpp
-        test_canny.cpp
         test_geometry.cpp
         test_geometry_1m.cpp
         test_imageproc.cpp
-        test_smooth.cpp
         test_statistics.cpp
         test_traits.cpp
         )
-
-set(FOAM_UNITTESTS_REQUIRED_BLAS)
-
-# Failed in compilation in macOS
-if (NOT APPLE)
-    list(APPEND FOAM_UNITTESTS test_blas.cpp)
-    list(APPEND FOAM_UNITTESTS_REQUIRED_BLAS test_blas)
-endif()
 
 set(CMAKE_BUILD_RPATH "${CMAKE_PREFIX_PATH}/lib")
 
@@ -90,14 +80,6 @@ foreach(pathname IN LISTS FOAM_UNITTESTS)
                 pthread
             )
 
-    if (${targetname} IN_LIST FOAM_UNITTESTS_REQUIRED_BLAS)
-        target_link_libraries(${targetname}
-                PRIVATE
-                    ${BLAS_LIBRARIES}
-                    ${LAPACK_LIBRARIES}
-                )
-    endif()
-
     add_custom_target(f${targetname}
         COMMAND ${targetname}
         DEPENDS ${targetname} ${filename}
@@ -119,8 +101,6 @@ target_link_libraries(test_foamalgo
             pthread
             foamalgo
             $<$<OR:$<BOOL:${FOAMALGO_USE_TBB}>,$<BOOL:${XTENSOR_USE_TBB}>>:${TBB_LIBRARIES}>
-            ${BLAS_LIBRARIES}
-            ${LAPACK_LIBRARIES}
         )
 
 add_custom_target(ftest

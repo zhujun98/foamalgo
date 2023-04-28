@@ -12,7 +12,7 @@ foamalgo
 
 ## Introduction
 
-`foamalgo` is a head-only C++ (17) library with Python binding `pyfoamalgo`, 
+`foamalgo` is a head-only C++20 library with Python binding `pyfoamalgo`, 
 which is meant to be used in numerical analysis in photon science and 
 accelerator physics. It leverages SIMD and multi-threaded parallelism
 to increase algorithm performance by up to 2 orders of magnitude compared to 

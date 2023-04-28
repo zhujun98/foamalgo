@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch
 
 import math
+import warnings
 
 import numpy as np
 
@@ -69,8 +70,8 @@ class TestStatistics:
             f_cpp(a1d)
             mocked.assert_not_called()
 
-        with np.warnings.catch_warnings():
-            np.warnings.simplefilter("ignore", category=RuntimeWarning)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
 
             # axis is None
             self._assert_array_almost_equal(f_py(a1d), f_cpp(a1d))
@@ -217,8 +218,8 @@ class TestStatistics:
         assert (-np.inf, np.inf) == _get_outer_edges(arr, (-math.inf, math.inf))
 
     def testComputeStatistics(self):
-        with np.warnings.catch_warnings():
-            np.warnings.simplefilter("ignore", category=RuntimeWarning)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
 
             # test input contains only Nan
             data = np.empty((3, 2), dtype=np.float32)

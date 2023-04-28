@@ -1,4 +1,5 @@
 import time
+import warnings
 
 import numpy as np
 
@@ -202,8 +203,8 @@ if __name__ == "__main__":
 
     s = (32, 1096, 1120)
 
-    with np.warnings.catch_warnings():
-        np.warnings.simplefilter("ignore", category=RuntimeWarning)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
 
         bench_nanmean_image_array(s)
         bench_mask_image_array(s)
