@@ -77,25 +77,15 @@ endif()
 find_package(xtensor REQUIRED)
 message(STATUS "Found xtensor: ${xtensor_VERSION}, ${xtensor_INCLUDE_DIRS}")
 
-# xtensor-blas
-find_package(BLAS REQUIRED)
-find_package(LAPACK REQUIRED)
-message(STATUS "BLAS VENDOR:    " ${BLA_VENDOR})
-message(STATUS "BLAS LIBRARIES: " ${BLAS_LIBRARIES})
-find_package(xtensor-blas QUIET)
-message(STATUS "Found xtensor-blas: ${xtensor-blas_VERSION}, ${xtensor-blas_INCLUDE_DIRS}")
-
 # foamalgo
 
 set(FOAM_HEADERS
-        ${FOAMALGO_HEADER_DIR}/canny.hpp
         ${FOAMALGO_HEADER_DIR}/foamalgo_config.hpp
         ${FOAMALGO_HEADER_DIR}/foamalgo_version.hpp
         ${FOAMALGO_HEADER_DIR}/geometry.hpp
         ${FOAMALGO_HEADER_DIR}/geometry_1m.hpp
         ${FOAMALGO_HEADER_DIR}/imageproc.hpp
         ${FOAMALGO_HEADER_DIR}/miscellaneous.hpp
-        ${FOAMALGO_HEADER_DIR}/smooth.hpp
         ${FOAMALGO_HEADER_DIR}/statistics.hpp
         ${FOAMALGO_HEADER_DIR}/traits.hpp
         ${FOAMALGO_HEADER_DIR}/utilities.hpp
@@ -119,7 +109,6 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         INTERFACE
             xtensor
-            xtensor-blas
             $<$<BOOL:${FOAMALGO_USE_XSIMD}>:xsimd>
         )
 

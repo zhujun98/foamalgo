@@ -6,5 +6,4 @@ dependencies:
   - tbb-devel=2021.6.0
   - xsimd=8.1.0
   - xtensor=0.24.3
-  - xtensor-blas=0.20.0
   - xtensor-python=0.26.1

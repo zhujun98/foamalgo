@@ -33,16 +33,12 @@ define_foam_compile_flags(foam_py)
 
 set(FOAM_MODULES
         azimuthal_integrator.cpp
-        canny.cpp
         geometry.cpp
         geometry_1m.cpp
         miscellaneous.cpp
         imageproc.cpp
-        smooth.cpp
         statistics.cpp
         )
-
-set(FOAM_MODULES_REQUIRE_BLAS)
 
 if(APPLE)
     set(target_install_rpath "@loader_path/")
@@ -70,9 +66,5 @@ foreach(pathname IN LISTS FOAM_MODULES)
                 pybind11::pybind11
                 xtensor-python
             )
-
-    if (${modulename} IN_LIST FOAM_MODULES_REQUIRE_BLAS)
-        target_link_libraries(${modulename} PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
-    endif()
 
 endforeach()
